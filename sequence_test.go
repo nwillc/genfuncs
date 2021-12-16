@@ -193,7 +193,7 @@ func TestFind(t *testing.T) {
 				slice:     []float32{1.0, 2.0, 3.0},
 				predicate: func(f float32) bool { return f > 1.0 },
 			},
-			want: 2.0,
+			want:      2.0,
 			wantFound: true,
 		},
 	}
@@ -233,7 +233,7 @@ func TestFindLast(t *testing.T) {
 			name: "Not Found",
 			args: args{
 				slice:     []float32{1.0, 2.0, 3.0},
-				predicate: func(f float32) bool { return f  < 0.0 },
+				predicate: func(f float32) bool { return f < 0.0 },
 			},
 			wantFound: false,
 		},
@@ -243,7 +243,7 @@ func TestFindLast(t *testing.T) {
 				slice:     []float32{1.0, 2.0, 3.0},
 				predicate: func(f float32) bool { return f > 1.0 },
 			},
-			want: 3.0,
+			want:      3.0,
 			wantFound: true,
 		},
 	}
@@ -262,6 +262,161 @@ func TestFindLast(t *testing.T) {
 
 func TestFold(t *testing.T) {
 	si := []int{1, 2, 3}
-	sum := Fold(si, 10, func(r int, i int) int { return r + i  })
+	sum := Fold(si, 10, func(r int, i int) int { return r + i })
 	assert.Equal(t, 16, sum)
+}
+
+func TestAll(t *testing.T) {
+	type args struct {
+		slice     []string
+		predicate Predicate[string]
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "Empty",
+			args: args{
+				slice:     []string{},
+				predicate: func(s string) bool { return s == "a" },
+			},
+			want: true,
+		},
+		{
+			name: "Some Not All",
+			args: args{
+				slice:     []string{"b", "c"},
+				predicate: func(s string) bool { return s == "b" },
+			},
+			want: false,
+		},
+		{
+			name: "All",
+			args: args{
+				slice:     []string{"b", "a", "c"},
+				predicate: func(s string) bool { return len(s) == 1 },
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := All(tt.args.slice, tt.args.predicate)
+			assert.Equal(t, got, tt.want)
+		})
+	}
+}
+
+func TestAssociate(t *testing.T) {
+	var firstLast Transform[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
+	type args struct {
+		slice     []PersonName
+		transform Transform[PersonName, string, string]
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantSize int
+		contains []string
+	}{
+		{
+			name: "Empty",
+			args: args{
+				slice:     []PersonName{},
+				transform: firstLast,
+			},
+			wantSize: 0,
+		},
+		{
+			name: "Two Unique",
+			args: args{
+				slice: []PersonName{
+					{
+						First: "fred",
+						Last:  "flintstone",
+					},
+					{
+						First: "barney",
+						Last:  "rubble",
+					},
+				},
+				transform: firstLast,
+			},
+			wantSize: 2,
+			contains: []string{"fred", "baarney"},
+		},
+		{
+			name: "Duplicate",
+			args: args{
+				slice: []PersonName{
+					{
+						First: "fred",
+						Last:  "flintstone",
+					},
+					{
+						First: "fred",
+						Last:  "astaire",
+					},
+				},
+				transform: firstLast,
+			},
+			wantSize: 1,
+			contains: []string{"fred"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fNameMap := Associate(tt.args.slice, tt.args.transform)
+			assert.Equal(t, tt.wantSize, len(fNameMap))
+			for k, _ := range fNameMap {
+				_, ok := fNameMap[k]
+				assert.True(t, ok)
+			}
+		})
+	}
+}
+
+func TestContains(t *testing.T) {
+	type args struct {
+		slice   []string
+		element string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "Empty",
+			args: args{
+				slice:     []string{},
+				element: "foo",
+			},
+			want: false,
+		},
+		{
+			name: "Not Found",
+			args: args{
+				slice:     []string{"b", "c"},
+				element: "a",
+			},
+			want: false,
+		},
+		{
+			name: "Found",
+			args: args{
+				slice:     []string{"b", "a", "c"},
+				element: "a" ,
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Contains(tt.args.slice, tt.args.element)
+			assert.Equal(t, got, tt.want)
+		})
+	}
 }
