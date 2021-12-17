@@ -19,6 +19,7 @@ import "github.com/nwillc/genfuncs"
 - [func FindLast[T any](slice []T, predicate Predicate[T]) (T, bool)](<#func-findlast>)
 - [func FlatMap[T, R any](slice []T, transform Transform[T, R]) []R](<#func-flatmap>)
 - [func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R](<#func-fold>)
+- [func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T](<#func-groupby>)
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
 - [type KeySelector](<#type-keyselector>)
 - [type Operation](<#type-operation>)
@@ -116,6 +117,14 @@ func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R
 ```
 
 Fold accumulates a value starting with initial value and applying operation from left to right to current accumulated value and each element\.
+
+## func GroupBy
+
+```go
+func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T
+```
+
+GroupBy groups elements of the slice by the key returned by the given keySelector function applied to each element and returns a map where each group key is associated with a slice of corresponding elements\.
 
 ## func JoinToString
 
