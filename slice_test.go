@@ -1,7 +1,8 @@
-package genfuncs
+package genfuncs_test
 
 import (
 	"fmt"
+	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
@@ -21,7 +22,7 @@ func (p PersonName) String() string {
 func TestAll(t *testing.T) {
 	type args struct {
 		slice     []string
-		predicate Predicate[string]
+		predicate genfuncs.Predicate[string]
 	}
 	tests := []struct {
 		name string
@@ -55,7 +56,7 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := All(tt.args.slice, tt.args.predicate)
+			got := genfuncs.All(tt.args.slice, tt.args.predicate)
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -64,7 +65,7 @@ func TestAll(t *testing.T) {
 func TestAny(t *testing.T) {
 	type args struct {
 		slice     []string
-		predicate Predicate[string]
+		predicate genfuncs.Predicate[string]
 	}
 	tests := []struct {
 		name string
@@ -98,17 +99,17 @@ func TestAny(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := Any(tt.args.slice, tt.args.predicate)
+			got := genfuncs.Any(tt.args.slice, tt.args.predicate)
 			assert.Equal(t, got, tt.want)
 		})
 	}
 }
 
 func TestAssociate(t *testing.T) {
-	var firstLast TransformKV[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
+	var firstLast genfuncs.TransformKV[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
 	type args struct {
 		slice     []PersonName
-		transform TransformKV[PersonName, string, string]
+		transform genfuncs.TransformKV[PersonName, string, string]
 	}
 	tests := []struct {
 		name     string
@@ -163,7 +164,7 @@ func TestAssociate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fNameMap := Associate(tt.args.slice, tt.args.transform)
+			fNameMap := genfuncs.Associate(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, len(fNameMap))
 			for k, _ := range fNameMap {
 				_, ok := fNameMap[k]
@@ -174,10 +175,10 @@ func TestAssociate(t *testing.T) {
 }
 
 func TestAssociateWith(t *testing.T) {
-	var valueSelector ValueSelector[int, int] = func(i int) int { return i * 2 }
+	var valueSelector genfuncs.ValueSelector[int, int] = func(i int) int { return i * 2 }
 	type args struct {
 		slice     []int
-		transform ValueSelector[int, int]
+		transform genfuncs.ValueSelector[int, int]
 	}
 	tests := []struct {
 		name     string
@@ -211,7 +212,7 @@ func TestAssociateWith(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultMap := AssociateWith(tt.args.slice, tt.args.transform)
+			resultMap := genfuncs.AssociateWith(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, len(resultMap))
 			for _, k := range tt.args.slice {
 				v, ok := resultMap[k]
@@ -259,7 +260,7 @@ func TestContains(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := Contains(tt.args.slice, tt.args.element)
+			got := genfuncs.Contains(tt.args.slice, tt.args.element)
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -298,7 +299,7 @@ func TestDistinct(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			distinct := Distinct(tt.args.slice)
+			distinct := genfuncs.Distinct(tt.args.slice)
 			assert.Equal(t, len(tt.want), len(distinct))
 		})
 	}
@@ -307,7 +308,7 @@ func TestDistinct(t *testing.T) {
 func TestFilter(t *testing.T) {
 	type args struct {
 		slice     []int
-		predicate Predicate[int]
+		predicate genfuncs.Predicate[int]
 	}
 	tests := []struct {
 		name string
@@ -333,10 +334,10 @@ func TestFilter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := Filter(tt.args.slice, tt.args.predicate)
+			result := genfuncs.Filter(tt.args.slice, tt.args.predicate)
 			assert.Equal(t, len(tt.want), len(result))
 			for _, v := range result {
-				assert.True(t, Any(result, func(i int) bool { return i == v }))
+				assert.True(t, genfuncs.Any(result, func(i int) bool { return i == v }))
 			}
 		})
 	}
@@ -345,7 +346,7 @@ func TestFilter(t *testing.T) {
 func TestFind(t *testing.T) {
 	type args struct {
 		slice     []float32
-		predicate Predicate[float32]
+		predicate genfuncs.Predicate[float32]
 	}
 	tests := []struct {
 		name      string
@@ -381,7 +382,7 @@ func TestFind(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, ok := Find(tt.args.slice, tt.args.predicate)
+			got, ok := genfuncs.Find(tt.args.slice, tt.args.predicate)
 			if !tt.wantFound {
 				assert.False(t, ok)
 				return
@@ -395,7 +396,7 @@ func TestFind(t *testing.T) {
 func TestFindLast(t *testing.T) {
 	type args struct {
 		slice     []float32
-		predicate Predicate[float32]
+		predicate genfuncs.Predicate[float32]
 	}
 	tests := []struct {
 		name      string
@@ -431,7 +432,7 @@ func TestFindLast(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, ok := FindLast(tt.args.slice, tt.args.predicate)
+			got, ok := genfuncs.FindLast(tt.args.slice, tt.args.predicate)
 			if !tt.wantFound {
 				assert.False(t, ok)
 				return
@@ -443,10 +444,10 @@ func TestFindLast(t *testing.T) {
 }
 
 func TestFlatMap(t *testing.T) {
-	var trans Transform[int, string] = func(i int) string { return strconv.Itoa(i) }
+	var trans genfuncs.Transform[int, []string] = func(i int) []string { return []string{"#", strconv.Itoa(i)} }
 	type args struct {
 		slice     []int
-		transform Transform[int, string]
+		transform genfuncs.Transform[int, []string]
 	}
 	tests := []struct {
 		name string
@@ -467,15 +468,15 @@ func TestFlatMap(t *testing.T) {
 				slice:     []int{1, 2, 3},
 				transform: trans,
 			},
-			want: []string{"1", "2", "3"},
+			want: []string{"#", "1", "#", "2", "#", "3"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := FlatMap(tt.args.slice, tt.args.transform)
+			got := genfuncs.FlatMap(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, Contains(got, s))
+				assert.True(t, genfuncs.Contains(got, s))
 			}
 		})
 	}
@@ -483,14 +484,14 @@ func TestFlatMap(t *testing.T) {
 
 func TestFold(t *testing.T) {
 	si := []int{1, 2, 3}
-	sum := Fold(si, 10, func(r int, i int) int { return r + i })
+	sum := genfuncs.Fold(si, 10, func(r int, i int) int { return r + i })
 	assert.Equal(t, 16, sum)
 }
 
 func TestGroupBy(t *testing.T) {
 	type args struct {
 		slice       []int
-		keySelector KeySelector[int, string]
+		keySelector genfuncs.KeySelector[int, string]
 	}
 	tests := []struct {
 		name string
@@ -513,10 +514,10 @@ func TestGroupBy(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultsMap := GroupBy(tt.args.slice, tt.args.keySelector)
+			resultsMap := genfuncs.GroupBy(tt.args.slice, tt.args.keySelector)
 			assert.Equal(t, len(tt.want), len(resultsMap))
 			for k, v := range tt.want {
-				assert.True(t, All(v, func(i int) bool { return Contains(resultsMap[k], i) }))
+				assert.True(t, genfuncs.All(v, func(i int) bool { return genfuncs.Contains(resultsMap[k], i) }))
 			}
 		})
 	}
@@ -594,17 +595,17 @@ func TestJoinToString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := JoinToString(tt.args.slice, func(p PersonName) string { return p.String() }, tt.args.separator, tt.args.prefix, tt.args.postfix)
+			got := genfuncs.JoinToString(tt.args.slice, func(p PersonName) string { return p.String() }, tt.args.separator, tt.args.prefix, tt.args.postfix)
 			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
 func TestMap(t *testing.T) {
-	var trans Transform[int, string] = func(i int) string { return strconv.Itoa(i) }
+	var trans genfuncs.Transform[int, string] = func(i int) string { return strconv.Itoa(i) }
 	type args struct {
 		slice     []int
-		transform Transform[int, string]
+		transform genfuncs.Transform[int, string]
 	}
 	tests := []struct {
 		name string
@@ -630,10 +631,10 @@ func TestMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := Map(tt.args.slice, tt.args.transform)
+			got := genfuncs.Map(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, Contains(got, s))
+				assert.True(t, genfuncs.Contains(got, s))
 			}
 		})
 	}

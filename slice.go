@@ -105,11 +105,11 @@ func FindLast[T any](slice []T, predicate Predicate[T]) (T, bool) {
 }
 
 // FlatMap returns a slice of all elements from results of transform function being invoked on each element of
-// original slice.
-func FlatMap[T, R any](slice []T, transform Transform[T, R]) []R {
+// original slice, and those resultant slices concatenated.
+func FlatMap[T, R any](slice []T, transform Transform[T, []R]) []R {
 	var results []R
 	for _, e := range slice {
-		results = append(results, transform(e))
+		results = append(results, transform(e)...)
 	}
 	return results
 }
