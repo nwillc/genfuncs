@@ -21,6 +21,7 @@ import "github.com/nwillc/genfuncs"
 - [func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R](<#func-fold>)
 - [func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T](<#func-groupby>)
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
+- [func Map[T, R any](slice []T, transform Transform[T, R]) []R](<#func-map>)
 - [type KeySelector](<#type-keyselector>)
 - [type Operation](<#type-operation>)
 - [type Predicate](<#type-predicate>)
@@ -133,6 +134,14 @@ func JoinToString[T any](slice []T, stringer Stringer[T], separator string, pref
 ```
 
 JoinToString creates a string from all the elements using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
+
+## func Map
+
+```go
+func Map[T, R any](slice []T, transform Transform[T, R]) []R
+```
+
+Map returns a slice containing the results of applying the given transform function to each element in the original slice\.
 
 ## type KeySelector
 
