@@ -106,7 +106,7 @@ func FindLast[T any](slice []T, predicate Predicate[T]) (T, bool) {
 
 // FlatMap returns a slice of all elements from results of transform function being invoked on each element of
 // original slice.
-func FlatMap[T, R any](slice []T, transform Transform[T,R]) []R {
+func FlatMap[T, R any](slice []T, transform Transform[T, R]) []R {
 	var results []R
 	for _, e := range slice {
 		results = append(results, transform(e))
@@ -126,7 +126,7 @@ func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R {
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to
 // each element and returns a map where each group key is associated with a slice of corresponding elements.
-func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T,K]) map[K][]T {
+func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T {
 	m := make(map[K][]T)
 	for _, e := range slice {
 		k := keySelector(e)
@@ -152,4 +152,11 @@ func JoinToString[T any](slice []T, stringer Stringer[T], separator string, pref
 	return sb.String()
 }
 
-// map
+// Map returns a slice containing the results of applying the given transform function to each element in the original slice.
+func Map[T, R any](slice []T, transform Transform[T, R]) []R {
+	var results = make([]R, len(slice))
+	for i, e := range slice {
+		results[i] = transform(e)
+	}
+	return results
+}

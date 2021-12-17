@@ -515,6 +515,9 @@ func TestGroupBy(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			resultsMap := GroupBy(tt.args.slice, tt.args.keySelector)
 			assert.Equal(t, len(tt.want), len(resultsMap))
+			for k, v := range tt.want {
+				assert.True(t, All(v, func(i int) bool { return Contains(resultsMap[k], i) }))
+			}
 		})
 	}
 }
@@ -593,6 +596,45 @@ func TestJoinToString(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := JoinToString(tt.args.slice, func(p PersonName) string { return p.String() }, tt.args.separator, tt.args.prefix, tt.args.postfix)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestMap(t *testing.T) {
+	var trans Transform[int, string] = func(i int) string { return strconv.Itoa(i) }
+	type args struct {
+		slice     []int
+		transform Transform[int, string]
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "Empty",
+			args: args{
+				slice:     []int{},
+				transform: trans,
+			},
+			want: []string{},
+		},
+		{
+			name: "List",
+			args: args{
+				slice:     []int{1, 2, 3},
+				transform: trans,
+			},
+			want: []string{"1", "2", "3"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Map(tt.args.slice, tt.args.transform)
+			assert.Equal(t, len(tt.want), len(got))
+			for _, s := range tt.want {
+				assert.True(t, Contains(got, s))
+			}
 		})
 	}
 }
