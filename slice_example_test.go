@@ -14,6 +14,14 @@ func TestExamples(t *testing.T) {
 	ExampleAssociateWith()
 	ExampleContains()
 	ExampleDistinct()
+	ExampleFilter()
+	ExampleFind()
+	ExampleFindLast()
+	ExampleFlatMap()
+	ExampleFold()
+	ExampleGroupBy()
+	ExampleJoinToString()
+	ExampleMap()
 }
 
 func ExampleAll() {
@@ -41,14 +49,14 @@ func ExampleAssociate() {
 }
 
 func ExampleAssociateWith() {
-	odsEvens := func(i int) string {
+	oddEven := func(i int) string {
 		if i%2 == 0 {
 			return "EVEN"
 		}
 		return "ODD"
 	}
 	numbers := []int{1, 2, 3, 4}
-	odsEvensMap := genfuncs.AssociateWith(numbers, odsEvens)
+	odsEvensMap := genfuncs.AssociateWith(numbers, oddEven)
 	fmt.Println(odsEvensMap[2]) // EVEN
 	fmt.Println(odsEvensMap[3]) // ODD
 }
@@ -62,4 +70,58 @@ func ExampleContains() {
 func ExampleDistinct() {
 	values := []int{1, 2, 2, 3, 1, 3}
 	fmt.Println(genfuncs.Distinct(values)) // [1 2 3]
+}
+
+func ExampleFilter() {
+	values := []int{1, -2, 2, -3}
+	isPositive := func(i int) bool { return i > 0 }
+	fmt.Println(genfuncs.Filter(values, isPositive)) // [1 2]
+}
+
+func ExampleFind() {
+	values := []int{-1, -2, 2, -3}
+	isPositive := func(i int) bool { return i > 0 }
+	fmt.Println(genfuncs.Find(values, isPositive)) // 2 true
+}
+
+func ExampleFindLast() {
+	values := []int{-1, -2, 2, 3}
+	isPositive := func(i int) bool { return i > 0 }
+	fmt.Println(genfuncs.FindLast(values, isPositive)) // 3 true
+}
+
+func ExampleFlatMap() {
+	words := []string{"hello", " ", "world"}
+	slicer := func(s string) []string { return strings.Split(s, "") }
+	fmt.Println(genfuncs.FlatMap(words, slicer)) // [h e l l o   w o r l d]
+}
+
+func ExampleFold() {
+	numbers := []int{1, 2, 3, 4, 5}
+	sum := func(a int, b int) int { return a + b }
+	fmt.Println(genfuncs.Fold(numbers, 0, sum)) // 15
+}
+
+func ExampleGroupBy() {
+	oddEven := func(i int) string {
+		if i%2 == 0 {
+			return "EVEN"
+		}
+		return "ODD"
+	}
+	numbers := []int{1, 2, 3, 4}
+	grouped := genfuncs.GroupBy(numbers, oddEven)
+	fmt.Println(grouped["ODD"]) // [1 3]
+}
+
+func ExampleJoinToString() {
+	words := []string{"an", "example"}
+	uppercase := func(s string) string { return strings.ToUpper(s) }
+	fmt.Println(genfuncs.JoinToString(words, uppercase, " ", "-> ", " <-")) // -> AN EXAMPLE <-
+}
+
+func ExampleMap() {
+	numbers := []int{69, 88, 65, 77, 80, 76, 69}
+	toString := func(i int) string { return string(rune(i)) }
+	fmt.Println(genfuncs.Map(numbers, toString)) // [E X A M P L E]
 }

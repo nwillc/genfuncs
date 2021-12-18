@@ -6,8 +6,6 @@
 import "github.com/nwillc/genfuncs"
 ```
 
-Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular when working with slices\. Many of the functions are based on Kotlin's Sequence\.
-
 ## Index
 
 - [func All[T any](slice []T, predicate Predicate[T]) bool](<#func-all>)
@@ -147,14 +145,14 @@ import (
 )
 
 func main() {
-	odsEvens := func(i int) string {
+	oddEven := func(i int) string {
 		if i%2 == 0 {
 			return "EVEN"
 		}
 		return "ODD"
 	}
 	numbers := []int{1, 2, 3, 4}
-	odsEvensMap := genfuncs.AssociateWith(numbers, odsEvens)
+	odsEvensMap := genfuncs.AssociateWith(numbers, oddEven)
 	fmt.Println(odsEvensMap[2]) // EVEN
 	fmt.Println(odsEvensMap[3]) // ODD
 }
@@ -228,6 +226,27 @@ func Filter[T any](slice []T, predicate Predicate[T]) []T
 
 Filter returns a slice containing only elements matching the given predicate\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	values := []int{1, -2, 2, -3}
+	isPositive := func(i int) bool { return i > 0 }
+	fmt.Println(genfuncs.Filter(values, isPositive)) // [1 2]
+}
+```
+
+</p>
+</details>
+
 ## func Find
 
 ```go
@@ -235,6 +254,27 @@ func Find[T any](slice []T, predicate Predicate[T]) (T, bool)
 ```
 
 Find returns the first element matching the given predicate and true\, or false when no such element was found\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	values := []int{-1, -2, 2, -3}
+	isPositive := func(i int) bool { return i > 0 }
+	fmt.Println(genfuncs.Find(values, isPositive)) // 2 true
+}
+```
+
+</p>
+</details>
 
 ## func FindLast
 
@@ -244,6 +284,27 @@ func FindLast[T any](slice []T, predicate Predicate[T]) (T, bool)
 
 FindLast returns the last element matching the given predicate and true\, or false when no such element was found\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	values := []int{-1, -2, 2, 3}
+	isPositive := func(i int) bool { return i > 0 }
+	fmt.Println(genfuncs.FindLast(values, isPositive)) // 3 true
+}
+```
+
+</p>
+</details>
+
 ## func FlatMap
 
 ```go
@@ -251,6 +312,28 @@ func FlatMap[T, R any](slice []T, transform Transform[T, []R]) []R
 ```
 
 FlatMap returns a slice of all elements from results of transform function being invoked on each element of original slice\, and those resultant slices concatenated\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"strings"
+)
+
+func main() {
+	words := []string{"hello", " ", "world"}
+	slicer := func(s string) []string { return strings.Split(s, "") }
+	fmt.Println(genfuncs.FlatMap(words, slicer)) // [h e l l o   w o r l d]
+}
+```
+
+</p>
+</details>
 
 ## func Fold
 
@@ -260,6 +343,27 @@ func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R
 
 Fold accumulates a value starting with initial value and applying operation from left to right to current accumulated value and each element\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	numbers := []int{1, 2, 3, 4, 5}
+	sum := func(a int, b int) int { return a + b }
+	fmt.Println(genfuncs.Fold(numbers, 0, sum)) // 15
+}
+```
+
+</p>
+</details>
+
 ## func GroupBy
 
 ```go
@@ -267,6 +371,33 @@ func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[
 ```
 
 GroupBy groups elements of the slice by the key returned by the given keySelector function applied to each element and returns a map where each group key is associated with a slice of corresponding elements\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	oddEven := func(i int) string {
+		if i%2 == 0 {
+			return "EVEN"
+		}
+		return "ODD"
+	}
+	numbers := []int{1, 2, 3, 4}
+	grouped := genfuncs.GroupBy(numbers, oddEven)
+	fmt.Println(grouped["ODD"]) // [1 3]
+}
+```
+
+</p>
+</details>
 
 ## func JoinToString
 
@@ -276,6 +407,28 @@ func JoinToString[T any](slice []T, stringer Stringer[T], separator string, pref
 
 JoinToString creates a string from all the elements using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"strings"
+)
+
+func main() {
+	words := []string{"an", "example"}
+	uppercase := func(s string) string { return strings.ToUpper(s) }
+	fmt.Println(genfuncs.JoinToString(words, uppercase, " ", "-> ", " <-")) // -> AN EXAMPLE <-
+}
+```
+
+</p>
+</details>
+
 ## func Map
 
 ```go
@@ -283,6 +436,27 @@ func Map[T, R any](slice []T, transform Transform[T, R]) []R
 ```
 
 Map returns a slice containing the results of applying the given transform function to each element in the original slice\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	numbers := []int{69, 88, 65, 77, 80, 76, 69}
+	toString := func(i int) string { return string(rune(i)) }
+	fmt.Println(genfuncs.Map(numbers, toString)) // [E X A M P L E]
+}
+```
+
+</p>
+</details>
 
 ## type KeySelector
 
