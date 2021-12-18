@@ -55,8 +55,8 @@ import (
 )
 
 func main() {
-	numbers := []int{1, 2, 3, 4}
-	positive := func(i int) bool { return i >= 0 }
+	numbers := []float32{1, 2.2, 3.0, 4}
+	positive := func(i float32) bool { return i > 0 }
 	fmt.Println(genfuncs.All(numbers, positive)) // true
 }
 ```
@@ -420,13 +420,13 @@ package main
 import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
-	"strings"
+	"strconv"
 )
 
 func main() {
-	words := []string{"an", "example"}
-	uppercase := func(s string) string { return strings.ToUpper(s) }
-	fmt.Println(genfuncs.JoinToString(words, uppercase, " ", "-> ", " <-")) // -> AN EXAMPLE <-
+	values := []bool{true, false, true}
+	btos := func(b bool) string { return strconv.FormatBool(b) }
+	fmt.Println(genfuncs.JoinToString(values, btos, ", ", "{", "}")) // {true, false, true}
 }
 ```
 
