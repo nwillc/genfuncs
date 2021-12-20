@@ -2,10 +2,11 @@ package genfuncs_test
 
 import (
 	"fmt"
-	"github.com/nwillc/genfuncs"
-	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
+
+	"github.com/nwillc/genfuncs"
+	"github.com/stretchr/testify/assert"
 )
 
 var _ fmt.Stringer = (*PersonName)(nil)
@@ -166,7 +167,7 @@ func TestAssociate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fNameMap := genfuncs.Associate(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, len(fNameMap))
-			for k, _ := range fNameMap {
+			for k := range fNameMap {
 				_, ok := fNameMap[k]
 				assert.True(t, ok)
 			}
@@ -638,4 +639,56 @@ func TestMap(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestReduce(t *testing.T) {
+	type item struct {
+		price float64
+	}
+
+	type args struct {
+		slice   []any
+		reducer genfuncs.Operation[any, any]
+		initial any
+	}
+	tests := []struct {
+		name string
+		args args
+		want any
+	}{
+		{
+			name: "Primitive integer",
+			args: args{
+				slice:   []any{1, 2, 3},
+				reducer: func(acc, v any) any { return acc.(int) + v.(int) },
+				initial: 0,
+			},
+			want: 6,
+		},
+		{
+			name: "Primitive string",
+			args: args{
+				slice:   []any{"foo", "bar", "baz"},
+				reducer: func(acc, v any) any { return acc.(string) + v.(string) },
+				initial: "",
+			},
+			want: "foobarbaz",
+		},
+		{
+			name: "Struct",
+			args: args{
+				slice:   []any{item{1}, item{3}, item{2.5}},
+				reducer: func(acc, v any) any { return acc.(float64) + v.(item).price },
+				initial: 0.,
+			},
+			want: 6.5,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := genfuncs.Reduce(tt.args.slice, tt.args.reducer, tt.args.initial)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+
 }

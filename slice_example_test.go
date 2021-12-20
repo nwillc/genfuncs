@@ -2,10 +2,11 @@ package genfuncs_test
 
 import (
 	"fmt"
-	"github.com/nwillc/genfuncs"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/nwillc/genfuncs"
 )
 
 func TestExamples(t *testing.T) {
@@ -23,6 +24,7 @@ func TestExamples(t *testing.T) {
 	ExampleGroupBy()
 	ExampleJoinToString()
 	ExampleMap()
+	ExampleReduce()
 }
 
 func ExampleAll() {
@@ -125,4 +127,16 @@ func ExampleMap() {
 	numbers := []int{69, 88, 65, 77, 80, 76, 69}
 	toString := func(i int) string { return string(rune(i)) }
 	fmt.Println(genfuncs.Map(numbers, toString)) // [E X A M P L E]
+}
+
+func ExampleReduce() {
+	type item struct {
+		name  string
+		price float64
+	}
+	items := []item{
+		{name: "Salmon", price: 5},
+		{name: "Tuna", price: 3.5},
+	}
+	fmt.Println(genfuncs.Reduce(items, func(total float64, current item) float64 { return total + current.price }, 0)) // 8.5
 }

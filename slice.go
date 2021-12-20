@@ -160,3 +160,14 @@ func Map[T, R any](slice []T, transform Transform[T, R]) []R {
 	}
 	return results
 }
+
+// Reduce executes a user-supplied "reducer" callback function on each element of the slice,
+// in order, passing in the return value from the calculation on the preceding element.
+// The final result of running the reducer across all elements of the slice is a single value.
+func Reduce[T, R any](slice []T, reducer Operation[T, R], initial R) R {
+	accumulator := initial
+	for _, v := range slice {
+		accumulator = reducer(accumulator, v)
+	}
+	return accumulator
+}
