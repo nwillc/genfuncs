@@ -51,6 +51,7 @@ type TransformKV[T any, K comparable, V any] func(T) (K, V)
 // ValueSelector is used to select a value for a key, given a comparable key will return a value of any type.
 type ValueSelector[K comparable, T any] func(K) T
 
+// ReverseComparator reverses a Comparator to facilitate switching sort orderings.
 func ReverseComparator[T any](comparator Comparator[T]) Comparator[T] {
 	return func(a, b T) ComparedOrder { return comparator(b, a) }
 }

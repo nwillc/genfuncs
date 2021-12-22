@@ -22,7 +22,7 @@ type Heap[T any] struct {
 	comparator Comparator[T]
 }
 
-// NewMinHeap return a heap ordered min to max value.
+// NewHeap return a heap ordered based on the Comparator.
 func NewHeap[T any](comparator Comparator[T]) *Heap[T] {
 	return &Heap[T]{comparator: comparator}
 }
@@ -30,17 +30,26 @@ func NewHeap[T any](comparator Comparator[T]) *Heap[T] {
 // Len returns current length of the heap.
 func (h *Heap[T]) Len() int { return len(h.slice) }
 
-// Push an item onto the heap.
+// Push a value onto the heap.
 func (h *Heap[T]) Push(v T) {
 	h.slice = append(h.slice, v)
 	h.up(h.Len() - 1)
+}
+
+// PushAll the values onto the Heap.
+func (h *Heap[T]) PushAll(values ...T) {
+	end := h.Len()
+	h.slice = append(h.slice, values...)
+	for ; end < h.Len(); end++ {
+		h.up(end)
+	}
 }
 
 // Pop an item off the heap.
 func (h *Heap[T]) Pop() T {
 	n := h.Len() - 1
 	if n > 0 {
-		swap(h.slice, 0, n)
+		Swap(h.slice, 0, n)
 		h.down()
 	}
 	v := h.slice[n]
@@ -54,7 +63,7 @@ func (h *Heap[T]) up(jj int) {
 		if i == jj || h.comparator(h.slice[jj], h.slice[i]) >= EqualTo {
 			break
 		}
-		swap(h.slice, i, jj)
+		Swap(h.slice, i, jj)
 		jj = i
 	}
 }
@@ -75,13 +84,9 @@ func (h *Heap[T]) down() {
 		if h.comparator(h.slice[j], h.slice[i1]) >= EqualTo {
 			break
 		}
-		swap(h.slice, i1, j)
+		Swap(h.slice, i1, j)
 		i1 = j
 	}
-}
-
-func swap[T any](slice []T, i, j int) {
-	slice[i], slice[j] = slice[j], slice[i]
 }
 
 func parent(i int) int { return (i - 1) / 2 }

@@ -17,13 +17,13 @@
 package genfuncs
 
 import (
-	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestInsertionSort(t *testing.T) {
-	names := []string{"fred", "barney", "pebbles", "advark", "wombat"}
-	strCompare := func(a, b string) ComparedOrder {
+var (
+	letters                       = []string{"t", "e", "s", "t"}
+	strCompare Comparator[string] = func(a, b string) ComparedOrder {
 		if a == b {
 			return EqualTo
 		}
@@ -32,14 +32,100 @@ func TestInsertionSort(t *testing.T) {
 		}
 		return GreaterThan
 	}
+)
 
-	InsertionSort(names, strCompare)
-	for _, n := range names {
-		fmt.Println(n)
+func TestInsertionSort(t *testing.T) {
+	type args struct {
+		slice      []string
+		comparator Comparator[string]
 	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "Empty",
+			args: args{
+				slice:      []string{},
+				comparator: strCompare,
+			},
+			want: []string{},
+		},
+		{
+			name: "Sort Min Max",
+			args: args{
+				slice:      letters,
+				comparator: strCompare,
+			},
+			want: []string{"e", "s", "t", "t"},
+		},
+		{
+			name: "Sort Max Min",
+			args: args{
+				slice:      letters,
+				comparator: ReverseComparator(strCompare),
+			},
+			want: []string{"t", "t", "s", "e"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dst := make([]string, len(tt.args.slice))
+			copy(dst, tt.args.slice)
+			InsertionSort(dst, tt.args.comparator)
+			assert.Equal(t, len(tt.want), len(dst))
+			for i := 0; i < len(tt.want); i++ {
+				assert.Equal(t, tt.want[i], dst[i])
+			}
+		})
+	}
+}
 
-	InsertionSort(names, ReverseComparator(strCompare))
-	for _, n := range names {
-		fmt.Println(n)
+func TestHeapSort(t *testing.T) {
+	type args struct {
+		slice      []string
+		comparator Comparator[string]
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "Empty",
+			args: args{
+				slice:      []string{},
+				comparator: strCompare,
+			},
+			want: []string{},
+		},
+		{
+			name: "Sort Min Max",
+			args: args{
+				slice:      letters,
+				comparator: strCompare,
+			},
+			want: []string{"e", "s", "t", "t"},
+		},
+		{
+			name: "Sort Max Min",
+			args: args{
+				slice:      letters,
+				comparator: ReverseComparator(strCompare),
+			},
+			want: []string{"t", "t", "s", "e"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dst := make([]string, len(tt.args.slice))
+			copy(dst, tt.args.slice)
+			HeapSort(dst, tt.args.comparator)
+			assert.Equal(t, len(tt.want), len(dst))
+			for i := 0; i < len(tt.want); i++ {
+				assert.Equal(t, tt.want[i], dst[i])
+			}
+		})
 	}
 }

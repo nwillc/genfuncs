@@ -16,6 +16,7 @@
 
 package genfuncs
 
+// InsertionSort sorts a slice by Comparator order using the insertion sort algorithm.
 func InsertionSort[T any](slice []T, comparator Comparator[T]) {
 	for i := 1; i < len(slice); i++ {
 		key := slice[i]
@@ -24,5 +25,41 @@ func InsertionSort[T any](slice []T, comparator Comparator[T]) {
 			slice[j+1] = slice[j]
 		}
 		slice[j+1] = key
+	}
+}
+
+// HeapSort sorts a slice by Comparator order using the heap sort algorithm.
+func HeapSort[T any](slice []T, comparator Comparator[T]) {
+	// Build max heap
+	n := len(slice)
+	for i := n/2 - 1; i >= 0; i-- {
+		heapify(slice, n, i, comparator)
+	}
+
+	// Heap sort
+	for i := n - 1; i >= 0; i-- {
+		Swap(slice, 0, i)
+		// Heapify root element to get highest element at root again
+		heapify(slice, i, 0, comparator)
+	}
+}
+
+func heapify[T any](slice []T, n, i int, comparator Comparator[T]) {
+	// Find largest among root, left child and right child
+	largest := i
+	left := 2*i + 1
+	right := 2*i + 2
+
+	if left < n && comparator(slice[left], slice[largest]) == GreaterThan {
+		largest = left
+	}
+	if right < n && comparator(slice[right], slice[largest]) == GreaterThan {
+		largest = right
+	}
+
+	// Swap and continue heapifying if root is not largest
+	if largest != i {
+		Swap(slice, i, largest)
+		heapify(slice, n, largest, comparator)
 	}
 }

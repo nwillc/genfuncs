@@ -8,9 +8,9 @@ import "github.com/nwillc/genfuncs"
 
 Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular when working with slices\. Many of the functions are based on Kotlin's Sequence\.
 
-This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
+This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\. In particular\, the sorts are simplistic and while correct serve largely generics examples\.
 
-The code is under the ISC License \(https://github.com/nwillc/genfuncs/blob/master/LICENSE.md\)\.
+The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/master/LICENSE.md
 
 ## Index
 
@@ -26,9 +26,11 @@ The code is under the ISC License \(https://github.com/nwillc/genfuncs/blob/mast
 - [func FlatMap[T, R any](slice []T, transform Transform[T, []R]) []R](<#func-flatmap>)
 - [func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R](<#func-fold>)
 - [func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T](<#func-groupby>)
+- [func HeapSort[T any](slice []T, comparator Comparator[T])](<#func-heapsort>)
 - [func InsertionSort[T any](slice []T, comparator Comparator[T])](<#func-insertionsort>)
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
 - [func Map[T, R any](slice []T, transform Transform[T, R]) []R](<#func-map>)
+- [func Swap[T any](slice []T, i, j int)](<#func-swap>)
 - [type Comparator](<#type-comparator>)
   - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
 - [type ComparedOrder](<#type-comparedorder>)
@@ -37,6 +39,7 @@ The code is under the ISC License \(https://github.com/nwillc/genfuncs/blob/mast
   - [func (h *Heap[T]) Len() int](<#func-heap-len>)
   - [func (h *Heap[T]) Pop() T](<#func-heap-pop>)
   - [func (h *Heap[T]) Push(v T)](<#func-heap-push>)
+  - [func (h *Heap[T]) PushAll(values ...T)](<#func-heap-pushall>)
 - [type KeySelector](<#type-keyselector>)
 - [type Operation](<#type-operation>)
 - [type Predicate](<#type-predicate>)
@@ -414,11 +417,93 @@ func main() {
 </p>
 </details>
 
+## func HeapSort
+
+```go
+func HeapSort[T any](slice []T, comparator Comparator[T])
+```
+
+HeapSort sorts a slice by Comparator order using the heap sort algorithm\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"strings"
+)
+
+var order genfuncs.Comparator[string] = func(a, b string) genfuncs.ComparedOrder {
+	switch {
+	case a < b:
+		return genfuncs.LessThan
+	case a > b:
+		return genfuncs.GreaterThan
+	default:
+		return genfuncs.EqualTo
+	}
+}
+
+func main() {
+	letters := strings.Split("example", "")
+
+	genfuncs.HeapSort(letters, order)
+	fmt.Println(letters) // [a e e l m p x]
+	genfuncs.HeapSort(letters, genfuncs.ReverseComparator(order))
+	fmt.Println(letters) // [x p m l e e a]
+}
+```
+
+</p>
+</details>
+
 ## func InsertionSort
 
 ```go
 func InsertionSort[T any](slice []T, comparator Comparator[T])
 ```
+
+InsertionSort sorts a slice by Comparator order using the insertion sort algorithm\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"strings"
+)
+
+var order genfuncs.Comparator[string] = func(a, b string) genfuncs.ComparedOrder {
+	switch {
+	case a < b:
+		return genfuncs.LessThan
+	case a > b:
+		return genfuncs.GreaterThan
+	default:
+		return genfuncs.EqualTo
+	}
+}
+
+func main() {
+	letters := strings.Split("example", "")
+
+	genfuncs.InsertionSort(letters, order)
+	fmt.Println(letters) // [a e e l m p x]
+	genfuncs.InsertionSort(letters, genfuncs.ReverseComparator(order))
+	fmt.Println(letters) // [x p m l e e a]
+}
+```
+
+</p>
+</details>
 
 ## func JoinToString
 
@@ -484,6 +569,35 @@ func main() {
 </p>
 </details>
 
+## func Swap
+
+```go
+func Swap[T any](slice []T, i, j int)
+```
+
+Swap two values in the slice\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	words := []string{"world", "hello"}
+	genfuncs.Swap(words, 0, 1)
+	fmt.Println(words) // [hello world]
+}
+```
+
+</p>
+</details>
+
 ## type Comparator
 
 Comparator compares a to b and returns LessThan\, EqualTo or GreaterThan based on a relative to b\.
@@ -497,6 +611,8 @@ type Comparator[T any] func(a, b T) ComparedOrder
 ```go
 func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]
 ```
+
+ReverseComparator reverses a Comparator to facilitate switching sort orderings\.
 
 ## type ComparedOrder
 
@@ -530,7 +646,7 @@ type Heap[T any] struct {
 func NewHeap[T any](comparator Comparator[T]) *Heap[T]
 ```
 
-NewMinHeap return a heap ordered min to max value\.
+NewHeap return a heap ordered based on the Comparator\.
 
 ### func \(\*Heap\) Len
 
@@ -554,7 +670,15 @@ Pop an item off the heap\.
 func (h *Heap[T]) Push(v T)
 ```
 
-Push an item onto the heap\.
+Push a value onto the heap\.
+
+### func \(\*Heap\) PushAll
+
+```go
+func (h *Heap[T]) PushAll(values ...T)
+```
+
+PushAll the values onto the Heap\.
 
 ## type KeySelector
 

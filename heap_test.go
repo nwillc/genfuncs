@@ -22,16 +22,7 @@ import (
 )
 
 var (
-	names                         = []string{"fred", "barney", "pebbles"}
-	strCompare Comparator[string] = func(a, b string) ComparedOrder {
-		if a == b {
-			return EqualTo
-		}
-		if a <= b {
-			return LessThan
-		}
-		return GreaterThan
-	}
+	names = []string{"fred", "barney", "pebbles"}
 )
 
 func Test_New(t *testing.T) {
@@ -44,9 +35,7 @@ func Test_New(t *testing.T) {
 
 func Test_MinHeap(t *testing.T) {
 	heap := NewHeap(strCompare)
-	for _, name := range names {
-		heap.Push(name)
-	}
+	heap.PushAll(names...)
 	assert.Equal(t, 3, heap.Len())
 	assert.Equal(t, "barney", heap.Pop())
 	assert.Equal(t, "fred", heap.Pop())
@@ -56,9 +45,7 @@ func Test_MinHeap(t *testing.T) {
 
 func Test_MaxHeap(t *testing.T) {
 	heap := NewHeap(ReverseComparator(strCompare))
-	for _, name := range names {
-		heap.Push(name)
-	}
+	heap.PushAll(names...)
 	assert.Equal(t, 3, heap.Len())
 	assert.Equal(t, "pebbles", heap.Pop())
 	assert.Equal(t, "fred", heap.Pop())
