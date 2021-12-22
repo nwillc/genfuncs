@@ -14,14 +14,15 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/*
-
-Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with slices. Many of the functions are based on Kotlin's Sequence.
-
-This package, though usable, is primarily a proof-of-concept since it is likely Go will provide similar at some point soon.
-
-The code is under the ISC License (https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
-
-*/
 package genfuncs
+
+func InsertionSort[T any](slice []T, comparator Comparator[T]) {
+	for i := 1; i < len(slice); i++ {
+		key := slice[i]
+		j := i - 1
+		for ; j >= 0 && comparator(slice[j], key) == GreaterThan; j-- {
+			slice[j+1] = slice[j]
+		}
+		slice[j+1] = key
+	}
+}

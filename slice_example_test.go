@@ -117,8 +117,13 @@ func ExampleGroupBy() {
 
 func ExampleJoinToString() {
 	values := []bool{true, false, true}
-	btos := func(b bool) string { return strconv.FormatBool(b) }
-	fmt.Println(genfuncs.JoinToString(values, btos, ", ", "{", "}")) // {true, false, true}
+	fmt.Println(genfuncs.JoinToString(
+		values,
+		strconv.FormatBool,
+		", ",
+		"{",
+		"}",
+	)) // {true, false, true}
 }
 
 func ExampleMap() {

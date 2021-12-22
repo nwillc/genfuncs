@@ -10,6 +10,8 @@ Package genfuncs implements various functions utilizing Go's Generics to help av
 
 This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
 
+The code is under the ISC License \(https://github.com/nwillc/genfuncs/blob/master/LICENSE.md\)\.
+
 ## Index
 
 - [func All[T any](slice []T, predicate Predicate[T]) bool](<#func-all>)
@@ -24,8 +26,17 @@ This package\, though usable\, is primarily a proof\-of\-concept since it is lik
 - [func FlatMap[T, R any](slice []T, transform Transform[T, []R]) []R](<#func-flatmap>)
 - [func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R](<#func-fold>)
 - [func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T](<#func-groupby>)
+- [func InsertionSort[T any](slice []T, comparator Comparator[T])](<#func-insertionsort>)
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
 - [func Map[T, R any](slice []T, transform Transform[T, R]) []R](<#func-map>)
+- [type Comparator](<#type-comparator>)
+  - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
+- [type ComparedOrder](<#type-comparedorder>)
+- [type Heap](<#type-heap>)
+  - [func NewHeap[T any](comparator Comparator[T]) *Heap[T]](<#func-newheap>)
+  - [func (h *Heap[T]) Len() int](<#func-heap-len>)
+  - [func (h *Heap[T]) Pop() T](<#func-heap-pop>)
+  - [func (h *Heap[T]) Push(v T)](<#func-heap-push>)
 - [type KeySelector](<#type-keyselector>)
 - [type Operation](<#type-operation>)
 - [type Predicate](<#type-predicate>)
@@ -403,6 +414,12 @@ func main() {
 </p>
 </details>
 
+## func InsertionSort
+
+```go
+func InsertionSort[T any](slice []T, comparator Comparator[T])
+```
+
 ## func JoinToString
 
 ```go
@@ -425,7 +442,13 @@ import (
 
 func main() {
 	values := []bool{true, false, true}
-	fmt.Println(genfuncs.JoinToString(values, strconv.FormatBool, ", ", "{", "}")) // {true, false, true}
+	fmt.Println(genfuncs.JoinToString(
+		values,
+		strconv.FormatBool,
+		", ",
+		"{",
+		"}",
+	)) // {true, false, true}
 }
 ```
 
@@ -460,6 +483,78 @@ func main() {
 
 </p>
 </details>
+
+## type Comparator
+
+Comparator compares a to b and returns LessThan\, EqualTo or GreaterThan based on a relative to b\.
+
+```go
+type Comparator[T any] func(a, b T) ComparedOrder
+```
+
+### func ReverseComparator
+
+```go
+func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]
+```
+
+## type ComparedOrder
+
+ComparedOrder is the type returned by a Comparator\.
+
+```go
+type ComparedOrder int
+```
+
+```go
+var (
+    LessThan    ComparedOrder = -1
+    EqualTo     ComparedOrder = 0
+    GreaterThan ComparedOrder = 1
+)
+```
+
+## type Heap
+
+Heap implements either a min or max ordered heap of any type\.
+
+```go
+type Heap[T any] struct {
+    // contains filtered or unexported fields
+}
+```
+
+### func NewHeap
+
+```go
+func NewHeap[T any](comparator Comparator[T]) *Heap[T]
+```
+
+NewMinHeap return a heap ordered min to max value\.
+
+### func \(\*Heap\) Len
+
+```go
+func (h *Heap[T]) Len() int
+```
+
+Len returns current length of the heap\.
+
+### func \(\*Heap\) Pop
+
+```go
+func (h *Heap[T]) Pop() T
+```
+
+Pop an item off the heap\.
+
+### func \(\*Heap\) Push
+
+```go
+func (h *Heap[T]) Push(v T)
+```
+
+Push an item onto the heap\.
 
 ## type KeySelector
 

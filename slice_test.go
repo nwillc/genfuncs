@@ -602,7 +602,7 @@ func TestJoinToString(t *testing.T) {
 }
 
 func TestMap(t *testing.T) {
-	var trans genfuncs.Transform[int, string] = func(i int) string { return strconv.Itoa(i) }
+	var trans genfuncs.Transform[int, string] = strconv.Itoa
 	type args struct {
 		slice     []int
 		transform genfuncs.Transform[int, string]
