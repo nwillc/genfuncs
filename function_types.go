@@ -16,6 +16,11 @@
 
 package genfuncs
 
+import (
+	"constraints"
+	"fmt"
+)
+
 // ComparedOrder is the type returned by a Comparator.
 type ComparedOrder int
 
@@ -54,4 +59,23 @@ type ValueSelector[K comparable, T any] func(K) T
 // ReverseComparator reverses a Comparator to facilitate switching sort orderings.
 func ReverseComparator[T any](comparator Comparator[T]) Comparator[T] {
 	return func(a, b T) ComparedOrder { return comparator(b, a) }
+}
+
+// StringerStringer creates a Stringer for any type that implements fmt.Stringer.
+func StringerStringer[T fmt.Stringer]() Stringer[T] {
+	return func(t T) string { return t.String() }
+}
+
+// OrderedComparator will create a Comparator from any type included in the constraints.Ordered constraint.
+func OrderedComparator[T constraints.Ordered]() Comparator[T] {
+	return func(a, b T) ComparedOrder {
+		switch {
+		case a < b:
+			return LessThan
+		case a > b:
+			return GreaterThan
+		default:
+			return EqualTo
+		}
+	}
 }

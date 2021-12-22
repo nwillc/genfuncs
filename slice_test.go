@@ -540,6 +540,7 @@ func TestGroupBy(t *testing.T) {
 }
 
 func TestJoinToString(t *testing.T) {
+	personStringer := genfuncs.StringerStringer[PersonName]()
 	type args struct {
 		slice     []PersonName
 		separator string
@@ -611,7 +612,7 @@ func TestJoinToString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genfuncs.JoinToString(tt.args.slice, func(p PersonName) string { return p.String() }, tt.args.separator, tt.args.prefix, tt.args.postfix)
+			got := genfuncs.JoinToString(tt.args.slice, personStringer, tt.args.separator, tt.args.prefix, tt.args.postfix)
 			assert.Equal(t, tt.want, got)
 		})
 	}

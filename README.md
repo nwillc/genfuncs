@@ -32,6 +32,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [func Map[T, R any](slice []T, transform Transform[T, R]) []R](<#func-map>)
 - [func Swap[T any](slice []T, i, j int)](<#func-swap>)
 - [type Comparator](<#type-comparator>)
+  - [func OrderedComparator[T constraints.Ordered]() Comparator[T]](<#func-orderedcomparator>)
   - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
 - [type ComparedOrder](<#type-comparedorder>)
 - [type Heap](<#type-heap>)
@@ -44,6 +45,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [type Operation](<#type-operation>)
 - [type Predicate](<#type-predicate>)
 - [type Stringer](<#type-stringer>)
+  - [func StringerStringer[T fmt.Stringer]() Stringer[T]](<#func-stringerstringer>)
 - [type Transform](<#type-transform>)
 - [type TransformKV](<#type-transformkv>)
 - [type ValueSelector](<#type-valueselector>)
@@ -437,23 +439,14 @@ import (
 	"strings"
 )
 
-var order genfuncs.Comparator[string] = func(a, b string) genfuncs.ComparedOrder {
-	switch {
-	case a < b:
-		return genfuncs.LessThan
-	case a > b:
-		return genfuncs.GreaterThan
-	default:
-		return genfuncs.EqualTo
-	}
-}
+var alphaOrder = genfuncs.OrderedComparator[string]()
 
 func main() {
 	letters := strings.Split("example", "")
 
-	genfuncs.HeapSort(letters, order)
+	genfuncs.HeapSort(letters, alphaOrder)
 	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.HeapSort(letters, genfuncs.ReverseComparator(order))
+	genfuncs.HeapSort(letters, genfuncs.ReverseComparator(alphaOrder))
 	fmt.Println(letters) // [x p m l e e a]
 }
 ```
@@ -481,23 +474,14 @@ import (
 	"strings"
 )
 
-var order genfuncs.Comparator[string] = func(a, b string) genfuncs.ComparedOrder {
-	switch {
-	case a < b:
-		return genfuncs.LessThan
-	case a > b:
-		return genfuncs.GreaterThan
-	default:
-		return genfuncs.EqualTo
-	}
-}
+var alphaOrder = genfuncs.OrderedComparator[string]()
 
 func main() {
 	letters := strings.Split("example", "")
 
-	genfuncs.InsertionSort(letters, order)
+	genfuncs.InsertionSort(letters, alphaOrder)
 	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.InsertionSort(letters, genfuncs.ReverseComparator(order))
+	genfuncs.InsertionSort(letters, genfuncs.ReverseComparator(alphaOrder))
 	fmt.Println(letters) // [x p m l e e a]
 }
 ```
@@ -606,6 +590,14 @@ Comparator compares a to b and returns LessThan\, EqualTo or GreaterThan based o
 type Comparator[T any] func(a, b T) ComparedOrder
 ```
 
+### func OrderedComparator
+
+```go
+func OrderedComparator[T constraints.Ordered]() Comparator[T]
+```
+
+OrderedComparator will create a Comparator from any type included in the constraints\.Ordered constraint\.
+
 ### func ReverseComparator
 
 ```go
@@ -711,6 +703,14 @@ Stringer is used to create string representations\, it accepts any type and retu
 ```go
 type Stringer[T any] func(T) string
 ```
+
+### func StringerStringer
+
+```go
+func StringerStringer[T fmt.Stringer]() Stringer[T]
+```
+
+StringerStringer creates a Stringer for any type that implements fmt\.Stringer\.
 
 ## type Transform
 

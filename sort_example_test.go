@@ -23,16 +23,7 @@ import (
 	"testing"
 )
 
-var order genfuncs.Comparator[string] = func(a, b string) genfuncs.ComparedOrder {
-	switch {
-	case a < b:
-		return genfuncs.LessThan
-	case a > b:
-		return genfuncs.GreaterThan
-	default:
-		return genfuncs.EqualTo
-	}
-}
+var alphaOrder = genfuncs.OrderedComparator[string]()
 
 func TestSwapExamples(t *testing.T) {
 	ExampleInsertionSort()
@@ -42,17 +33,17 @@ func TestSwapExamples(t *testing.T) {
 func ExampleInsertionSort() {
 	letters := strings.Split("example", "")
 
-	genfuncs.InsertionSort(letters, order)
+	genfuncs.InsertionSort(letters, alphaOrder)
 	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.InsertionSort(letters, genfuncs.ReverseComparator(order))
+	genfuncs.InsertionSort(letters, genfuncs.ReverseComparator(alphaOrder))
 	fmt.Println(letters) // [x p m l e e a]
 }
 
 func ExampleHeapSort() {
 	letters := strings.Split("example", "")
 
-	genfuncs.HeapSort(letters, order)
+	genfuncs.HeapSort(letters, alphaOrder)
 	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.HeapSort(letters, genfuncs.ReverseComparator(order))
+	genfuncs.HeapSort(letters, genfuncs.ReverseComparator(alphaOrder))
 	fmt.Println(letters) // [x p m l e e a]
 }
