@@ -47,8 +47,8 @@ func HeapSort[T any](slice []T, comparator Comparator[T]) {
 func heapify[T any](slice []T, n, i int, comparator Comparator[T]) {
 	// Find largest among root, left child and right child
 	largest := i
-	left := 2*i + 1
-	right := 2*i + 2
+	left := left(i)
+	right := right(i)
 
 	if left < n && comparator(slice[left], slice[largest]) == GreaterThan {
 		largest = left
@@ -62,4 +62,53 @@ func heapify[T any](slice []T, n, i int, comparator Comparator[T]) {
 		Swap(slice, i, largest)
 		heapify(slice, n, largest, comparator)
 	}
+}
+
+// QuickSort sorts a slice by Comparator order using the quick sort algorithm.
+func QuickSort[T any](slice []T, comparator Comparator[T]) {
+	quickSort(slice, 0, len(slice)-1, comparator)
+}
+
+func quickSort[T any](slice []T, start, end int, comparator Comparator[T]) {
+	// base condition
+	if start >= end {
+		return
+	}
+
+	// rearrange elements across pivot
+	pivot := partition(slice, start, end, comparator)
+
+	// recur on subarray containing elements less than the pivot
+	quickSort(slice, start, pivot-1, comparator)
+
+	// recur on subarray containing elements more than the pivot
+	quickSort(slice, pivot+1, end, comparator)
+}
+
+// Partition using the Lomuto partition scheme
+func partition[T any](slice []T, start, end int, comparator Comparator[T]) int {
+
+	// Pick the rightmost element as a pivot from the array
+	pivot := slice[end]
+
+	// elements less than the pivot will be pushed to the left of `pIndex`
+	// elements more than the pivot will be pushed to the right of `pIndex`
+	// equal elements can go either way
+	pIndex := start
+
+	// each time we find an element less than or equal to the pivot,
+	// `pIndex` is incremented, and that element would be placed
+	// before the pivot.
+	for i := start; i < end; i++ {
+		if comparator(slice[i], pivot) != GreaterThan {
+			Swap(slice, i, pIndex)
+			pIndex++
+		}
+	}
+
+	// swap `pIndex` with pivot
+	Swap(slice, end, pIndex)
+
+	// return `pIndex` (index of the pivot element)
+	return pIndex
 }

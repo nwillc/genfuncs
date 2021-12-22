@@ -30,9 +30,10 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [func InsertionSort[T any](slice []T, comparator Comparator[T])](<#func-insertionsort>)
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
 - [func Map[T, R any](slice []T, transform Transform[T, R]) []R](<#func-map>)
+- [func QuickSort[T any](slice []T, comparator Comparator[T])](<#func-quicksort>)
 - [func Swap[T any](slice []T, i, j int)](<#func-swap>)
 - [type Comparator](<#type-comparator>)
-  - [func OrderedComparator[T constraints.Ordered]\(\) Comparator[T]](<#func-orderedcomparator>)
+  - [func OrderedComparator[T constraints.Ordered]() Comparator[T]](<#func-orderedcomparator>)
   - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
 - [type ComparedOrder](<#type-comparedorder>)
 - [type Heap](<#type-heap>)
@@ -45,7 +46,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [type Operation](<#type-operation>)
 - [type Predicate](<#type-predicate>)
 - [type Stringer](<#type-stringer>)
-  - [func StringerStringer[T fmt.Stringer]\(\) Stringer[T]](<#func-stringerstringer>)
+  - [func StringerStringer[T fmt.Stringer]() Stringer[T]](<#func-stringerstringer>)
 - [type Transform](<#type-transform>)
 - [type TransformKV](<#type-transformkv>)
 - [type ValueSelector](<#type-valueselector>)
@@ -553,6 +554,41 @@ func main() {
 </p>
 </details>
 
+## func QuickSort
+
+```go
+func QuickSort[T any](slice []T, comparator Comparator[T])
+```
+
+QuickSort sorts a slice by Comparator order using the quick sort algorithm\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"strings"
+)
+
+var alphaOrder = genfuncs.OrderedComparator[string]()
+
+func main() {
+	letters := strings.Split("example", "")
+
+	genfuncs.HeapSort(letters, alphaOrder)
+	fmt.Println(letters) // [a e e l m p x]
+	genfuncs.QuickSort(letters, genfuncs.ReverseComparator(alphaOrder))
+	fmt.Println(letters) // [x p m l e e a]
+}
+```
+
+</p>
+</details>
+
 ## func Swap
 
 ```go
@@ -598,6 +634,32 @@ func OrderedComparator[T constraints.Ordered]() Comparator[T]
 
 OrderedComparator will create a Comparator from any type included in the constraints\.Ordered constraint\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+var (
+	lexicalOrder   = genfuncs.OrderedComparator[string]()
+	reverseLexical = genfuncs.ReverseComparator(lexicalOrder)
+)
+
+func main() {
+	fmt.Println(lexicalOrder("a", "b")) // -1
+	fmt.Println(lexicalOrder("a", "a")) // 0
+	fmt.Println(lexicalOrder("b", "a")) // 1
+}
+```
+
+</p>
+</details>
+
 ### func ReverseComparator
 
 ```go
@@ -605,6 +667,31 @@ func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]
 ```
 
 ReverseComparator reverses a Comparator to facilitate switching sort orderings\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+var (
+	lexicalOrder   = genfuncs.OrderedComparator[string]()
+	reverseLexical = genfuncs.ReverseComparator(lexicalOrder)
+)
+
+func main() {
+	fmt.Println(lexicalOrder("a", "b"))   // -1
+	fmt.Println(reverseLexical("a", "b")) // 1
+}
+```
+
+</p>
+</details>
 
 ## type ComparedOrder
 
@@ -639,6 +726,34 @@ func NewHeap[T any](comparator Comparator[T]) *Heap[T]
 ```
 
 NewHeap return a heap ordered based on the Comparator\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+var (
+	ascendingOrder = genfuncs.OrderedComparator[int]()
+)
+
+func main() {
+	heap := genfuncs.NewHeap(ascendingOrder)
+	heap.PushAll(3, 1, 4, 2)
+	for heap.Len() > 0 {
+		fmt.Print(heap.Pop()) // 1234
+	}
+	fmt.Println()
+}
+```
+
+</p>
+</details>
 
 ### func \(\*Heap\) Len
 
@@ -711,6 +826,29 @@ func StringerStringer[T fmt.Stringer]() Stringer[T]
 ```
 
 StringerStringer creates a Stringer for any type that implements fmt\.Stringer\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"time"
+)
+
+func main() {
+	var epoch time.Time
+	fmt.Println(epoch.String()) // 0001-01-01 00:00:00 +0000 UTC
+	stringer := genfuncs.StringerStringer[time.Time]()
+	fmt.Println(stringer(epoch)) // 0001-01-01 00:00:00 +0000 UTC
+}
+```
+
+</p>
+</details>
 
 ## type Transform
 

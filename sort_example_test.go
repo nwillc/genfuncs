@@ -25,9 +25,10 @@ import (
 
 var alphaOrder = genfuncs.OrderedComparator[string]()
 
-func TestSwapExamples(t *testing.T) {
+func TestSortExamples(t *testing.T) {
 	ExampleInsertionSort()
 	ExampleHeapSort()
+	ExampleQuickSort()
 }
 
 func ExampleInsertionSort() {
@@ -45,5 +46,14 @@ func ExampleHeapSort() {
 	genfuncs.HeapSort(letters, alphaOrder)
 	fmt.Println(letters) // [a e e l m p x]
 	genfuncs.HeapSort(letters, genfuncs.ReverseComparator(alphaOrder))
+	fmt.Println(letters) // [x p m l e e a]
+}
+
+func ExampleQuickSort() {
+	letters := strings.Split("example", "")
+
+	genfuncs.HeapSort(letters, alphaOrder)
+	fmt.Println(letters) // [a e e l m p x]
+	genfuncs.QuickSort(letters, genfuncs.ReverseComparator(alphaOrder))
 	fmt.Println(letters) // [x p m l e e a]
 }

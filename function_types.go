@@ -56,16 +56,6 @@ type TransformKV[T any, K comparable, V any] func(T) (K, V)
 // ValueSelector is used to select a value for a key, given a comparable key will return a value of any type.
 type ValueSelector[K comparable, T any] func(K) T
 
-// ReverseComparator reverses a Comparator to facilitate switching sort orderings.
-func ReverseComparator[T any](comparator Comparator[T]) Comparator[T] {
-	return func(a, b T) ComparedOrder { return comparator(b, a) }
-}
-
-// StringerStringer creates a Stringer for any type that implements fmt.Stringer.
-func StringerStringer[T fmt.Stringer]() Stringer[T] {
-	return func(t T) string { return t.String() }
-}
-
 // OrderedComparator will create a Comparator from any type included in the constraints.Ordered constraint.
 func OrderedComparator[T constraints.Ordered]() Comparator[T] {
 	return func(a, b T) ComparedOrder {
@@ -78,4 +68,14 @@ func OrderedComparator[T constraints.Ordered]() Comparator[T] {
 			return EqualTo
 		}
 	}
+}
+
+// ReverseComparator reverses a Comparator to facilitate switching sort orderings.
+func ReverseComparator[T any](comparator Comparator[T]) Comparator[T] {
+	return func(a, b T) ComparedOrder { return comparator(b, a) }
+}
+
+// StringerStringer creates a Stringer for any type that implements fmt.Stringer.
+func StringerStringer[T fmt.Stringer]() Stringer[T] {
+	return func(t T) string { return t.String() }
 }
