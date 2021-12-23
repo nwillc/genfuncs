@@ -597,6 +597,30 @@ func main() {
 func SortBy[T any](slice []T, comparator Comparator[T]) []T
 ```
 
+SortBy copies a slice\, sorts the copy applying the Comparator and returns it\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	numbers := []int{1, 0, 9, 6, 0}
+	sorted := genfuncs.SortBy(numbers, genfuncs.OrderedComparator[int]())
+	fmt.Println(numbers) // [1 0 9 6 0]
+	fmt.Println(sorted)  // [0 0 1 6 9]
+}
+```
+
+</p>
+</details>
+
 ## func Swap
 
 ```go
