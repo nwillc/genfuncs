@@ -177,6 +177,7 @@ func Map[T, R any](slice []T, transform Transform[T, R]) []R {
 	return results
 }
 
+// SortBy copies a slice, sorts the copy applying the Comparator and returns it.
 func SortBy[T any](slice []T, comparator Comparator[T]) []T {
 	dst := make([]T, len(slice))
 	copy(dst, slice)

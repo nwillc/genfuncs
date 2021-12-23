@@ -39,6 +39,7 @@ func TestSliceExamples(t *testing.T) {
 	ExampleGroupBy()
 	ExampleJoinToString()
 	ExampleMap()
+	ExampleSortBy()
 	ExampleSwap()
 }
 
@@ -147,6 +148,13 @@ func ExampleMap() {
 	numbers := []int{69, 88, 65, 77, 80, 76, 69}
 	toString := func(i int) string { return string(rune(i)) }
 	fmt.Println(genfuncs.Map(numbers, toString)) // [E X A M P L E]
+}
+
+func ExampleSortBy() {
+	numbers := []int{1, 0, 9, 6, 0}
+	sorted := genfuncs.SortBy(numbers, genfuncs.OrderedComparator[int]())
+	fmt.Println(numbers) // [1 0 9 6 0]
+	fmt.Println(sorted)  // [0 0 1 6 9]
 }
 
 func ExampleSwap() {
