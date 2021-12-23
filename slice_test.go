@@ -22,6 +22,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
+	"time"
 )
 
 var _ fmt.Stringer = (*PersonName)(nil)
@@ -652,6 +653,57 @@ func TestMap(t *testing.T) {
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
 				assert.True(t, genfuncs.Contains(got, s))
+			}
+		})
+	}
+}
+
+func TestSortBy(t *testing.T) {
+	timeComparator := genfuncs.TransformComparator[time.Time, int64](
+		func(t time.Time) int64 { return t.Unix() },
+		genfuncs.OrderedComparator[int64](),
+	)
+	type args struct {
+		slice      []time.Time
+		comparator genfuncs.Comparator[time.Time]
+	}
+	now := time.Now()
+	tests := []struct {
+		name string
+		args args
+		want []time.Time
+	}{
+		{
+			name: "Empty",
+			args: args{
+				slice:      []time.Time{},
+				comparator: timeComparator,
+			},
+			want: []time.Time{},
+		},
+		{
+			name: "Min Max",
+			args: args{
+				slice:      []time.Time{now.Add(time.Second), now, now.Add(-time.Second)},
+				comparator: timeComparator,
+			},
+			want: []time.Time{now.Add(-time.Second), now, now.Add(time.Second)},
+		},
+		{
+			name: "Max Min",
+			args: args{
+				slice:      []time.Time{now.Add(time.Second), now.Add(-time.Second), now},
+				comparator: genfuncs.ReverseComparator(timeComparator),
+			},
+			want: []time.Time{now.Add(time.Second), now, now.Add(-time.Second)},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sorted := genfuncs.SortBy(tt.args.slice, tt.args.comparator)
+			assert.Equal(t, len(tt.want), len(sorted))
+			for i, tm := range tt.want {
+				assert.Equal(t, tm, sorted[i])
 			}
 		})
 	}

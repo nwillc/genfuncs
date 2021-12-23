@@ -79,3 +79,10 @@ func ReverseComparator[T any](comparator Comparator[T]) Comparator[T] {
 func StringerStringer[T fmt.Stringer]() Stringer[T] {
 	return func(t T) string { return t.String() }
 }
+
+// TransformComparator composites an existing Comparator[R] and Transform[T,R] into a new Comparator[T].
+func TransformComparator[T, R any](transform Transform[T, R], comparator Comparator[R]) Comparator[T] {
+	return func(a, b T) ComparedOrder {
+		return comparator(transform(a), transform(b))
+	}
+}

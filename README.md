@@ -31,10 +31,12 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
 - [func Map[T, R any](slice []T, transform Transform[T, R]) []R](<#func-map>)
 - [func QuickSort[T any](slice []T, comparator Comparator[T])](<#func-quicksort>)
+- [func SortBy[T any](slice []T, comparator Comparator[T]) []T](<#func-sortby>)
 - [func Swap[T any](slice []T, i, j int)](<#func-swap>)
 - [type Comparator](<#type-comparator>)
   - [func OrderedComparator[T constraints.Ordered]\(\) Comparator[T]](<#func-orderedcomparator>)
   - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
+  - [func TransformComparator[T, R any](transform Transform[T, R], comparator Comparator[R]) Comparator[T]](<#func-transformcomparator>)
 - [type ComparedOrder](<#type-comparedorder>)
 - [type Heap](<#type-heap>)
   - [func NewHeap[T any](comparator Comparator[T]) *Heap[T]](<#func-newheap>)
@@ -589,6 +591,12 @@ func main() {
 </p>
 </details>
 
+## func SortBy
+
+```go
+func SortBy[T any](slice []T, comparator Comparator[T]) []T
+```
+
 ## func Swap
 
 ```go
@@ -687,6 +695,39 @@ var (
 func main() {
 	fmt.Println(lexicalOrder("a", "b"))   // -1
 	fmt.Println(reverseLexical("a", "b")) // 1
+}
+```
+
+</p>
+</details>
+
+### func TransformComparator
+
+```go
+func TransformComparator[T, R any](transform Transform[T, R], comparator Comparator[R]) Comparator[T]
+```
+
+TransformComparator composites an existing Comparator\[R\] and Transform\[T\,R\] into a new Comparator\[T\]\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"time"
+)
+
+func main() {
+	var integerComparator = genfuncs.OrderedComparator[int64]()
+	var timeTransform = func(t time.Time) int64 { return t.Unix() }
+	var timeComparator = genfuncs.TransformComparator(timeTransform, integerComparator)
+
+	now := time.Now()
+	fmt.Println(timeComparator(now, now.Add(time.Second))) // -1
 }
 ```
 

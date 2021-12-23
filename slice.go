@@ -177,6 +177,13 @@ func Map[T, R any](slice []T, transform Transform[T, R]) []R {
 	return results
 }
 
+func SortBy[T any](slice []T, comparator Comparator[T]) []T {
+	dst := make([]T, len(slice))
+	copy(dst, slice)
+	QuickSort(dst, comparator)
+	return dst
+}
+
 // Swap two values in the slice.
 func Swap[T any](slice []T, i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
