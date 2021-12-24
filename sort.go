@@ -16,14 +16,20 @@
 
 package genfuncs
 
-func comparesLessThan[T any](slice []T, comparator Comparator[T]) func(a, b int) bool {
+// Sort sorts a slice by Comparator order.
+func Sort[T any](slice []T, comparator Comparator[T]) {
+	n := len(slice)
+	quickSort(slice, 0, n, maxDepth(n), comparator)
+}
+
+func lessThanFor[T any](slice []T, comparator Comparator[T]) func(a, b int) bool {
 	return func(a, b int) bool {
 		return comparator(slice[a], slice[b]) == LessThan
 	}
 }
 
 func insertionSort[T any](slice []T, a, b int, comparator Comparator[T]) {
-	lessThan := comparesLessThan(slice, comparator)
+	lessThan := lessThanFor(slice, comparator)
 	for i := a + 1; i < b; i++ {
 		for j := i; j > a && lessThan(j, j-1); j-- {
 			Swap(slice, j, j-1)
@@ -34,7 +40,7 @@ func insertionSort[T any](slice []T, a, b int, comparator Comparator[T]) {
 // siftDown implements the heap property on data[lo:hi].
 // first is an offset into the array where the root of the heap lies.
 func siftDown[T any](slice []T, lo, hi, first int, comparator Comparator[T]) {
-	lessThan := comparesLessThan(slice, comparator)
+	lessThan := lessThanFor(slice, comparator)
 	root := lo
 	for {
 		child := 2*root + 1
@@ -71,7 +77,7 @@ func heapSort[T any](slice []T, a, b int, comparator Comparator[T]) {
 
 // medianOfThree moves the median of the three values data[m0], data[m1], data[m2] into data[m1].
 func medianOfThree[T any](slice []T, m1, m0, m2 int, comparator Comparator[T]) {
-	lessThan := comparesLessThan(slice, comparator)
+	lessThan := lessThanFor(slice, comparator)
 	// sort 3 elements
 	if lessThan(m1, m0) {
 		Swap(slice, m1, m0)
@@ -88,7 +94,7 @@ func medianOfThree[T any](slice []T, m1, m0, m2 int, comparator Comparator[T]) {
 }
 
 func doPivot[T any](slice []T, lo, hi int, comparator Comparator[T]) (midlo, midhi int) {
-	lessThan := comparesLessThan(slice, comparator)
+	lessThan := lessThanFor(slice, comparator)
 	m := int(uint(lo+hi) >> 1) // Written like this to avoid integer overflow.
 	if hi-lo > 40 {
 		// Tukey's ``Ninther,'' median of three medians of three.
@@ -176,7 +182,7 @@ func doPivot[T any](slice []T, lo, hi int, comparator Comparator[T]) (midlo, mid
 }
 
 func quickSort[T any](slice []T, a, b, maxDepth int, comparator Comparator[T]) {
-	lessThan := comparesLessThan(slice, comparator)
+	lessThan := lessThanFor(slice, comparator)
 	for b-a > 12 { // Use ShellSort for slices <= 12 elements
 		if maxDepth == 0 {
 			heapSort(slice, a, b, comparator)
@@ -214,10 +220,4 @@ func maxDepth(n int) int {
 		depth++
 	}
 	return depth * 2
-}
-
-// Sort sorts a slice by Comparator order.
-func Sort[T any](slice []T, comparator Comparator[T]) {
-	n := len(slice)
-	quickSort(slice, 0, n, maxDepth(n), comparator)
 }

@@ -14,22 +14,23 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs
+package genfuncs_test
 
 import (
+	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 var (
 	letters    = []string{"t", "e", "s", "t"}
-	strCompare = OrderedComparator[string]()
+	strCompare = genfuncs.OrderedComparator[string]()
 )
 
 func TestSort(t *testing.T) {
 	type args struct {
 		slice      []string
-		comparator Comparator[string]
+		comparator genfuncs.Comparator[string]
 	}
 	tests := []struct {
 		name string
@@ -45,6 +46,30 @@ func TestSort(t *testing.T) {
 			want: []string{},
 		},
 		{
+			name: "Single",
+			args: args{
+				slice:      []string{"a"},
+				comparator: strCompare,
+			},
+			want: []string{"a"},
+		},
+		{
+			name: "Double",
+			args: args{
+				slice:      []string{"a", "b"},
+				comparator: strCompare,
+			},
+			want: []string{"a", "b"},
+		},
+		{
+			name: "Double Reverse",
+			args: args{
+				slice:      []string{"a", "b"},
+				comparator: genfuncs.ReverseComparator(strCompare),
+			},
+			want: []string{"b", "a"},
+		},
+		{
 			name: "Min Max",
 			args: args{
 				slice:      letters,
@@ -56,7 +81,7 @@ func TestSort(t *testing.T) {
 			name: "Max Min",
 			args: args{
 				slice:      letters,
-				comparator: ReverseComparator(strCompare),
+				comparator: genfuncs.ReverseComparator(strCompare),
 			},
 			want: []string{"t", "t", "s", "e"},
 		},
@@ -66,7 +91,7 @@ func TestSort(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			dst := make([]string, len(tt.args.slice))
 			copy(dst, tt.args.slice)
-			Sort(dst, tt.args.comparator)
+			genfuncs.Sort(dst, tt.args.comparator)
 			assert.Equal(t, len(tt.want), len(dst))
 			for i := 0; i < len(tt.want); i++ {
 				assert.Equal(t, tt.want[i], dst[i])

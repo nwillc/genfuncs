@@ -29,11 +29,9 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [func FlatMap[T, R any](slice []T, transform Transform[T, []R]) []R](<#func-flatmap>)
 - [func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R](<#func-fold>)
 - [func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T](<#func-groupby>)
-- [func HeapSort[T any](slice []T, comparator Comparator[T])](<#func-heapsort>)
-- [func InsertionSort[T any](slice []T, comparator Comparator[T])](<#func-insertionsort>)
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
 - [func Map[T, R any](slice []T, transform Transform[T, R]) []R](<#func-map>)
-- [func QuickSort[T any](slice []T, comparator Comparator[T])](<#func-quicksort>)
+- [func Sort[T any](slice []T, comparator Comparator[T])](<#func-sort>)
 - [func SortBy[T any](slice []T, comparator Comparator[T]) []T](<#func-sortby>)
 - [func Swap[T any](slice []T, i, j int)](<#func-swap>)
 - [type Comparator](<#type-comparator>)
@@ -425,76 +423,6 @@ func main() {
 </p>
 </details>
 
-## func HeapSort
-
-```go
-func HeapSort[T any](slice []T, comparator Comparator[T])
-```
-
-HeapSort sorts a slice by Comparator order using the heap sort algorithm\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-	"strings"
-)
-
-var alphaOrder = genfuncs.OrderedComparator[string]()
-
-func main() {
-	letters := strings.Split("example", "")
-
-	genfuncs.HeapSort(letters, alphaOrder)
-	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.HeapSort(letters, genfuncs.ReverseComparator(alphaOrder))
-	fmt.Println(letters) // [x p m l e e a]
-}
-```
-
-</p>
-</details>
-
-## func InsertionSort
-
-```go
-func InsertionSort[T any](slice []T, comparator Comparator[T])
-```
-
-InsertionSort sorts a slice by Comparator order using the insertion sort algorithm\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-	"strings"
-)
-
-var alphaOrder = genfuncs.OrderedComparator[string]()
-
-func main() {
-	letters := strings.Split("example", "")
-
-	genfuncs.InsertionSort(letters, alphaOrder)
-	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.InsertionSort(letters, genfuncs.ReverseComparator(alphaOrder))
-	fmt.Println(letters) // [x p m l e e a]
-}
-```
-
-</p>
-</details>
-
 ## func JoinToString
 
 ```go
@@ -559,13 +487,13 @@ func main() {
 </p>
 </details>
 
-## func QuickSort
+## func Sort
 
 ```go
-func QuickSort[T any](slice []T, comparator Comparator[T])
+func Sort[T any](slice []T, comparator Comparator[T])
 ```
 
-QuickSort sorts a slice by Comparator order using the quick sort algorithm\.
+Sort sorts a slice by Comparator order\.
 
 <details><summary>Example</summary>
 <p>
@@ -584,9 +512,9 @@ var alphaOrder = genfuncs.OrderedComparator[string]()
 func main() {
 	letters := strings.Split("example", "")
 
-	genfuncs.HeapSort(letters, alphaOrder)
+	genfuncs.Sort(letters, alphaOrder)
 	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.QuickSort(letters, genfuncs.ReverseComparator(alphaOrder))
+	genfuncs.Sort(letters, genfuncs.ReverseComparator(alphaOrder))
 	fmt.Println(letters) // [x p m l e e a]
 }
 ```
