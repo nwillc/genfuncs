@@ -18,10 +18,11 @@ package genfuncs_test
 
 import (
 	"fmt"
-	"github.com/nwillc/genfuncs"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/nwillc/genfuncs"
 )
 
 func TestSliceExamples(t *testing.T) {

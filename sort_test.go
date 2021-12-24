@@ -26,12 +26,7 @@ var (
 	strCompare = OrderedComparator[string]()
 )
 
-func TestSorts(t *testing.T) {
-	sorts := map[string]func([]string, Comparator[string]){
-		"Insertion": InsertionSort[string],
-		"Quick":     QuickSort[string],
-		"Heap":      HeapSort[string],
-	}
+func TestSort(t *testing.T) {
 	type args struct {
 		slice      []string
 		comparator Comparator[string]
@@ -67,16 +62,16 @@ func TestSorts(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		for name, sort := range sorts {
-			t.Run(tt.name+" "+name, func(t *testing.T) {
-				dst := make([]string, len(tt.args.slice))
-				copy(dst, tt.args.slice)
-				sort(dst, tt.args.comparator)
-				assert.Equal(t, len(tt.want), len(dst))
-				for i := 0; i < len(tt.want); i++ {
-					assert.Equal(t, tt.want[i], dst[i])
-				}
-			})
-		}
+
+		t.Run(tt.name, func(t *testing.T) {
+			dst := make([]string, len(tt.args.slice))
+			copy(dst, tt.args.slice)
+			Sort(dst, tt.args.comparator)
+			assert.Equal(t, len(tt.want), len(dst))
+			for i := 0; i < len(tt.want); i++ {
+				assert.Equal(t, tt.want[i], dst[i])
+			}
+		})
+
 	}
 }

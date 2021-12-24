@@ -18,42 +18,23 @@ package genfuncs_test
 
 import (
 	"fmt"
-	"github.com/nwillc/genfuncs"
 	"strings"
 	"testing"
+
+	"github.com/nwillc/genfuncs"
 )
 
 var alphaOrder = genfuncs.OrderedComparator[string]()
 
 func TestSortExamples(t *testing.T) {
-	ExampleInsertionSort()
-	ExampleHeapSort()
-	ExampleQuickSort()
+	ExampleSort()
 }
 
-func ExampleInsertionSort() {
+func ExampleSort() {
 	letters := strings.Split("example", "")
 
-	genfuncs.InsertionSort(letters, alphaOrder)
+	genfuncs.Sort(letters, alphaOrder)
 	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.InsertionSort(letters, genfuncs.ReverseComparator(alphaOrder))
-	fmt.Println(letters) // [x p m l e e a]
-}
-
-func ExampleHeapSort() {
-	letters := strings.Split("example", "")
-
-	genfuncs.HeapSort(letters, alphaOrder)
-	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.HeapSort(letters, genfuncs.ReverseComparator(alphaOrder))
-	fmt.Println(letters) // [x p m l e e a]
-}
-
-func ExampleQuickSort() {
-	letters := strings.Split("example", "")
-
-	genfuncs.HeapSort(letters, alphaOrder)
-	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.QuickSort(letters, genfuncs.ReverseComparator(alphaOrder))
+	genfuncs.Sort(letters, genfuncs.ReverseComparator(alphaOrder))
 	fmt.Println(letters) // [x p m l e e a]
 }

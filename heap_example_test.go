@@ -18,8 +18,9 @@ package genfuncs_test
 
 import (
 	"fmt"
-	"github.com/nwillc/genfuncs"
 	"testing"
+
+	"github.com/nwillc/genfuncs"
 )
 
 var (

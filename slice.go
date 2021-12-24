@@ -181,7 +181,7 @@ func Map[T, R any](slice []T, transform Transform[T, R]) []R {
 func SortBy[T any](slice []T, comparator Comparator[T]) []T {
 	dst := make([]T, len(slice))
 	copy(dst, slice)
-	QuickSort(dst, comparator)
+	Sort(dst, comparator)
 	return dst
 }
 
