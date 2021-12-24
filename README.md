@@ -9,9 +9,7 @@
 import "github.com/nwillc/genfuncs"
 ```
 
-Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular
-when working with slices\. Many of the functions are based on Kotlin's Sequence\. This package\, though usable\,
-is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
+Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular when working with slices\. Many of the functions are based on Kotlin's Sequence\. This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
 
 The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/master/LICENSE.md
 
@@ -19,40 +17,40 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 
 - [func All[T any](slice []T, predicate Predicate[T]) bool](<#func-all>)
 - [func Any[T any](slice []T, predicate Predicate[T]) bool](<#func-any>)
-- [func Associate[T any, K comparable, V any](slice []T, transform TransformKV[T, K, V]) map[K]V](<#func-associate>)
-- [func AssociateWith[K comparable, V any](slice []K, valueSelector ValueSelector[K, V]) map[K]V](<#func-associatewith>)
+- [func Associate[T, V any, K comparable](slice []T, keyValueFor KeyValueFor[T, K, V]) map[K]V](<#func-associate>)
+- [func AssociateWith[K comparable, V any](slice []K, valueFor ValueFor[K, V]) map[K]V](<#func-associatewith>)
 - [func Contains[T comparable](slice []T, element T) bool](<#func-contains>)
 - [func Distinct[T comparable](slice []T) []T](<#func-distinct>)
 - [func Filter[T any](slice []T, predicate Predicate[T]) []T](<#func-filter>)
 - [func Find[T any](slice []T, predicate Predicate[T]) (T, bool)](<#func-find>)
 - [func FindLast[T any](slice []T, predicate Predicate[T]) (T, bool)](<#func-findlast>)
-- [func FlatMap[T, R any](slice []T, transform Transform[T, []R]) []R](<#func-flatmap>)
-- [func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R](<#func-fold>)
-- [func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T](<#func-groupby>)
+- [func FlatMap[T, R any](slice []T, function Function[T, []R]) []R](<#func-flatmap>)
+- [func Fold[T, R any](slice []T, initial R, biFunction BiFunction[R, T, R]) R](<#func-fold>)
+- [func GroupBy[T any, K comparable](slice []T, keyFor KeyFor[T, K]) map[K][]T](<#func-groupby>)
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
-- [func Map[T, R any](slice []T, transform Transform[T, R]) []R](<#func-map>)
+- [func Map[T, R any](slice []T, function Function[T, R]) []R](<#func-map>)
 - [func Sort[T any](slice []T, comparator Comparator[T])](<#func-sort>)
 - [func SortBy[T any](slice []T, comparator Comparator[T]) []T](<#func-sortby>)
 - [func Swap[T any](slice []T, i, j int)](<#func-swap>)
+- [type BiFunction](<#type-bifunction>)
 - [type Comparator](<#type-comparator>)
+  - [func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T]](<#func-functioncomparator>)
   - [func OrderedComparator[T constraints.Ordered]\(\) Comparator[T]](<#func-orderedcomparator>)
   - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
-  - [func TransformComparator[T, R any](transform Transform[T, R], comparator Comparator[R]) Comparator[T]](<#func-transformcomparator>)
 - [type ComparedOrder](<#type-comparedorder>)
+- [type Function](<#type-function>)
 - [type Heap](<#type-heap>)
   - [func NewHeap[T any](comparator Comparator[T]) *Heap[T]](<#func-newheap>)
   - [func (h *Heap[T]) Len() int](<#func-heap-len>)
   - [func (h *Heap[T]) Pop() T](<#func-heap-pop>)
   - [func (h *Heap[T]) Push(v T)](<#func-heap-push>)
   - [func (h *Heap[T]) PushAll(values ...T)](<#func-heap-pushall>)
-- [type KeySelector](<#type-keyselector>)
-- [type Operation](<#type-operation>)
+- [type KeyFor](<#type-keyfor>)
+- [type KeyValueFor](<#type-keyvaluefor>)
 - [type Predicate](<#type-predicate>)
 - [type Stringer](<#type-stringer>)
   - [func StringerStringer[T fmt.Stringer]\(\) Stringer[T]](<#func-stringerstringer>)
-- [type Transform](<#type-transform>)
-- [type TransformKV](<#type-transformkv>)
-- [type ValueSelector](<#type-valueselector>)
+- [type ValueFor](<#type-valuefor>)
 
 
 ## func All
@@ -118,10 +116,10 @@ func main() {
 ## func Associate
 
 ```go
-func Associate[T any, K comparable, V any](slice []T, transform TransformKV[T, K, V]) map[K]V
+func Associate[T, V any, K comparable](slice []T, keyValueFor KeyValueFor[T, K, V]) map[K]V
 ```
 
-Associate returns a map containing key/values provided by transform function applied to elements of the slice\.
+Associate returns a map containing key/values created by applying a function to elements of the slice\.
 
 <details><summary>Example</summary>
 <p>
@@ -152,7 +150,7 @@ func main() {
 ## func AssociateWith
 
 ```go
-func AssociateWith[K comparable, V any](slice []K, valueSelector ValueSelector[K, V]) map[K]V
+func AssociateWith[K comparable, V any](slice []K, valueFor ValueFor[K, V]) map[K]V
 ```
 
 AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the valueSelector function applied to each element\.
@@ -332,7 +330,7 @@ func main() {
 ## func FlatMap
 
 ```go
-func FlatMap[T, R any](slice []T, transform Transform[T, []R]) []R
+func FlatMap[T, R any](slice []T, function Function[T, []R]) []R
 ```
 
 FlatMap returns a slice of all elements from results of transform function being invoked on each element of original slice\, and those resultant slices concatenated\.
@@ -362,7 +360,7 @@ func main() {
 ## func Fold
 
 ```go
-func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R
+func Fold[T, R any](slice []T, initial R, biFunction BiFunction[R, T, R]) R
 ```
 
 Fold accumulates a value starting with initial value and applying operation from left to right to current accumulated value and each element\.
@@ -391,7 +389,7 @@ func main() {
 ## func GroupBy
 
 ```go
-func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T
+func GroupBy[T any, K comparable](slice []T, keyFor KeyFor[T, K]) map[K][]T
 ```
 
 GroupBy groups elements of the slice by the key returned by the given keySelector function applied to each element and returns a map where each group key is associated with a slice of corresponding elements\.
@@ -461,7 +459,7 @@ func main() {
 ## func Map
 
 ```go
-func Map[T, R any](slice []T, transform Transform[T, R]) []R
+func Map[T, R any](slice []T, function Function[T, R]) []R
 ```
 
 Map returns a slice containing the results of applying the given transform function to each element in the original slice\.
@@ -581,13 +579,29 @@ func main() {
 </p>
 </details>
 
-## type Comparator
+## type BiFunction
 
-Comparator compares a to b and returns LessThan\, EqualTo or GreaterThan based on a relative to b\.
+BiFunction accepts two arguments and produces a result\.
 
 ```go
-type Comparator[T any] func(a, b T) ComparedOrder
+type BiFunction[T, U, R any] func(T, U) R
 ```
+
+## type Comparator
+
+Comparator compares two arguments of the same type and returns LessThan\, EqualTo or GreaterThan based relative order\.
+
+```go
+type Comparator[T any] BiFunction[T, T, ComparedOrder]
+```
+
+### func FunctionComparator
+
+```go
+func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T]
+```
+
+FunctionComparator composites an existing Comparator\[R\] and Function\[T\,R\] into a new Comparator\[T\]\.
 
 ### func OrderedComparator
 
@@ -656,39 +670,6 @@ func main() {
 </p>
 </details>
 
-### func TransformComparator
-
-```go
-func TransformComparator[T, R any](transform Transform[T, R], comparator Comparator[R]) Comparator[T]
-```
-
-TransformComparator composites an existing Comparator\[R\] and Transform\[T\,R\] into a new Comparator\[T\]\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-	"time"
-)
-
-func main() {
-	var integerComparator = genfuncs.OrderedComparator[int64]()
-	var timeTransform = func(t time.Time) int64 { return t.Unix() }
-	var timeComparator = genfuncs.TransformComparator(timeTransform, integerComparator)
-
-	now := time.Now()
-	fmt.Println(timeComparator(now, now.Add(time.Second))) // -1
-}
-```
-
-</p>
-</details>
-
 ## type ComparedOrder
 
 ComparedOrder is the type returned by a Comparator\.
@@ -703,6 +684,14 @@ var (
     EqualTo     ComparedOrder = 0
     GreaterThan ComparedOrder = 1
 )
+```
+
+## type Function
+
+Function accepts one argument and produces a result\.
+
+```go
+type Function[T, R any] func(T) R
 ```
 
 ## type Heap
@@ -783,20 +772,20 @@ func (h *Heap[T]) PushAll(values ...T)
 
 PushAll the values onto the Heap\.
 
-## type KeySelector
+## type KeyFor
 
-KeySelector is used for generating keys from types\, it accepts any type and returns a comparable key for it\.
+KeyFor is used for generating keys from types\, it accepts any type and returns a comparable key for it\.
 
 ```go
-type KeySelector[T any, K comparable] func(T) K
+type KeyFor[T any, K comparable] Function[T, K]
 ```
 
-## type Operation
+## type KeyValueFor
 
-Operation is used to perform operations on its arguments\, it accepts two arguments of any type and returns a result of the type of the first argument\.
+KeyValueFor is used to generate a key and value from a type\, it accepts any type\, and returns a comparable key and any value\.
 
 ```go
-type Operation[T, R any] func(R, T) R
+type KeyValueFor[T any, K comparable, V any] func(T) (K, V)
 ```
 
 ## type Predicate
@@ -846,28 +835,12 @@ func main() {
 </p>
 </details>
 
-## type Transform
+## type ValueFor
 
-Transform is used to transform values and types\, it accepts an argument of any type and returns any type\.
-
-```go
-type Transform[T, R any] func(T) R
-```
-
-## type TransformKV
-
-TransformKV is used to generate a key and value from a type\, it accepts any type\, and returns a comparable key and any value\.
+ValueFor given a comparable key will return a value for it\.
 
 ```go
-type TransformKV[T any, K comparable, V any] func(T) (K, V)
-```
-
-## type ValueSelector
-
-ValueSelector is used to select a value for a key\, given a comparable key will return a value of any type\.
-
-```go
-type ValueSelector[K comparable, T any] func(K) T
+type ValueFor[K comparable, T any] Function[K, T]
 ```
 
 
