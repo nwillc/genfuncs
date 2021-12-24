@@ -603,6 +603,30 @@ func FunctionComparator[T, R any](transform Function[T, R], comparator Comparato
 
 FunctionComparator composites an existing Comparator\[R\] and Function\[T\,R\] into a new Comparator\[T\]\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"time"
+)
+
+func main() {
+	var unixTime = func(t time.Time) int64 { return t.Unix() }
+	var timeComparator = genfuncs.FunctionComparator(unixTime, genfuncs.OrderedComparator[int64]())
+
+	now := time.Now()
+	fmt.Println(timeComparator(now, now.Add(time.Second))) // -1
+}
+```
+
+</p>
+</details>
+
 ### func OrderedComparator
 
 ```go
