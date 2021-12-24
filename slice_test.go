@@ -123,10 +123,10 @@ func TestAny(t *testing.T) {
 }
 
 func TestAssociate(t *testing.T) {
-	var firstLast genfuncs.TransformKV[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
+	var firstLast genfuncs.KeyValueFor[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
 	type args struct {
 		slice     []PersonName
-		transform genfuncs.TransformKV[PersonName, string, string]
+		transform genfuncs.KeyValueFor[PersonName, string, string]
 	}
 	tests := []struct {
 		name     string
@@ -192,10 +192,10 @@ func TestAssociate(t *testing.T) {
 }
 
 func TestAssociateWith(t *testing.T) {
-	var valueSelector genfuncs.ValueSelector[int, int] = func(i int) int { return i * 2 }
+	var valueSelector genfuncs.ValueFor[int, int] = func(i int) int { return i * 2 }
 	type args struct {
 		slice     []int
-		transform genfuncs.ValueSelector[int, int]
+		transform genfuncs.ValueFor[int, int]
 	}
 	tests := []struct {
 		name     string
@@ -461,10 +461,10 @@ func TestFindLast(t *testing.T) {
 }
 
 func TestFlatMap(t *testing.T) {
-	var trans genfuncs.Transform[int, []string] = func(i int) []string { return []string{"#", strconv.Itoa(i)} }
+	var trans genfuncs.Function[int, []string] = func(i int) []string { return []string{"#", strconv.Itoa(i)} }
 	type args struct {
 		slice     []int
-		transform genfuncs.Transform[int, []string]
+		transform genfuncs.Function[int, []string]
 	}
 	tests := []struct {
 		name string
@@ -508,7 +508,7 @@ func TestFold(t *testing.T) {
 func TestGroupBy(t *testing.T) {
 	type args struct {
 		slice       []int
-		keySelector genfuncs.KeySelector[int, string]
+		keySelector genfuncs.KeyFor[int, string]
 	}
 	tests := []struct {
 		name string
@@ -620,10 +620,10 @@ func TestJoinToString(t *testing.T) {
 }
 
 func TestMap(t *testing.T) {
-	var trans genfuncs.Transform[int, string] = strconv.Itoa
+	var trans genfuncs.Function[int, string] = strconv.Itoa
 	type args struct {
 		slice     []int
-		transform genfuncs.Transform[int, string]
+		transform genfuncs.Function[int, string]
 	}
 	tests := []struct {
 		name string
@@ -659,7 +659,7 @@ func TestMap(t *testing.T) {
 }
 
 func TestSortBy(t *testing.T) {
-	timeComparator := genfuncs.TransformComparator[time.Time, int64](
+	timeComparator := genfuncs.FunctionComparator[time.Time, int64](
 		func(t time.Time) int64 { return t.Unix() },
 		genfuncs.OrderedComparator[int64](),
 	)

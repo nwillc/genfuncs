@@ -30,15 +30,21 @@ var (
 	GreaterThan ComparedOrder = 1
 )
 
-// Comparator compares a to b and returns LessThan, EqualTo or GreaterThan based on a relative to b.
-type Comparator[T any] func(a, b T) ComparedOrder
+// BiFunction accepts two arguments and produces a result.
+type BiFunction[T, U, R any] func(T, U) R
 
-// KeySelector is used for generating keys from types, it accepts any type and returns a comparable key for it.
-type KeySelector[T any, K comparable] func(T) K
+// Comparator compares two arguments of the same type and returns LessThan, EqualTo or GreaterThan based relative order.
+type Comparator[T any] BiFunction[T, T, ComparedOrder]
 
-// Operation is used to perform operations on its arguments, it accepts two arguments of any type and returns a result
-// of the type of the first argument.
-type Operation[T, R any] func(R, T) R
+// Function accepts one argument and produces a result.
+type Function[T, R any] func(T) R
+
+// KeyFor is used for generating keys from types, it accepts any type and returns a comparable key for it.
+type KeyFor[T any, K comparable] Function[T, K]
+
+// KeyValueFor is used to generate a key and value from a type, it accepts any type, and returns a comparable key and
+// any value.
+type KeyValueFor[T any, K comparable, V any] func(T) (K, V)
 
 // Predicate is used evaluate a value, it accepts any type and returns a bool.
 type Predicate[T any] func(T) bool
@@ -46,15 +52,8 @@ type Predicate[T any] func(T) bool
 // Stringer is used to create string representations, it accepts any type and returns a string.
 type Stringer[T any] func(T) string
 
-// Transform is used to transform values and types, it accepts an argument of any type and returns any type.
-type Transform[T, R any] func(T) R
-
-// TransformKV is used to generate a key and value from a type, it accepts any type, and returns a comparable key and
-// any value.
-type TransformKV[T any, K comparable, V any] func(T) (K, V)
-
-// ValueSelector is used to select a value for a key, given a comparable key will return a value of any type.
-type ValueSelector[K comparable, T any] func(K) T
+// ValueFor given a comparable key will return a value for it.
+type ValueFor[K comparable, T any] Function[K, T]
 
 // OrderedComparator will create a Comparator from any type included in the constraints.Ordered constraint.
 func OrderedComparator[T constraints.Ordered]() Comparator[T] {
@@ -80,8 +79,8 @@ func StringerStringer[T fmt.Stringer]() Stringer[T] {
 	return func(t T) string { return t.String() }
 }
 
-// TransformComparator composites an existing Comparator[R] and Transform[T,R] into a new Comparator[T].
-func TransformComparator[T, R any](transform Transform[T, R], comparator Comparator[R]) Comparator[T] {
+// FunctionComparator composites an existing Comparator[R] and Function[T,R] into a new Comparator[T].
+func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T] {
 	return func(a, b T) ComparedOrder {
 		return comparator(transform(a), transform(b))
 	}

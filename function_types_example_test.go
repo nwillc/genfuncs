@@ -57,7 +57,7 @@ func ExampleStringerStringer() {
 func ExampleTransformComparator() {
 	var integerComparator = genfuncs.OrderedComparator[int64]()
 	var timeTransform = func(t time.Time) int64 { return t.Unix() }
-	var timeComparator = genfuncs.TransformComparator(timeTransform, integerComparator)
+	var timeComparator = genfuncs.FunctionComparator(timeTransform, integerComparator)
 
 	now := time.Now()
 	fmt.Println(timeComparator(now, now.Add(time.Second))) // -1

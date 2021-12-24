@@ -40,11 +40,11 @@ func Any[T any](slice []T, predicate Predicate[T]) bool {
 	return false
 }
 
-// Associate returns a map containing key/values provided by transform function applied to elements of the slice.
-func Associate[T any, K comparable, V any](slice []T, transform TransformKV[T, K, V]) map[K]V {
+// Associate returns a map containing key/values created by applying a function to elements of the slice.
+func Associate[T, V any, K comparable](slice []T, keyValueFor KeyValueFor[T, K, V]) map[K]V {
 	m := make(map[K]V)
 	for _, e := range slice {
-		k, v := transform(e)
+		k, v := keyValueFor(e)
 		m[k] = v
 	}
 	return m
@@ -52,10 +52,10 @@ func Associate[T any, K comparable, V any](slice []T, transform TransformKV[T, K
 
 // AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the
 // valueSelector function applied to each element.
-func AssociateWith[K comparable, V any](slice []K, valueSelector ValueSelector[K, V]) map[K]V {
+func AssociateWith[K comparable, V any](slice []K, valueFor ValueFor[K, V]) map[K]V {
 	m := make(map[K]V)
 	for _, k := range slice {
-		v := valueSelector(k)
+		v := valueFor(k)
 		m[k] = v
 	}
 	return m
@@ -122,30 +122,30 @@ func FindLast[T any](slice []T, predicate Predicate[T]) (T, bool) {
 
 // FlatMap returns a slice of all elements from results of transform function being invoked on each element of
 // original slice, and those resultant slices concatenated.
-func FlatMap[T, R any](slice []T, transform Transform[T, []R]) []R {
+func FlatMap[T, R any](slice []T, function Function[T, []R]) []R {
 	var results []R
 	for _, e := range slice {
-		results = append(results, transform(e)...)
+		results = append(results, function(e)...)
 	}
 	return results
 }
 
 // Fold accumulates a value starting with initial value and applying operation from left to right to current
 // accumulated value and each element.
-func Fold[T, R any](slice []T, initial R, operation Operation[T, R]) R {
+func Fold[T, R any](slice []T, initial R, biFunction BiFunction[R, T, R]) R {
 	r := initial
 	for _, t := range slice {
-		r = operation(r, t)
+		r = biFunction(r, t)
 	}
 	return r
 }
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to
 // each element and returns a map where each group key is associated with a slice of corresponding elements.
-func GroupBy[T any, K comparable](slice []T, keySelector KeySelector[T, K]) map[K][]T {
+func GroupBy[T any, K comparable](slice []T, keyFor KeyFor[T, K]) map[K][]T {
 	m := make(map[K][]T)
 	for _, e := range slice {
-		k := keySelector(e)
+		k := keyFor(e)
 		m[k] = append(m[k], e)
 	}
 	return m
@@ -169,10 +169,10 @@ func JoinToString[T any](slice []T, stringer Stringer[T], separator string, pref
 }
 
 // Map returns a slice containing the results of applying the given transform function to each element in the original slice.
-func Map[T, R any](slice []T, transform Transform[T, R]) []R {
+func Map[T, R any](slice []T, function Function[T, R]) []R {
 	var results = make([]R, len(slice))
 	for i, e := range slice {
-		results[i] = transform(e)
+		results[i] = function(e)
 	}
 	return results
 }
