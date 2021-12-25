@@ -33,7 +33,7 @@ func TestFunctionExamples(t *testing.T) {
 	ExampleOrderedComparator()
 	ExampleReverseComparator()
 	ExampleStringerStringer()
-	ExampleTransformComparator()
+	ExampleFunctionComparator()
 }
 
 func ExampleOrderedComparator() {
@@ -54,10 +54,9 @@ func ExampleStringerStringer() {
 	fmt.Println(stringer(epoch)) // 0001-01-01 00:00:00 +0000 UTC
 }
 
-func ExampleTransformComparator() {
-	var integerComparator = genfuncs.OrderedComparator[int64]()
-	var timeTransform = func(t time.Time) int64 { return t.Unix() }
-	var timeComparator = genfuncs.FunctionComparator(timeTransform, integerComparator)
+func ExampleFunctionComparator() {
+	var unixTime = func(t time.Time) int64 { return t.Unix() }
+	var timeComparator = genfuncs.FunctionComparator(unixTime, genfuncs.OrderedComparator[int64]())
 
 	now := time.Now()
 	fmt.Println(timeComparator(now, now.Add(time.Second))) // -1
