@@ -466,6 +466,28 @@ func Keys[K comparable, V any](m map[K]V) []K
 
 Keys returns a slice of all the keys in the map\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+var wordPositions = map[string]int{"hello": 1, "world": 2}
+
+func main() {
+	words := genfuncs.Keys(wordPositions)
+	fmt.Println(words) // [hello, world]
+}
+```
+
+</p>
+</details>
+
 ## func Map
 
 ```go
@@ -596,6 +618,28 @@ func Values[K comparable, V any](m map[K]V) []V
 ```
 
 Values returns a slice of all the values in the map\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+var wordPositions = map[string]int{"hello": 1, "world": 2}
+
+func main() {
+	counts := genfuncs.Values(wordPositions)
+	fmt.Println(counts) // [1, 2]
+}
+```
+
+</p>
+</details>
 
 ## type BiFunction
 
