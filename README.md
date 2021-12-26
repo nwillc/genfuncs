@@ -28,10 +28,12 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [func Fold[T, R any](slice []T, initial R, biFunction BiFunction[R, T, R]) R](<#func-fold>)
 - [func GroupBy[T any, K comparable](slice []T, keyFor KeyFor[T, K]) map[K][]T](<#func-groupby>)
 - [func JoinToString[T any](slice []T, stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-jointostring>)
+- [func Keys[K comparable, V any](m map[K]V) []K](<#func-keys>)
 - [func Map[T, R any](slice []T, function Function[T, R]) []R](<#func-map>)
 - [func Sort[T any](slice []T, comparator Comparator[T])](<#func-sort>)
 - [func SortBy[T any](slice []T, comparator Comparator[T]) []T](<#func-sortby>)
 - [func Swap[T any](slice []T, i, j int)](<#func-swap>)
+- [func Values[K comparable, V any](m map[K]V) []V](<#func-values>)
 - [type BiFunction](<#type-bifunction>)
 - [type Comparator](<#type-comparator>)
   - [func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T]](<#func-functioncomparator>)
@@ -456,6 +458,14 @@ func main() {
 </p>
 </details>
 
+## func Keys
+
+```go
+func Keys[K comparable, V any](m map[K]V) []K
+```
+
+Keys returns a slice of all the keys in the map\.
+
 ## func Map
 
 ```go
@@ -578,6 +588,14 @@ func main() {
 
 </p>
 </details>
+
+## func Values
+
+```go
+func Values[K comparable, V any](m map[K]V) []V
+```
+
+Values returns a slice of all the values in the map\.
 
 ## type BiFunction
 
