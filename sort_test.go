@@ -29,7 +29,7 @@ var (
 
 func TestSort(t *testing.T) {
 	type args struct {
-		slice      []string
+		slice      genfuncs.Slice[string]
 		comparator genfuncs.Comparator[string]
 	}
 	tests := []struct {
@@ -89,9 +89,7 @@ func TestSort(t *testing.T) {
 	for _, tt := range tests {
 
 		t.Run(tt.name, func(t *testing.T) {
-			dst := make([]string, len(tt.args.slice))
-			copy(dst, tt.args.slice)
-			genfuncs.Sort(dst, tt.args.comparator)
+			dst := tt.args.slice.SortBy(tt.args.comparator)
 			assert.Equal(t, len(tt.want), len(dst))
 			for i := 0; i < len(tt.want); i++ {
 				assert.Equal(t, tt.want[i], dst[i])

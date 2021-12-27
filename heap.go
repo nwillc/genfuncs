@@ -18,7 +18,7 @@ package genfuncs
 
 // Heap implements either a min or max ordered heap of any type.
 type Heap[T any] struct {
-	slice      []T
+	slice      Slice[T]
 	comparator Comparator[T]
 }
 
@@ -49,7 +49,7 @@ func (h *Heap[T]) PushAll(values ...T) {
 func (h *Heap[T]) Pop() T {
 	n := h.Len() - 1
 	if n > 0 {
-		Swap(h.slice, 0, n)
+		h.slice.Swap(0, n)
 		h.down()
 	}
 	v := h.slice[n]
@@ -63,7 +63,7 @@ func (h *Heap[T]) up(jj int) {
 		if i == jj || h.comparator(h.slice[jj], h.slice[i]) >= EqualTo {
 			break
 		}
-		Swap(h.slice, i, jj)
+		h.slice.Swap(i, jj)
 		jj = i
 	}
 }
@@ -84,7 +84,7 @@ func (h *Heap[T]) down() {
 		if h.comparator(h.slice[j], h.slice[i1]) >= EqualTo {
 			break
 		}
-		Swap(h.slice, i1, j)
+		h.slice.Swap(i1, j)
 		i1 = j
 	}
 }

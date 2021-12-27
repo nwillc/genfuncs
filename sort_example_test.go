@@ -31,10 +31,10 @@ func TestSortExamples(t *testing.T) {
 }
 
 func ExampleSort() {
-	letters := strings.Split("example", "")
+	var letters genfuncs.Slice[string] = strings.Split("example", "")
 
-	genfuncs.Sort(letters, alphaOrder)
+	letters.Sort(alphaOrder)
 	fmt.Println(letters) // [a e e l m p x]
-	genfuncs.Sort(letters, genfuncs.ReverseComparator(alphaOrder))
+	letters.Sort(genfuncs.ReverseComparator(alphaOrder))
 	fmt.Println(letters) // [x p m l e e a]
 }

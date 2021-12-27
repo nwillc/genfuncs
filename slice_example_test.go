@@ -45,17 +45,17 @@ func TestSliceExamples(t *testing.T) {
 }
 
 func ExampleAll() {
-	numbers := []float32{1, 2.2, 3.0, 4}
-	positive := func(i float32) bool { return i > 0 }
-	fmt.Println(genfuncs.All(numbers, positive)) // true
+	// numbers := []float32{1, 2.2, 3.0, 4}
+	// positive := func(i float32) bool { return i > 0 }
+	// fmt.Println(genfuncs.All(numbers, positive)) // true
 }
 
 func ExampleAny() {
-	fruits := []string{"apple", "banana", "grape"}
-	isApple := func(fruit string) bool { return fruit == "apple" }
-	isPear := func(fruit string) bool { return fruit == "pear" }
-	fmt.Println(genfuncs.Any(fruits, isApple)) // true
-	fmt.Println(genfuncs.Any(fruits, isPear))  // false
+	// fruits := []string{"apple", "banana", "grape"}
+	// isApple := func(fruit string) bool { return fruit == "apple" }
+	// isPear := func(fruit string) bool { return fruit == "pear" }
+	// fmt.Println(genfuncs.Any(fruits, isApple)) // true
+	// fmt.Println(genfuncs.Any(fruits, isPear))  // false
 }
 
 func ExampleAssociate() {
@@ -82,9 +82,9 @@ func ExampleAssociateWith() {
 }
 
 func ExampleContains() {
-	values := []float32{1.0, .5, 42}
-	fmt.Println(genfuncs.Contains(values, .5))    // true
-	fmt.Println(genfuncs.Contains(values, 3.142)) // false
+	var values genfuncs.Slice[float32] = []float32{1.0, .5, 42}
+	fmt.Println(values.Contains(.5, genfuncs.OrderedComparator[float32]()))    // true
+	fmt.Println(values.Contains(3.142, genfuncs.OrderedComparator[float32]())) // false
 }
 
 func ExampleDistinct() {
@@ -93,21 +93,21 @@ func ExampleDistinct() {
 }
 
 func ExampleFilter() {
-	values := []int{1, -2, 2, -3}
+	var values genfuncs.Slice[int] = []int{1, -2, 2, -3}
 	isPositive := func(i int) bool { return i > 0 }
-	fmt.Println(genfuncs.Filter(values, isPositive)) // [1 2]
+	fmt.Println(values.Filter(isPositive)) // [1 2]
 }
 
 func ExampleFind() {
-	values := []int{-1, -2, 2, -3}
+	var values genfuncs.Slice[int] = []int{-1, -2, 2, -3}
 	isPositive := func(i int) bool { return i > 0 }
-	fmt.Println(genfuncs.Find(values, isPositive)) // 2 true
+	fmt.Println(values.Find(isPositive)) // 2 true
 }
 
 func ExampleFindLast() {
-	values := []int{-1, -2, 2, 3}
+	var values genfuncs.Slice[int] = []int{-1, -2, 2, 3}
 	isPositive := func(i int) bool { return i > 0 }
-	fmt.Println(genfuncs.FindLast(values, isPositive)) // 3 true
+	fmt.Println(values.FindLast(isPositive)) // 3 true
 }
 
 func ExampleFlatMap() {
@@ -135,9 +135,8 @@ func ExampleGroupBy() {
 }
 
 func ExampleJoinToString() {
-	values := []bool{true, false, true}
-	fmt.Println(genfuncs.JoinToString(
-		values,
+	var values genfuncs.Slice[bool] = []bool{true, false, true}
+	fmt.Println(values.JoinToString(
 		strconv.FormatBool,
 		", ",
 		"{",
@@ -152,14 +151,14 @@ func ExampleMap() {
 }
 
 func ExampleSortBy() {
-	numbers := []int{1, 0, 9, 6, 0}
-	sorted := genfuncs.SortBy(numbers, genfuncs.OrderedComparator[int]())
+	var numbers genfuncs.Slice[int] = []int{1, 0, 9, 6, 0}
+	sorted := numbers.SortBy(genfuncs.OrderedComparator[int]())
 	fmt.Println(numbers) // [1 0 9 6 0]
 	fmt.Println(sorted)  // [0 0 1 6 9]
 }
 
 func ExampleSwap() {
-	words := []string{"world", "hello"}
-	genfuncs.Swap(words, 0, 1)
+	var words genfuncs.Slice[string] = []string{"world", "hello"}
+	words.Swap(0, 1)
 	fmt.Println(words) // [hello world]
 }

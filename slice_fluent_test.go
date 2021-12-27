@@ -73,7 +73,7 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genfuncs.All(tt.args.slice, tt.args.predicate)
+			got := genfuncs.Slice[string](tt.args.slice).All(tt.args.predicate)
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -81,7 +81,7 @@ func TestAll(t *testing.T) {
 
 func TestAny(t *testing.T) {
 	type args struct {
-		slice     []string
+		slice     genfuncs.Slice[string]
 		predicate genfuncs.Predicate[string]
 	}
 	tests := []struct {
@@ -116,7 +116,7 @@ func TestAny(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genfuncs.Any(tt.args.slice, tt.args.predicate)
+			got := tt.args.slice.Any(tt.args.predicate)
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -242,7 +242,7 @@ func TestAssociateWith(t *testing.T) {
 
 func TestContains(t *testing.T) {
 	type args struct {
-		slice   []string
+		slice   genfuncs.Slice[string]
 		element string
 	}
 	tests := []struct {
@@ -277,7 +277,7 @@ func TestContains(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genfuncs.Contains(tt.args.slice, tt.args.element)
+			got := tt.args.slice.Contains(tt.args.element, genfuncs.OrderedComparator[string]())
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -324,13 +324,13 @@ func TestDistinct(t *testing.T) {
 
 func TestFilter(t *testing.T) {
 	type args struct {
-		slice     []int
+		slice     genfuncs.Slice[int]
 		predicate genfuncs.Predicate[int]
 	}
 	tests := []struct {
 		name string
 		args args
-		want []int
+		want genfuncs.Slice[int]
 	}{
 		{
 			name: "Empty",
@@ -351,10 +351,10 @@ func TestFilter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := genfuncs.Filter(tt.args.slice, tt.args.predicate)
+			result := tt.args.slice.Filter(tt.args.predicate)
 			assert.Equal(t, len(tt.want), len(result))
 			for _, v := range result {
-				assert.True(t, genfuncs.Any(result, func(i int) bool { return i == v }))
+				assert.True(t, result.Any(func(i int) bool { return i == v }))
 			}
 		})
 	}
@@ -362,7 +362,7 @@ func TestFilter(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	type args struct {
-		slice     []float32
+		slice     genfuncs.Slice[float32]
 		predicate genfuncs.Predicate[float32]
 	}
 	tests := []struct {
@@ -399,7 +399,7 @@ func TestFind(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, ok := genfuncs.Find(tt.args.slice, tt.args.predicate)
+			got, ok := tt.args.slice.Find(tt.args.predicate)
 			if !tt.wantFound {
 				assert.False(t, ok)
 				return
@@ -412,7 +412,7 @@ func TestFind(t *testing.T) {
 
 func TestFindLast(t *testing.T) {
 	type args struct {
-		slice     []float32
+		slice     genfuncs.Slice[float32]
 		predicate genfuncs.Predicate[float32]
 	}
 	tests := []struct {
@@ -449,7 +449,7 @@ func TestFindLast(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, ok := genfuncs.FindLast(tt.args.slice, tt.args.predicate)
+			got, ok := tt.args.slice.FindLast(tt.args.predicate)
 			if !tt.wantFound {
 				assert.False(t, ok)
 				return
@@ -463,7 +463,7 @@ func TestFindLast(t *testing.T) {
 func TestFlatMap(t *testing.T) {
 	var trans genfuncs.Function[int, []string] = func(i int) []string { return []string{"#", strconv.Itoa(i)} }
 	type args struct {
-		slice     []int
+		slice     genfuncs.Slice[int]
 		transform genfuncs.Function[int, []string]
 	}
 	tests := []struct {
@@ -493,7 +493,7 @@ func TestFlatMap(t *testing.T) {
 			got := genfuncs.FlatMap(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, genfuncs.Contains(got, s))
+				assert.True(t, genfuncs.Slice[string](got).Contains(s, genfuncs.OrderedComparator[string]()))
 			}
 		})
 	}
@@ -507,13 +507,13 @@ func TestFold(t *testing.T) {
 
 func TestGroupBy(t *testing.T) {
 	type args struct {
-		slice       []int
+		slice       genfuncs.Slice[int]
 		keySelector genfuncs.KeyFor[int, string]
 	}
 	tests := []struct {
 		name string
 		args args
-		want map[string][]int
+		want map[string]genfuncs.Slice[int]
 	}{
 		{
 			name: "Odds Evens",
@@ -526,7 +526,7 @@ func TestGroupBy(t *testing.T) {
 					return "odd"
 				},
 			},
-			want: map[string][]int{"odd": {1, 3}, "even": {2, 4}},
+			want: map[string]genfuncs.Slice[int]{"odd": {1, 3}, "even": {2, 4}},
 		},
 	}
 	for _, tt := range tests {
@@ -534,7 +534,9 @@ func TestGroupBy(t *testing.T) {
 			resultsMap := genfuncs.GroupBy(tt.args.slice, tt.args.keySelector)
 			assert.Equal(t, len(tt.want), len(resultsMap))
 			for k, v := range tt.want {
-				assert.True(t, genfuncs.All(v, func(i int) bool { return genfuncs.Contains(resultsMap[k], i) }))
+				assert.True(t, v.All(func(i int) bool {
+					return genfuncs.Slice[int](resultsMap[k]).Contains(i, genfuncs.OrderedComparator[int]())
+				}))
 			}
 		})
 	}
@@ -543,7 +545,7 @@ func TestGroupBy(t *testing.T) {
 func TestJoinToString(t *testing.T) {
 	personStringer := genfuncs.StringerStringer[PersonName]()
 	type args struct {
-		slice     []PersonName
+		slice     genfuncs.Slice[PersonName]
 		separator string
 		prefix    string
 		postfix   string
@@ -613,7 +615,7 @@ func TestJoinToString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genfuncs.JoinToString(tt.args.slice, personStringer, tt.args.separator, tt.args.prefix, tt.args.postfix)
+			got := tt.args.slice.JoinToString(personStringer, tt.args.separator, tt.args.prefix, tt.args.postfix)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -622,7 +624,7 @@ func TestJoinToString(t *testing.T) {
 func TestMap(t *testing.T) {
 	var trans genfuncs.Function[int, string] = strconv.Itoa
 	type args struct {
-		slice     []int
+		slice     genfuncs.Slice[int]
 		transform genfuncs.Function[int, string]
 	}
 	tests := []struct {
@@ -652,7 +654,7 @@ func TestMap(t *testing.T) {
 			got := genfuncs.Map(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, genfuncs.Contains(got, s))
+				assert.True(t, genfuncs.Slice[string](got).Contains(s, genfuncs.OrderedComparator[string]()))
 			}
 		})
 	}
@@ -664,7 +666,7 @@ func TestSortBy(t *testing.T) {
 		genfuncs.OrderedComparator[int64](),
 	)
 	type args struct {
-		slice      []time.Time
+		slice      genfuncs.Slice[time.Time]
 		comparator genfuncs.Comparator[time.Time]
 	}
 	now := time.Now()
@@ -700,7 +702,7 @@ func TestSortBy(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			sorted := genfuncs.SortBy(tt.args.slice, tt.args.comparator)
+			sorted := tt.args.slice.SortBy(tt.args.comparator)
 			assert.Equal(t, len(tt.want), len(sorted))
 			for i, tm := range tt.want {
 				assert.Equal(t, tm, sorted[i])
