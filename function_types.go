@@ -49,6 +49,8 @@ type KeyValueFor[T any, K comparable, V any] func(T) (K, V)
 // Predicate is used evaluate a value, it accepts any type and returns a bool.
 type Predicate[T any] func(T) bool
 
+func (p Predicate[T]) Not() Predicate[T] { return func(a T) bool { return !p(a) } }
+
 // IsEqualTo creates a Predicate that tests if its argument is equal to a given value.
 func IsEqualTo[T comparable](a T) Predicate[T] { return func(b T) bool { return b == a } }
 

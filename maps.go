@@ -17,7 +17,7 @@
 package genfuncs
 
 // Keys returns a slice of all the keys in the map.
-func Keys[K comparable, V any](m map[K]V) []K {
+func Keys[K comparable, V any](m map[K]V) Slice[K] {
 	keys := make([]K, len(m))
 	var i int
 	for k, _ := range m {
@@ -28,7 +28,7 @@ func Keys[K comparable, V any](m map[K]V) []K {
 }
 
 // Values returns a slice of all the values in the map.
-func Values[K comparable, V any](m map[K]V) []V {
+func Values[K comparable, V any](m map[K]V) Slice[V] {
 	values := make([]V, len(m))
 	var i int
 	for _, v := range m {

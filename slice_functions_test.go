@@ -181,10 +181,10 @@ func TestDistinct(t *testing.T) {
 }
 
 func TestFlatMap(t *testing.T) {
-	var trans genfuncs.Function[int, []string] = func(i int) []string { return []string{"#", strconv.Itoa(i)} }
+	var trans = func(i int) genfuncs.Slice[string] { return []string{"#", strconv.Itoa(i)} }
 	type args struct {
 		slice     genfuncs.Slice[int]
-		transform genfuncs.Function[int, []string]
+		transform genfuncs.Function[int, genfuncs.Slice[string]]
 	}
 	tests := []struct {
 		name string

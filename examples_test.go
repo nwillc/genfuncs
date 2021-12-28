@@ -121,10 +121,10 @@ func ExampleSlice_All() {
 
 func ExampleSlice_Any() {
 	var fruits genfuncs.Slice[string] = []string{"apple", "banana", "grape"}
-	isApple := genfuncs.IsEqualTo("apple")
 	isPear := genfuncs.IsEqualTo("pear")
-	fmt.Println(fruits.Any(isApple)) // true
-	fmt.Println(fruits.Any(isPear))  // false
+	isNotPear := isPear.Not()
+	fmt.Println(fruits.Any(isNotPear)) // true
+	fmt.Println(fruits.Any(isPear))    // false
 }
 
 func ExampleSlice_Contains() {
@@ -201,7 +201,7 @@ func ExampleDistinct() {
 }
 
 func ExampleFlatMap() {
-	slicer := func(s string) []string { return strings.Split(s, "") }
+	slicer := func(s string) genfuncs.Slice[string] { return strings.Split(s, "") }
 	fmt.Println(genfuncs.FlatMap(words.SortBy(lexicalOrder), slicer)) // [h e l l o w o r l d]
 }
 
