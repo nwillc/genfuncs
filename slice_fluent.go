@@ -105,7 +105,7 @@ func (s Slice[T]) JoinToString(stringer Stringer[T], separator string, prefix st
 }
 
 // SortBy copies a slice, sorts the copy applying the Comparator and returns it.
-func (s Slice[T]) SortBy(comparator Comparator[T]) []T {
+func (s Slice[T]) SortBy(comparator Comparator[T]) Slice[T] {
 	dst := make([]T, len(s))
 	copy(dst, s)
 	Slice[T](dst).Sort(comparator)
