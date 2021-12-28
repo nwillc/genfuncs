@@ -29,7 +29,6 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
   - [func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T]](<#func-functioncomparator>)
   - [func OrderedComparator[T constraints.Ordered]() Comparator[T]](<#func-orderedcomparator>)
   - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
-- [type ComparedOrder](<#type-comparedorder>)
 - [type Function](<#type-function>)
 - [type Heap](<#type-heap>)
   - [func NewHeap[T any](comparator Comparator[T]) *Heap[T]](<#func-newheap>)
@@ -39,7 +38,11 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
   - [func (h *Heap[T]) PushAll(values ...T)](<#func-heap-pushall>)
 - [type KeyFor](<#type-keyfor>)
 - [type KeyValueFor](<#type-keyvaluefor>)
+- [type Ordering](<#type-ordering>)
 - [type Predicate](<#type-predicate>)
+  - [func IsEqualTo[T comparable](a T) Predicate[T]](<#func-isequalto>)
+  - [func IsGreaterThan[T constraints.Ordered](a T) Predicate[T]](<#func-isgreaterthan>)
+  - [func IsLessThan[T constraints.Ordered](a T) Predicate[T]](<#func-islessthan>)
 - [type Slice](<#type-slice>)
   - [func (s Slice[T]) All(predicate Predicate[T]) bool](<#func-slice-all>)
   - [func (s Slice[T]) Any(predicate Predicate[T]) bool](<#func-slice-any>)
@@ -56,7 +59,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [type ValueFor](<#type-valuefor>)
 
 
-## func [Associate](<https://github.com/nwillc/genfuncs/blob/master/slice_functions.go#L20>)
+## func Associate
 
 ```go
 func Associate[T, V any, K comparable](slice []T, keyValueFor KeyValueFor[T, K, V]) map[K]V
@@ -90,7 +93,7 @@ func main() {
 </p>
 </details>
 
-## func [AssociateWith](<https://github.com/nwillc/genfuncs/blob/master/slice_functions.go#L31>)
+## func AssociateWith
 
 ```go
 func AssociateWith[K comparable, V any](slice []K, valueFor ValueFor[K, V]) map[K]V
@@ -126,7 +129,7 @@ func main() {
 </p>
 </details>
 
-## func [Distinct](<https://github.com/nwillc/genfuncs/blob/master/slice_functions.go#L41>)
+## func Distinct
 
 ```go
 func Distinct[T comparable](slice []T) []T
@@ -154,7 +157,7 @@ func main() {
 </p>
 </details>
 
-## func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/slice_functions.go#L56>)
+## func FlatMap
 
 ```go
 func FlatMap[T, R any](slice []T, function Function[T, []R]) []R
@@ -174,17 +177,20 @@ import (
 	"strings"
 )
 
+var lexicalOrder = genfuncs.OrderedComparator[string]()
+
+var words genfuncs.Slice[string] = []string{"hello", "world"}
+
 func main() {
-	words := []string{"hello", " ", "world"}
 	slicer := func(s string) []string { return strings.Split(s, "") }
-	fmt.Println(genfuncs.FlatMap(words, slicer)) // [h e l l o   w o r l d]
+	fmt.Println(genfuncs.FlatMap(words.SortBy(lexicalOrder), slicer)) // [h e l l o w o r l d]
 }
 ```
 
 </p>
 </details>
 
-## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/slice_functions.go#L66>)
+## func Fold
 
 ```go
 func Fold[T, R any](slice []T, initial R, biFunction BiFunction[R, T, R]) R
@@ -213,7 +219,7 @@ func main() {
 </p>
 </details>
 
-## func [GroupBy](<https://github.com/nwillc/genfuncs/blob/master/slice_functions.go#L76>)
+## func GroupBy
 
 ```go
 func GroupBy[T any, K comparable](slice []T, keyFor KeyFor[T, K]) map[K][]T
@@ -248,7 +254,7 @@ func main() {
 </p>
 </details>
 
-## func [Keys](<https://github.com/nwillc/genfuncs/blob/master/maps.go#L20>)
+## func Keys
 
 ```go
 func Keys[K comparable, V any](m map[K]V) []K
@@ -278,7 +284,7 @@ func main() {
 </p>
 </details>
 
-## func [Map](<https://github.com/nwillc/genfuncs/blob/master/slice_functions.go#L86>)
+## func Map
 
 ```go
 func Map[T, R any](slice []T, function Function[T, R]) []R
@@ -307,7 +313,7 @@ func main() {
 </p>
 </details>
 
-## func [Values](<https://github.com/nwillc/genfuncs/blob/master/maps.go#L31>)
+## func Values
 
 ```go
 func Values[K comparable, V any](m map[K]V) []V
@@ -337,7 +343,7 @@ func main() {
 </p>
 </details>
 
-## type [BiFunction](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L34>)
+## type BiFunction
 
 BiFunction accepts two arguments and produces a result\.
 
@@ -345,15 +351,15 @@ BiFunction accepts two arguments and produces a result\.
 type BiFunction[T, U, R any] func(T, U) R
 ```
 
-## type [Comparator](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L37>)
+## type Comparator
 
 Comparator compares two arguments of the same type and returns LessThan\, EqualTo or GreaterThan based relative order\.
 
 ```go
-type Comparator[T any] BiFunction[T, T, ComparedOrder]
+type Comparator[T any] BiFunction[T, T, Ordering]
 ```
 
-### func [FunctionComparator](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L83>)
+### func FunctionComparator
 
 ```go
 func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T]
@@ -385,7 +391,7 @@ func main() {
 </p>
 </details>
 
-### func [OrderedComparator](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L59>)
+### func OrderedComparator
 
 ```go
 func OrderedComparator[T constraints.Ordered]() Comparator[T]
@@ -416,7 +422,7 @@ func main() {
 </p>
 </details>
 
-### func [ReverseComparator](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L73>)
+### func ReverseComparator
 
 ```go
 func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]
@@ -447,23 +453,7 @@ func main() {
 </p>
 </details>
 
-## type [ComparedOrder](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L25>)
-
-ComparedOrder is the type returned by a Comparator\.
-
-```go
-type ComparedOrder int
-```
-
-```go
-var (
-    LessThan    ComparedOrder = -1
-    EqualTo     ComparedOrder = 0
-    GreaterThan ComparedOrder = 1
-)
-```
-
-## type [Function](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L40>)
+## type Function
 
 Function accepts one argument and produces a result\.
 
@@ -471,7 +461,7 @@ Function accepts one argument and produces a result\.
 type Function[T, R any] func(T) R
 ```
 
-## type [Heap](<https://github.com/nwillc/genfuncs/blob/master/heap.go#L20-L23>)
+## type Heap
 
 Heap implements either a min or max ordered heap of any type\.
 
@@ -481,7 +471,7 @@ type Heap[T any] struct {
 }
 ```
 
-### func [NewHeap](<https://github.com/nwillc/genfuncs/blob/master/heap.go#L26>)
+### func NewHeap
 
 ```go
 func NewHeap[T any](comparator Comparator[T]) *Heap[T]
@@ -500,10 +490,10 @@ import (
 	"github.com/nwillc/genfuncs"
 )
 
-var numericOrder = genfuncs.OrderedComparator[int]()
+var intCmp = genfuncs.OrderedComparator[int]()
 
 func main() {
-	heap := genfuncs.NewHeap(numericOrder)
+	heap := genfuncs.NewHeap(intCmp)
 	heap.PushAll(3, 1, 4, 2)
 	for heap.Len() > 0 {
 		fmt.Print(heap.Pop()) // 1234
@@ -515,7 +505,7 @@ func main() {
 </p>
 </details>
 
-### func \(\*Heap\) [Len](<https://github.com/nwillc/genfuncs/blob/master/heap.go#L31>)
+### func \(\*Heap\) Len
 
 ```go
 func (h *Heap[T]) Len() int
@@ -523,7 +513,7 @@ func (h *Heap[T]) Len() int
 
 Len returns current length of the heap\.
 
-### func \(\*Heap\) [Pop](<https://github.com/nwillc/genfuncs/blob/master/heap.go#L49>)
+### func \(\*Heap\) Pop
 
 ```go
 func (h *Heap[T]) Pop() T
@@ -531,7 +521,7 @@ func (h *Heap[T]) Pop() T
 
 Pop an item off the heap\.
 
-### func \(\*Heap\) [Push](<https://github.com/nwillc/genfuncs/blob/master/heap.go#L34>)
+### func \(\*Heap\) Push
 
 ```go
 func (h *Heap[T]) Push(v T)
@@ -539,7 +529,7 @@ func (h *Heap[T]) Push(v T)
 
 Push a value onto the heap\.
 
-### func \(\*Heap\) [PushAll](<https://github.com/nwillc/genfuncs/blob/master/heap.go#L40>)
+### func \(\*Heap\) PushAll
 
 ```go
 func (h *Heap[T]) PushAll(values ...T)
@@ -547,7 +537,7 @@ func (h *Heap[T]) PushAll(values ...T)
 
 PushAll the values onto the Heap\.
 
-## type [KeyFor](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L43>)
+## type KeyFor
 
 KeyFor is used for generating keys from types\, it accepts any type and returns a comparable key for it\.
 
@@ -555,7 +545,7 @@ KeyFor is used for generating keys from types\, it accepts any type and returns 
 type KeyFor[T any, K comparable] Function[T, K]
 ```
 
-## type [KeyValueFor](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L47>)
+## type KeyValueFor
 
 KeyValueFor is used to generate a key and value from a type\, it accepts any type\, and returns a comparable key and any value\.
 
@@ -563,7 +553,23 @@ KeyValueFor is used to generate a key and value from a type\, it accepts any typ
 type KeyValueFor[T any, K comparable, V any] func(T) (K, V)
 ```
 
-## type [Predicate](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L50>)
+## type Ordering
+
+Ordering is the type returned by a Comparator\.
+
+```go
+type Ordering int
+```
+
+```go
+var (
+    LessThan    Ordering = -1
+    EqualTo     Ordering = 0
+    GreaterThan Ordering = 1
+)
+```
+
+## type Predicate
 
 Predicate is used evaluate a value\, it accepts any type and returns a bool\.
 
@@ -571,13 +577,37 @@ Predicate is used evaluate a value\, it accepts any type and returns a bool\.
 type Predicate[T any] func(T) bool
 ```
 
-## type [Slice](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L23>)
+### func IsEqualTo
+
+```go
+func IsEqualTo[T comparable](a T) Predicate[T]
+```
+
+IsEqualTo creates a Predicate that tests if its argument is equal to a given value\.
+
+### func IsGreaterThan
+
+```go
+func IsGreaterThan[T constraints.Ordered](a T) Predicate[T]
+```
+
+IsGreaterThan creates a Predicate that tests if its argument is greater than a given value\.
+
+### func IsLessThan
+
+```go
+func IsLessThan[T constraints.Ordered](a T) Predicate[T]
+```
+
+IsLessThan creates a Predicate that tests if its argument is less than a given value\.
+
+## type Slice
 
 ```go
 type Slice[T any] []T
 ```
 
-### func \(Slice\) [All](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L26>)
+### func \(Slice\) All
 
 ```go
 func (s Slice[T]) All(predicate Predicate[T]) bool
@@ -585,7 +615,7 @@ func (s Slice[T]) All(predicate Predicate[T]) bool
 
 All returns true if all elements of slice match the predicate\.
 
-### func \(Slice\) [Any](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L36>)
+### func \(Slice\) Any
 
 ```go
 func (s Slice[T]) Any(predicate Predicate[T]) bool
@@ -593,7 +623,7 @@ func (s Slice[T]) Any(predicate Predicate[T]) bool
 
 Any returns true if any element of the slice matches the predicate\.
 
-### func \(Slice\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L46>)
+### func \(Slice\) Contains
 
 ```go
 func (s Slice[T]) Contains(element T, comparator Comparator[T]) bool
@@ -601,7 +631,7 @@ func (s Slice[T]) Contains(element T, comparator Comparator[T]) bool
 
 Contains returns true if element is found in slice\.
 
-### func \(Slice\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L56>)
+### func \(Slice\) Filter
 
 ```go
 func (s Slice[T]) Filter(predicate Predicate[T]) Slice[T]
@@ -609,7 +639,7 @@ func (s Slice[T]) Filter(predicate Predicate[T]) Slice[T]
 
 Filter returns a slice containing only elements matching the given predicate\.
 
-### func \(Slice\) [Find](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L67>)
+### func \(Slice\) Find
 
 ```go
 func (s Slice[T]) Find(predicate Predicate[T]) (T, bool)
@@ -617,7 +647,7 @@ func (s Slice[T]) Find(predicate Predicate[T]) (T, bool)
 
 Find returns the first element matching the given predicate and true\, or false when no such element was found\.
 
-### func \(Slice\) [FindLast](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L78>)
+### func \(Slice\) FindLast
 
 ```go
 func (s Slice[T]) FindLast(predicate Predicate[T]) (T, bool)
@@ -625,7 +655,7 @@ func (s Slice[T]) FindLast(predicate Predicate[T]) (T, bool)
 
 FindLast returns the last element matching the given predicate and true\, or false when no such element was found\.
 
-### func \(Slice\) [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L92>)
+### func \(Slice\) JoinToString
 
 ```go
 func (s Slice[T]) JoinToString(stringer Stringer[T], separator string, prefix string, postfix string) string
@@ -633,7 +663,7 @@ func (s Slice[T]) JoinToString(stringer Stringer[T], separator string, prefix st
 
 JoinToString creates a string from all the elements using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
 
-### func \(Slice\) [Sort](<https://github.com/nwillc/genfuncs/blob/master/sort.go#L20>)
+### func \(Slice\) Sort
 
 ```go
 func (s Slice[T]) Sort(comparator Comparator[T])
@@ -641,7 +671,7 @@ func (s Slice[T]) Sort(comparator Comparator[T])
 
 Sort sorts a slice by Comparator order\.
 
-### func \(Slice\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L108>)
+### func \(Slice\) SortBy
 
 ```go
 func (s Slice[T]) SortBy(comparator Comparator[T]) []T
@@ -649,7 +679,7 @@ func (s Slice[T]) SortBy(comparator Comparator[T]) []T
 
 SortBy copies a slice\, sorts the copy applying the Comparator and returns it\.
 
-### func \(Slice\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/slice_fluent.go#L116>)
+### func \(Slice\) Swap
 
 ```go
 func (s Slice[T]) Swap(i, j int)
@@ -657,7 +687,7 @@ func (s Slice[T]) Swap(i, j int)
 
 Swap two values in the slice\.
 
-## type [Stringer](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L53>)
+## type Stringer
 
 Stringer is used to create string representations\, it accepts any type and returns a string\.
 
@@ -665,7 +695,7 @@ Stringer is used to create string representations\, it accepts any type and retu
 type Stringer[T any] func(T) string
 ```
 
-### func [StringerStringer](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L78>)
+### func StringerStringer
 
 ```go
 func StringerStringer[T fmt.Stringer]() Stringer[T]
@@ -696,7 +726,7 @@ func main() {
 </p>
 </details>
 
-## type [ValueFor](<https://github.com/nwillc/genfuncs/blob/master/function_types.go#L56>)
+## type ValueFor
 
 ValueFor given a comparable key will return a value for it\.
 
