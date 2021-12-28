@@ -27,7 +27,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [type BiFunction](<#type-bifunction>)
 - [type Comparator](<#type-comparator>)
   - [func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T]](<#func-functioncomparator>)
-  - [func OrderedComparator[T constraints.Ordered]() Comparator[T]](<#func-orderedcomparator>)
+  - [func OrderedComparator[T constraints.Ordered]\(\) Comparator[T]](<#func-orderedcomparator>)
   - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
 - [type Function](<#type-function>)
 - [type Heap](<#type-heap>)
@@ -55,7 +55,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
   - [func (s Slice[T]) SortBy(comparator Comparator[T]) []T](<#func-slice-sortby>)
   - [func (s Slice[T]) Swap(i, j int)](<#func-slice-swap>)
 - [type Stringer](<#type-stringer>)
-  - [func StringerStringer[T fmt.Stringer]() Stringer[T]](<#func-stringerstringer>)
+  - [func StringerStringer[T fmt.Stringer]\(\) Stringer[T]](<#func-stringerstringer>)
 - [type ValueFor](<#type-valuefor>)
 
 
