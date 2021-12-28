@@ -21,20 +21,20 @@ import (
 	"fmt"
 )
 
-// ComparedOrder is the type returned by a Comparator.
-type ComparedOrder int
+// Ordering is the type returned by a Comparator.
+type Ordering int
 
 var (
-	LessThan    ComparedOrder = -1
-	EqualTo     ComparedOrder = 0
-	GreaterThan ComparedOrder = 1
+	LessThan    Ordering = -1
+	EqualTo     Ordering = 0
+	GreaterThan Ordering = 1
 )
 
 // BiFunction accepts two arguments and produces a result.
 type BiFunction[T, U, R any] func(T, U) R
 
 // Comparator compares two arguments of the same type and returns LessThan, EqualTo or GreaterThan based relative order.
-type Comparator[T any] BiFunction[T, T, ComparedOrder]
+type Comparator[T any] BiFunction[T, T, Ordering]
 
 // Function accepts one argument and produces a result.
 type Function[T, R any] func(T) R
@@ -49,6 +49,15 @@ type KeyValueFor[T any, K comparable, V any] func(T) (K, V)
 // Predicate is used evaluate a value, it accepts any type and returns a bool.
 type Predicate[T any] func(T) bool
 
+// IsEqualTo creates a Predicate that tests if its argument is equal to a given value.
+func IsEqualTo[T comparable](a T) Predicate[T] { return func(b T) bool { return b == a } }
+
+// IsLessThan creates a Predicate that tests if its argument is less than a given value.
+func IsLessThan[T constraints.Ordered](a T) Predicate[T] { return func(b T) bool { return b < a } }
+
+// IsGreaterThan creates a Predicate that tests if its argument is greater than a given value.
+func IsGreaterThan[T constraints.Ordered](a T) Predicate[T] { return func(b T) bool { return b > a } }
+
 // Stringer is used to create string representations, it accepts any type and returns a string.
 type Stringer[T any] func(T) string
 
@@ -57,7 +66,7 @@ type ValueFor[K comparable, T any] Function[K, T]
 
 // OrderedComparator will create a Comparator from any type included in the constraints.Ordered constraint.
 func OrderedComparator[T constraints.Ordered]() Comparator[T] {
-	return func(a, b T) ComparedOrder {
+	return func(a, b T) Ordering {
 		switch {
 		case a < b:
 			return LessThan
@@ -71,7 +80,7 @@ func OrderedComparator[T constraints.Ordered]() Comparator[T] {
 
 // ReverseComparator reverses a Comparator to facilitate switching sort orderings.
 func ReverseComparator[T any](comparator Comparator[T]) Comparator[T] {
-	return func(a, b T) ComparedOrder { return comparator(b, a) }
+	return func(a, b T) Ordering { return comparator(b, a) }
 }
 
 // StringerStringer creates a Stringer for any type that implements fmt.Stringer.
@@ -81,7 +90,7 @@ func StringerStringer[T fmt.Stringer]() Stringer[T] {
 
 // FunctionComparator composites an existing Comparator[R] and Function[T,R] into a new Comparator[T].
 func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T] {
-	return func(a, b T) ComparedOrder {
+	return func(a, b T) Ordering {
 		return comparator(transform(a), transform(b))
 	}
 }
