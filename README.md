@@ -30,7 +30,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [type KeyFor](<#type-keyfor>)
 - [type KeyValueFor](<#type-keyvaluefor>)
 - [type LessThan](<#type-lessthan>)
-  - [func OrderedLessThan[T constraints.Ordered]() LessThan[T]](<#func-orderedlessthan>)
+  - [func OrderedLessThan[T constraints.Ordered]\(\) LessThan[T]](<#func-orderedlessthan>)
   - [func Reverse[T any](lessThan LessThan[T]) LessThan[T]](<#func-reverse>)
   - [func TransformLessThan[T, R any](transform Function[T, R], lessThan LessThan[R]) LessThan[T]](<#func-transformlessthan>)
 - [type Predicate](<#type-predicate>)
@@ -54,7 +54,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
   - [func (s Slice[T]) SortBy(lessThan LessThan[T]) Slice[T]](<#func-slice-sortby>)
   - [func (s Slice[T]) Swap(i, j int)](<#func-slice-swap>)
 - [type Stringer](<#type-stringer>)
-  - [func StringerStringer[T fmt.Stringer]() Stringer[T]](<#func-stringerstringer>)
+  - [func StringerStringer[T fmt.Stringer]\(\) Stringer[T]](<#func-stringerstringer>)
 - [type ValueFor](<#type-valuefor>)
 
 
