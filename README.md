@@ -15,54 +15,53 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 
 ## Index
 
-- [func Associate[T, V any, K comparable](slice []T, keyValueFor KeyValueFor[T, K, V]) map[K]V](<#func-associate>)
-- [func AssociateWith[K comparable, V any](slice []K, valueFor ValueFor[K, V]) map[K]V](<#func-associatewith>)
-- [func Distinct[T comparable](slice []T) []T](<#func-distinct>)
-- [func FlatMap[T, R any](slice []T, function Function[T, []R]) []R](<#func-flatmap>)
-- [func Fold[T, R any](slice []T, initial R, biFunction BiFunction[R, T, R]) R](<#func-fold>)
-- [func GroupBy[T any, K comparable](slice []T, keyFor KeyFor[T, K]) map[K][]T](<#func-groupby>)
-- [func Keys[K comparable, V any](m map[K]V) []K](<#func-keys>)
-- [func Map[T, R any](slice []T, function Function[T, R]) []R](<#func-map>)
-- [func Values[K comparable, V any](m map[K]V) []V](<#func-values>)
+- [func Associate[T, V any, K comparable](slice Slice[T], keyValueFor KeyValueFor[T, K, V]) map[K]V](<#func-associate>)
+- [func AssociateWith[K comparable, V any](slice Slice[K], valueFor ValueFor[K, V]) map[K]V](<#func-associatewith>)
+- [func Fold[T, R any](slice Slice[T], initial R, biFunction BiFunction[R, T, R]) R](<#func-fold>)
+- [func GroupBy[T any, K comparable](slice Slice[T], keyFor KeyFor[T, K]) map[K]Slice[T]](<#func-groupby>)
 - [type BiFunction](<#type-bifunction>)
-- [type Comparator](<#type-comparator>)
-  - [func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T]](<#func-functioncomparator>)
-  - [func OrderedComparator[T constraints.Ordered]\(\) Comparator[T]](<#func-orderedcomparator>)
-  - [func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]](<#func-reversecomparator>)
 - [type Function](<#type-function>)
 - [type Heap](<#type-heap>)
-  - [func NewHeap[T any](comparator Comparator[T]) *Heap[T]](<#func-newheap>)
+  - [func NewHeap[T any](lessThan LessThan[T]) *Heap[T]](<#func-newheap>)
   - [func (h *Heap[T]) Len() int](<#func-heap-len>)
   - [func (h *Heap[T]) Pop() T](<#func-heap-pop>)
   - [func (h *Heap[T]) Push(v T)](<#func-heap-push>)
   - [func (h *Heap[T]) PushAll(values ...T)](<#func-heap-pushall>)
 - [type KeyFor](<#type-keyfor>)
 - [type KeyValueFor](<#type-keyvaluefor>)
-- [type Ordering](<#type-ordering>)
+- [type LessThan](<#type-lessthan>)
+  - [func OrderedLessThan[T constraints.Ordered]() LessThan[T]](<#func-orderedlessthan>)
+  - [func Reverse[T any](lessThan LessThan[T]) LessThan[T]](<#func-reverse>)
+  - [func TransformLessThan[T, R any](transform Function[T, R], lessThan LessThan[R]) LessThan[T]](<#func-transformlessthan>)
 - [type Predicate](<#type-predicate>)
-  - [func IsEqualTo[T comparable](a T) Predicate[T]](<#func-isequalto>)
   - [func IsGreaterThan[T constraints.Ordered](a T) Predicate[T]](<#func-isgreaterthan>)
   - [func IsLessThan[T constraints.Ordered](a T) Predicate[T]](<#func-islessthan>)
+  - [func (p Predicate[T]) Not() Predicate[T]](<#func-predicate-not>)
 - [type Slice](<#type-slice>)
+  - [func Distinct[T comparable](slice Slice[T]) Slice[T]](<#func-distinct>)
+  - [func FlatMap[T, R any](slice Slice[T], function Function[T, Slice[R]]) Slice[R]](<#func-flatmap>)
+  - [func Keys[K comparable, V any](m map[K]V) Slice[K]](<#func-keys>)
+  - [func Map[T, R any](slice Slice[T], function Function[T, R]) Slice[R]](<#func-map>)
+  - [func Values[K comparable, V any](m map[K]V) Slice[V]](<#func-values>)
   - [func (s Slice[T]) All(predicate Predicate[T]) bool](<#func-slice-all>)
   - [func (s Slice[T]) Any(predicate Predicate[T]) bool](<#func-slice-any>)
-  - [func (s Slice[T]) Contains(element T, comparator Comparator[T]) bool](<#func-slice-contains>)
+  - [func (s Slice[T]) Contains(element T, lessThan LessThan[T]) bool](<#func-slice-contains>)
   - [func (s Slice[T]) Filter(predicate Predicate[T]) Slice[T]](<#func-slice-filter>)
   - [func (s Slice[T]) Find(predicate Predicate[T]) (T, bool)](<#func-slice-find>)
   - [func (s Slice[T]) FindLast(predicate Predicate[T]) (T, bool)](<#func-slice-findlast>)
   - [func (s Slice[T]) JoinToString(stringer Stringer[T], separator string, prefix string, postfix string) string](<#func-slice-jointostring>)
-  - [func (s Slice[T]) Sort(comparator Comparator[T])](<#func-slice-sort>)
-  - [func (s Slice[T]) SortBy(comparator Comparator[T]) []T](<#func-slice-sortby>)
+  - [func (s Slice[T]) Sort(lessThan LessThan[T])](<#func-slice-sort>)
+  - [func (s Slice[T]) SortBy(lessThan LessThan[T]) Slice[T]](<#func-slice-sortby>)
   - [func (s Slice[T]) Swap(i, j int)](<#func-slice-swap>)
 - [type Stringer](<#type-stringer>)
-  - [func StringerStringer[T fmt.Stringer]\(\) Stringer[T]](<#func-stringerstringer>)
+  - [func StringerStringer[T fmt.Stringer]() Stringer[T]](<#func-stringerstringer>)
 - [type ValueFor](<#type-valuefor>)
 
 
 ## func Associate
 
 ```go
-func Associate[T, V any, K comparable](slice []T, keyValueFor KeyValueFor[T, K, V]) map[K]V
+func Associate[T, V any, K comparable](slice Slice[T], keyValueFor KeyValueFor[T, K, V]) map[K]V
 ```
 
 Associate returns a map containing key/values created by applying a function to elements of the slice\.
@@ -96,7 +95,7 @@ func main() {
 ## func AssociateWith
 
 ```go
-func AssociateWith[K comparable, V any](slice []K, valueFor ValueFor[K, V]) map[K]V
+func AssociateWith[K comparable, V any](slice Slice[K], valueFor ValueFor[K, V]) map[K]V
 ```
 
 AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the valueSelector function applied to each element\.
@@ -129,71 +128,10 @@ func main() {
 </p>
 </details>
 
-## func Distinct
-
-```go
-func Distinct[T comparable](slice []T) []T
-```
-
-Distinct returns a slice containing only distinct elements from the given slice\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-)
-
-func main() {
-	values := []int{1, 2, 2, 3, 1, 3}
-	fmt.Println(genfuncs.Distinct(values)) // [1 2 3]
-}
-```
-
-</p>
-</details>
-
-## func FlatMap
-
-```go
-func FlatMap[T, R any](slice []T, function Function[T, []R]) []R
-```
-
-FlatMap returns a slice of all elements from results of transform function being invoked on each element of original slice\, and those resultant slices concatenated\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-	"strings"
-)
-
-var lexicalOrder = genfuncs.OrderedComparator[string]()
-
-var words genfuncs.Slice[string] = []string{"hello", "world"}
-
-func main() {
-	slicer := func(s string) []string { return strings.Split(s, "") }
-	fmt.Println(genfuncs.FlatMap(words.SortBy(lexicalOrder), slicer)) // [h e l l o w o r l d]
-}
-```
-
-</p>
-</details>
-
 ## func Fold
 
 ```go
-func Fold[T, R any](slice []T, initial R, biFunction BiFunction[R, T, R]) R
+func Fold[T, R any](slice Slice[T], initial R, biFunction BiFunction[R, T, R]) R
 ```
 
 Fold accumulates a value starting with initial value and applying operation from left to right to current accumulated value and each element\.
@@ -222,7 +160,7 @@ func main() {
 ## func GroupBy
 
 ```go
-func GroupBy[T any, K comparable](slice []T, keyFor KeyFor[T, K]) map[K][]T
+func GroupBy[T any, K comparable](slice Slice[T], keyFor KeyFor[T, K]) map[K]Slice[T]
 ```
 
 GroupBy groups elements of the slice by the key returned by the given keySelector function applied to each element and returns a map where each group key is associated with a slice of corresponding elements\.
@@ -254,95 +192,6 @@ func main() {
 </p>
 </details>
 
-## func Keys
-
-```go
-func Keys[K comparable, V any](m map[K]V) []K
-```
-
-Keys returns a slice of all the keys in the map\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-)
-
-var wordPositions = map[string]int{"hello": 1, "world": 2}
-
-func main() {
-	keys := genfuncs.Keys(wordPositions)
-	fmt.Println(keys) // [hello, world]
-}
-```
-
-</p>
-</details>
-
-## func Map
-
-```go
-func Map[T, R any](slice []T, function Function[T, R]) []R
-```
-
-Map returns a slice containing the results of applying the given transform function to each element in the original slice\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-)
-
-func main() {
-	numbers := []int{69, 88, 65, 77, 80, 76, 69}
-	toString := func(i int) string { return string(rune(i)) }
-	fmt.Println(genfuncs.Map(numbers, toString)) // [E X A M P L E]
-}
-```
-
-</p>
-</details>
-
-## func Values
-
-```go
-func Values[K comparable, V any](m map[K]V) []V
-```
-
-Values returns a slice of all the values in the map\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-)
-
-var wordPositions = map[string]int{"hello": 1, "world": 2}
-
-func main() {
-	values := genfuncs.Values(wordPositions)
-	fmt.Println(values) // [1, 2]
-}
-```
-
-</p>
-</details>
-
 ## type BiFunction
 
 BiFunction accepts two arguments and produces a result\.
@@ -350,108 +199,6 @@ BiFunction accepts two arguments and produces a result\.
 ```go
 type BiFunction[T, U, R any] func(T, U) R
 ```
-
-## type Comparator
-
-Comparator compares two arguments of the same type and returns LessThan\, EqualTo or GreaterThan based relative order\.
-
-```go
-type Comparator[T any] BiFunction[T, T, Ordering]
-```
-
-### func FunctionComparator
-
-```go
-func FunctionComparator[T, R any](transform Function[T, R], comparator Comparator[R]) Comparator[T]
-```
-
-FunctionComparator composites an existing Comparator\[R\] and Function\[T\,R\] into a new Comparator\[T\]\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-	"time"
-)
-
-func main() {
-	var unixTime = func(t time.Time) int64 { return t.Unix() }
-	var timeComparator = genfuncs.FunctionComparator(unixTime, genfuncs.OrderedComparator[int64]())
-
-	now := time.Now()
-	fmt.Println(timeComparator(now, now.Add(time.Second))) // -1
-}
-```
-
-</p>
-</details>
-
-### func OrderedComparator
-
-```go
-func OrderedComparator[T constraints.Ordered]() Comparator[T]
-```
-
-OrderedComparator will create a Comparator from any type included in the constraints\.Ordered constraint\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-)
-
-var lexicalOrder = genfuncs.OrderedComparator[string]()
-
-func main() {
-	fmt.Println(lexicalOrder("a", "b")) // -1
-	fmt.Println(lexicalOrder("a", "a")) // 0
-	fmt.Println(lexicalOrder("b", "a")) // 1
-}
-```
-
-</p>
-</details>
-
-### func ReverseComparator
-
-```go
-func ReverseComparator[T any](comparator Comparator[T]) Comparator[T]
-```
-
-ReverseComparator reverses a Comparator to facilitate switching sort orderings\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs"
-)
-
-var lexicalOrder = genfuncs.OrderedComparator[string]()
-var reverseLexical = genfuncs.ReverseComparator(lexicalOrder)
-
-func main() {
-	fmt.Println(lexicalOrder("a", "b"))   // -1
-	fmt.Println(reverseLexical("a", "b")) // 1
-}
-```
-
-</p>
-</details>
 
 ## type Function
 
@@ -474,10 +221,10 @@ type Heap[T any] struct {
 ### func NewHeap
 
 ```go
-func NewHeap[T any](comparator Comparator[T]) *Heap[T]
+func NewHeap[T any](lessThan LessThan[T]) *Heap[T]
 ```
 
-NewHeap return a heap ordered based on the Comparator\.
+NewHeap return a heap ordered based on the LessThan\.
 
 <details><summary>Example</summary>
 <p>
@@ -490,7 +237,7 @@ import (
 	"github.com/nwillc/genfuncs"
 )
 
-var intCmp = genfuncs.OrderedComparator[int]()
+var intCmp = genfuncs.OrderedLessThan[int]()
 
 func main() {
 	heap := genfuncs.NewHeap(intCmp)
@@ -553,21 +300,37 @@ KeyValueFor is used to generate a key and value from a type\, it accepts any typ
 type KeyValueFor[T any, K comparable, V any] func(T) (K, V)
 ```
 
-## type Ordering
+## type LessThan
 
-Ordering is the type returned by a Comparator\.
-
-```go
-type Ordering int
-```
+LessThan compares two arguments of the same type and returns true if the first is less than the second\.
 
 ```go
-var (
-    LessThan    Ordering = -1
-    EqualTo     Ordering = 0
-    GreaterThan Ordering = 1
-)
+type LessThan[T any] BiFunction[T, T, bool]
 ```
+
+### func OrderedLessThan
+
+```go
+func OrderedLessThan[T constraints.Ordered]() LessThan[T]
+```
+
+OrderedLessThan will create a LessThan from any type included in the constraints\.Ordered constraint\.
+
+### func Reverse
+
+```go
+func Reverse[T any](lessThan LessThan[T]) LessThan[T]
+```
+
+Reverse reverses a LessThan to facilitate reverse sort ordering\.
+
+### func TransformLessThan
+
+```go
+func TransformLessThan[T, R any](transform Function[T, R], lessThan LessThan[R]) LessThan[T]
+```
+
+TransformLessThan composites an existing LessThan\[R\] and transform Function\[T\,R\] into a new LessThan\[T\]\. The transform is used to convert the arguments before they are passed to the lessThan\.
 
 ## type Predicate
 
@@ -576,14 +339,6 @@ Predicate is used evaluate a value\, it accepts any type and returns a bool\.
 ```go
 type Predicate[T any] func(T) bool
 ```
-
-### func IsEqualTo
-
-```go
-func IsEqualTo[T comparable](a T) Predicate[T]
-```
-
-IsEqualTo creates a Predicate that tests if its argument is equal to a given value\.
 
 ### func IsGreaterThan
 
@@ -601,11 +356,167 @@ func IsLessThan[T constraints.Ordered](a T) Predicate[T]
 
 IsLessThan creates a Predicate that tests if its argument is less than a given value\.
 
+### func \(Predicate\) Not
+
+```go
+func (p Predicate[T]) Not() Predicate[T]
+```
+
 ## type Slice
 
 ```go
 type Slice[T any] []T
 ```
+
+### func Distinct
+
+```go
+func Distinct[T comparable](slice Slice[T]) Slice[T]
+```
+
+Distinct returns a slice containing only distinct elements from the given slice\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	values := []int{1, 2, 2, 3, 1, 3}
+	fmt.Println(genfuncs.Distinct(values)) // [1 2 3]
+}
+```
+
+</p>
+</details>
+
+### func FlatMap
+
+```go
+func FlatMap[T, R any](slice Slice[T], function Function[T, Slice[R]]) Slice[R]
+```
+
+FlatMap returns a slice of all elements from results of transform function being invoked on each element of original slice\, and those resultant slices concatenated\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"strings"
+)
+
+var lexicalOrder = genfuncs.OrderedLessThan[string]()
+
+var words genfuncs.Slice[string] = []string{"hello", "world"}
+
+func main() {
+	slicer := func(s string) genfuncs.Slice[string] { return strings.Split(s, "") }
+	fmt.Println(genfuncs.FlatMap(words.SortBy(lexicalOrder), slicer)) // [h e l l o w o r l d]
+}
+```
+
+</p>
+</details>
+
+### func Keys
+
+```go
+func Keys[K comparable, V any](m map[K]V) Slice[K]
+```
+
+Keys returns a slice of all the keys in the map\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+var wordPositions = map[string]int{"hello": 1, "world": 2}
+
+func main() {
+	keys := genfuncs.Keys(wordPositions)
+	fmt.Println(keys) // [hello, world]
+}
+```
+
+</p>
+</details>
+
+### func Map
+
+```go
+func Map[T, R any](slice Slice[T], function Function[T, R]) Slice[R]
+```
+
+Map returns a slice containing the results of applying the given transform function to each element in the original slice\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+func main() {
+	numbers := []int{69, 88, 65, 77, 80, 76, 69}
+	toString := func(i int) string { return string(rune(i)) }
+	fmt.Println(genfuncs.Map(numbers, toString)) // [E X A M P L E]
+}
+```
+
+</p>
+</details>
+
+### func Values
+
+```go
+func Values[K comparable, V any](m map[K]V) Slice[V]
+```
+
+Values returns a slice of all the values in the map\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+)
+
+var wordPositions = map[string]int{"hello": 1, "world": 2}
+
+func main() {
+	values := genfuncs.Values(wordPositions)
+	fmt.Println(values) // [1, 2]
+}
+```
+
+</p>
+</details>
 
 ### func \(Slice\) All
 
@@ -626,7 +537,7 @@ Any returns true if any element of the slice matches the predicate\.
 ### func \(Slice\) Contains
 
 ```go
-func (s Slice[T]) Contains(element T, comparator Comparator[T]) bool
+func (s Slice[T]) Contains(element T, lessThan LessThan[T]) bool
 ```
 
 Contains returns true if element is found in slice\.
@@ -666,15 +577,15 @@ JoinToString creates a string from all the elements using the stringer on each\,
 ### func \(Slice\) Sort
 
 ```go
-func (s Slice[T]) Sort(comparator Comparator[T])
+func (s Slice[T]) Sort(lessThan LessThan[T])
 ```
 
-Sort sorts a slice by Comparator order\.
+Sort sorts a slice by the LessThan order\.
 
 ### func \(Slice\) SortBy
 
 ```go
-func (s Slice[T]) SortBy(comparator Comparator[T]) []T
+func (s Slice[T]) SortBy(lessThan LessThan[T]) Slice[T]
 ```
 
 SortBy copies a slice\, sorts the copy applying the Comparator and returns it\.
