@@ -17,9 +17,10 @@
 package genfuncs_test
 
 import (
+	"testing"
+
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var (

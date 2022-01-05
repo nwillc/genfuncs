@@ -24,7 +24,7 @@ import (
 // BiFunction accepts two arguments and produces a result.
 type BiFunction[T, U, R any] func(T, U) R
 
-// TODO Comparator compares two arguments of the same type and returns LessThan, EqualTo or GreaterThan based relative order.
+// LessThan compares two arguments of the same type and returns true if the first is less than the second.
 type LessThan[T any] BiFunction[T, T, bool]
 
 // Function accepts one argument and produces a result.
@@ -54,14 +54,14 @@ type Stringer[T any] func(T) string
 // ValueFor given a comparable key will return a value for it.
 type ValueFor[K comparable, T any] Function[K, T]
 
-// OrderedComparator will create a Comparator from any type included in the constraints.Ordered constraint.
+// OrderedLessThan will create a LessThan from any type included in the constraints.Ordered constraint.
 func OrderedLessThan[T constraints.Ordered]() LessThan[T] {
 	return func(a, b T) bool {
 		return a < b
 	}
 }
 
-// ReverseComparator reverses a Comparator to facilitate switching sort orderings.
+// Reverse reverses a LessThan to facilitate reverse sort ordering.
 func Reverse[T any](lessThan LessThan[T]) LessThan[T] {
 	return func(a, b T) bool { return lessThan(b, a) }
 }
@@ -71,7 +71,8 @@ func StringerStringer[T fmt.Stringer]() Stringer[T] {
 	return func(t T) string { return t.String() }
 }
 
-// FunctionComparator composites an existing Comparator[R] and Function[T,R] into a new Comparator[T].
+// TransformLessThan composites an existing LessThan[R] and transform Function[T,R] into a new LessThan[T]. The
+// transform is used to convert the arguments before they are passed to the lessThan.
 func TransformLessThan[T, R any](transform Function[T, R], lessThan LessThan[R]) LessThan[T] {
 	return func(a, b T) bool {
 		return lessThan(transform(a), transform(b))

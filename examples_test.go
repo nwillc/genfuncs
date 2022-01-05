@@ -18,11 +18,12 @@ package genfuncs_test
 
 import (
 	"fmt"
-	"github.com/nwillc/genfuncs"
 	"os"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/nwillc/genfuncs"
 )
 
 var floatCmp = genfuncs.OrderedLessThan[float32]()

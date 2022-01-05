@@ -17,9 +17,10 @@
 package genfuncs
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestKeys(t *testing.T) {

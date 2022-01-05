@@ -17,10 +17,11 @@
 package genfuncs_test
 
 import (
-	"github.com/nwillc/genfuncs"
-	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
+
+	"github.com/nwillc/genfuncs"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAssociate(t *testing.T) {

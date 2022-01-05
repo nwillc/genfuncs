@@ -16,7 +16,7 @@
 
 package genfuncs
 
-// Sort sorts a slice by Comparator order.
+// Sort sorts a slice by the LessThan order.
 func (s Slice[T]) Sort(lessThan LessThan[T]) {
 	n := len(s)
 	s.quickSort(0, n, maxDepth(n), lessThan)

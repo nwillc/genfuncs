@@ -18,10 +18,11 @@ package genfuncs_test
 
 import (
 	"fmt"
-	"github.com/nwillc/genfuncs"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/nwillc/genfuncs"
+	"github.com/stretchr/testify/assert"
 )
 
 var _ fmt.Stringer = (*PersonName)(nil)

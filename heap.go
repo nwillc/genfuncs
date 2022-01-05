@@ -22,7 +22,7 @@ type Heap[T any] struct {
 	lessThan LessThan[T]
 }
 
-// NewHeap return a heap ordered based on the Comparator.
+// NewHeap return a heap ordered based on the LessThan.
 func NewHeap[T any](lessThan LessThan[T]) *Heap[T] {
 	return &Heap[T]{lessThan: lessThan}
 }
