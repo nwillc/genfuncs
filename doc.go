@@ -20,6 +20,8 @@ Package genfuncs implements various functions utilizing Go's Generics to help av
 in particular when working with slices. Many of the functions are based on Kotlin's Sequence. This package, though
 usable, is primarily a proof-of-concept since it is likely Go will provide similar at some point soon.
 
+A good set of use examples are found in [examples_test.go](examples_test.go)
+
 The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/master/LICENSE.md
 
 */
