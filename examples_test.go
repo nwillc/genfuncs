@@ -25,11 +25,11 @@ import (
 	"time"
 )
 
-var floatCmp = genfuncs.OrderedComparator[float32]()
+var floatCmp = genfuncs.OrderedLessThan[float32]()
 var greaterThanZero = genfuncs.IsGreaterThan(0)
-var intCmp = genfuncs.OrderedComparator[int]()
-var lexicalOrder = genfuncs.OrderedComparator[string]()
-var reverseLexical = genfuncs.ReverseComparator(lexicalOrder)
+var intCmp = genfuncs.OrderedLessThan[int]()
+var lexicalOrder = genfuncs.OrderedLessThan[string]()
+var reverseLexical = genfuncs.Reverse(lexicalOrder)
 var wordPositions = map[string]int{"hello": 1, "world": 2}
 var words genfuncs.Slice[string] = []string{"hello", "world"}
 
@@ -61,8 +61,8 @@ func TestFunctionExamples(t *testing.T) {
 	ExampleAssociate()
 	ExampleAssociateWith()
 	ExampleDistinct()
-	ExampleFold()
 	ExampleFlatMap()
+	ExampleFold()
 	ExampleGroupBy()
 	ExampleMap()
 	// Sort
@@ -70,14 +70,14 @@ func TestFunctionExamples(t *testing.T) {
 }
 
 func ExampleOrderedComparator() {
-	fmt.Println(lexicalOrder("a", "b")) // -1
-	fmt.Println(lexicalOrder("a", "a")) // 0
-	fmt.Println(lexicalOrder("b", "a")) // 1
+	fmt.Println(lexicalOrder("a", "b")) // true
+	fmt.Println(lexicalOrder("a", "a")) // false
+	fmt.Println(lexicalOrder("b", "a")) // false
 }
 
 func ExampleReverseComparator() {
-	fmt.Println(lexicalOrder("a", "b"))   // -1
-	fmt.Println(reverseLexical("a", "b")) // 1
+	fmt.Println(lexicalOrder("a", "b"))   // true
+	fmt.Println(reverseLexical("a", "b")) // false
 }
 
 func ExampleStringerStringer() {
@@ -89,10 +89,10 @@ func ExampleStringerStringer() {
 
 func ExampleFunctionComparator() {
 	var unixTime = func(t time.Time) int64 { return t.Unix() }
-	var timeComparator = genfuncs.FunctionComparator(unixTime, genfuncs.OrderedComparator[int64]())
+	var timeComparator = genfuncs.TransformLessThan(unixTime, genfuncs.OrderedLessThan[int64]())
 
 	now := time.Now()
-	fmt.Println(timeComparator(now, now.Add(time.Second))) // -1
+	fmt.Println(timeComparator(now, now.Add(time.Second))) // true
 }
 
 func ExampleNewHeap() {
@@ -121,7 +121,7 @@ func ExampleSlice_All() {
 
 func ExampleSlice_Any() {
 	var fruits genfuncs.Slice[string] = []string{"apple", "banana", "grape"}
-	isPear := genfuncs.IsEqualTo("pear")
+	var isPear genfuncs.Predicate[string] = func(s string) bool { return s == "pear" }
 	isNotPear := isPear.Not()
 	fmt.Println(fruits.Any(isNotPear)) // true
 	fmt.Println(fruits.Any(isPear))    // false

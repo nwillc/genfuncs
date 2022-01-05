@@ -24,13 +24,13 @@ import (
 
 var (
 	letters    = []string{"t", "e", "s", "t"}
-	strCompare = genfuncs.OrderedComparator[string]()
+	strCompare = genfuncs.OrderedLessThan[string]()
 )
 
 func TestSort(t *testing.T) {
 	type args struct {
 		slice      genfuncs.Slice[string]
-		comparator genfuncs.Comparator[string]
+		comparator genfuncs.LessThan[string]
 	}
 	tests := []struct {
 		name string
@@ -65,7 +65,7 @@ func TestSort(t *testing.T) {
 			name: "Double Reverse",
 			args: args{
 				slice:      []string{"a", "b"},
-				comparator: genfuncs.ReverseComparator(strCompare),
+				comparator: genfuncs.Reverse(strCompare),
 			},
 			want: []string{"b", "a"},
 		},
@@ -81,7 +81,7 @@ func TestSort(t *testing.T) {
 			name: "Max Min",
 			args: args{
 				slice:      letters,
-				comparator: genfuncs.ReverseComparator(strCompare),
+				comparator: genfuncs.Reverse(strCompare),
 			},
 			want: []string{"t", "t", "s", "e"},
 		},

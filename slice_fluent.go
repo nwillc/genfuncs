@@ -43,9 +43,9 @@ func (s Slice[T]) Any(predicate Predicate[T]) bool {
 }
 
 // Contains returns true if element is found in slice.
-func (s Slice[T]) Contains(element T, comparator Comparator[T]) bool {
+func (s Slice[T]) Contains(element T, lessThan LessThan[T]) bool {
 	for _, e := range s {
-		if comparator(e, element) == EqualTo {
+		if !(lessThan(e, element) || lessThan(element, e)) {
 			return true
 		}
 	}
@@ -105,10 +105,10 @@ func (s Slice[T]) JoinToString(stringer Stringer[T], separator string, prefix st
 }
 
 // SortBy copies a slice, sorts the copy applying the Comparator and returns it.
-func (s Slice[T]) SortBy(comparator Comparator[T]) Slice[T] {
+func (s Slice[T]) SortBy(lessThan LessThan[T]) Slice[T] {
 	dst := make([]T, len(s))
 	copy(dst, s)
-	Slice[T](dst).Sort(comparator)
+	Slice[T](dst).Sort(lessThan)
 	return dst
 }
 

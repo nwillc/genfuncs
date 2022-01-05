@@ -213,7 +213,7 @@ func TestFlatMap(t *testing.T) {
 			got := genfuncs.FlatMap(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, genfuncs.Slice[string](got).Contains(s, genfuncs.OrderedComparator[string]()))
+				assert.True(t, genfuncs.Slice[string](got).Contains(s, genfuncs.OrderedLessThan[string]()))
 			}
 		})
 	}
@@ -255,7 +255,7 @@ func TestGroupBy(t *testing.T) {
 			assert.Equal(t, len(tt.want), len(resultsMap))
 			for k, v := range tt.want {
 				assert.True(t, v.All(func(i int) bool {
-					return genfuncs.Slice[int](resultsMap[k]).Contains(i, genfuncs.OrderedComparator[int]())
+					return genfuncs.Slice[int](resultsMap[k]).Contains(i, genfuncs.OrderedLessThan[int]())
 				}))
 			}
 		})
@@ -295,7 +295,7 @@ func TestMap(t *testing.T) {
 			got := genfuncs.Map(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, genfuncs.Slice[string](got).Contains(s, genfuncs.OrderedComparator[string]()))
+				assert.True(t, genfuncs.Slice[string](got).Contains(s, genfuncs.OrderedLessThan[string]()))
 			}
 		})
 	}

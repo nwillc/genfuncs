@@ -158,7 +158,7 @@ func TestContains(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.args.slice.Contains(tt.args.element, genfuncs.OrderedComparator[string]())
+			got := tt.args.slice.Contains(tt.args.element, genfuncs.OrderedLessThan[string]())
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -382,13 +382,13 @@ func TestJoinToString(t *testing.T) {
 }
 
 func TestSortBy(t *testing.T) {
-	timeComparator := genfuncs.FunctionComparator[time.Time, int64](
+	timeComparator := genfuncs.TransformLessThan[time.Time, int64](
 		func(t time.Time) int64 { return t.Unix() },
-		genfuncs.OrderedComparator[int64](),
+		genfuncs.OrderedLessThan[int64](),
 	)
 	type args struct {
 		slice      genfuncs.Slice[time.Time]
-		comparator genfuncs.Comparator[time.Time]
+		comparator genfuncs.LessThan[time.Time]
 	}
 	now := time.Now()
 	tests := []struct {
@@ -416,7 +416,7 @@ func TestSortBy(t *testing.T) {
 			name: "Max Min",
 			args: args{
 				slice:      []time.Time{now.Add(time.Second), now.Add(-time.Second), now},
-				comparator: genfuncs.ReverseComparator(timeComparator),
+				comparator: genfuncs.Reverse(timeComparator),
 			},
 			want: []time.Time{now.Add(time.Second), now, now.Add(-time.Second)},
 		},

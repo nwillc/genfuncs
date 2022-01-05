@@ -18,13 +18,13 @@ package genfuncs
 
 // Heap implements either a min or max ordered heap of any type.
 type Heap[T any] struct {
-	slice      Slice[T]
-	comparator Comparator[T]
+	slice    Slice[T]
+	lessThan LessThan[T]
 }
 
 // NewHeap return a heap ordered based on the Comparator.
-func NewHeap[T any](comparator Comparator[T]) *Heap[T] {
-	return &Heap[T]{comparator: comparator}
+func NewHeap[T any](lessThan LessThan[T]) *Heap[T] {
+	return &Heap[T]{lessThan: lessThan}
 }
 
 // Len returns current length of the heap.
@@ -60,7 +60,7 @@ func (h *Heap[T]) Pop() T {
 func (h *Heap[T]) up(jj int) {
 	for {
 		i := parent(jj)
-		if i == jj || h.comparator(h.slice[jj], h.slice[i]) >= EqualTo {
+		if i == jj || !h.lessThan(h.slice[jj], h.slice[i]) {
 			break
 		}
 		h.slice.Swap(i, jj)
@@ -78,10 +78,10 @@ func (h *Heap[T]) down() {
 		}
 		j := j1
 		j2 := right(i1)
-		if j2 < n && h.comparator(h.slice[j2], h.slice[j1]) == LessThan {
+		if j2 < n && h.lessThan(h.slice[j2], h.slice[j1]) {
 			j = j2
 		}
-		if h.comparator(h.slice[j], h.slice[i1]) >= EqualTo {
+		if !h.lessThan(h.slice[j], h.slice[i1]) {
 			break
 		}
 		h.slice.Swap(i1, j)

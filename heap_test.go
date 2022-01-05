@@ -45,7 +45,7 @@ func Test_MinHeap(t *testing.T) {
 }
 
 func Test_MaxHeap(t *testing.T) {
-	heap := genfuncs.NewHeap(genfuncs.ReverseComparator(strCompare))
+	heap := genfuncs.NewHeap(genfuncs.Reverse(strCompare))
 	heap.PushAll(names...)
 	assert.Equal(t, 3, heap.Len())
 	assert.Equal(t, "pebbles", heap.Pop())
