@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -14,15 +14,17 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs
+package gentype
+
+import "github.com/nwillc/genfuncs"
 
 // Sort sorts a slice by the LessThan order.
-func (s Slice[T]) Sort(lessThan LessThan[T]) {
+func (s Slice[T]) Sort(lessThan genfuncs.LessThan[T]) {
 	n := len(s)
 	s.quickSort(0, n, maxDepth(n), lessThan)
 }
 
-func (s Slice[T]) insertionSort(a, b int, lessThan LessThan[T]) {
+func (s Slice[T]) insertionSort(a, b int, lessThan genfuncs.LessThan[T]) {
 	for i := a + 1; i < b; i++ {
 		for j := i; j > a && lessThan(s[j], s[j-1]); j-- {
 			s.Swap(j, j-1)
@@ -32,7 +34,7 @@ func (s Slice[T]) insertionSort(a, b int, lessThan LessThan[T]) {
 
 // siftDown implements the heap property on data[lo:hi].
 // first is an offset into the array where the root of the heap lies.
-func (s Slice[T]) siftDown(lo, hi, first int, lessThan LessThan[T]) {
+func (s Slice[T]) siftDown(lo, hi, first int, lessThan genfuncs.LessThan[T]) {
 	root := lo
 	for {
 		child := 2*root + 1
@@ -50,7 +52,7 @@ func (s Slice[T]) siftDown(lo, hi, first int, lessThan LessThan[T]) {
 	}
 }
 
-func (s Slice[T]) heapSort(a, b int, lessThan LessThan[T]) {
+func (s Slice[T]) heapSort(a, b int, lessThan genfuncs.LessThan[T]) {
 	first := a
 	lo := 0
 	hi := b - a
@@ -60,7 +62,7 @@ func (s Slice[T]) heapSort(a, b int, lessThan LessThan[T]) {
 		s.siftDown(i, hi, first, lessThan)
 	}
 
-	// Remove elements, largest first, into end of data.
+	// Pop elements, largest first, into end of data.
 	for i := hi - 1; i >= 0; i-- {
 		s.Swap(first, first+i)
 		s.siftDown(lo, i, first, lessThan)
@@ -68,7 +70,7 @@ func (s Slice[T]) heapSort(a, b int, lessThan LessThan[T]) {
 }
 
 // medianOfThree moves the median of the three values data[m0], data[m1], data[m2] into data[m1].
-func (s Slice[T]) medianOfThree(m1, m0, m2 int, lessThan LessThan[T]) {
+func (s Slice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.LessThan[T]) {
 	// sort 3 elements
 	if lessThan(s[m1], s[m0]) {
 		s.Swap(m1, m0)
@@ -84,7 +86,7 @@ func (s Slice[T]) medianOfThree(m1, m0, m2 int, lessThan LessThan[T]) {
 	// now data[m0] <= data[m1] <= data[m2]
 }
 
-func (s Slice[T]) doPivot(lo, hi int, lessThan LessThan[T]) (midlo, midhi int) {
+func (s Slice[T]) doPivot(lo, hi int, lessThan genfuncs.LessThan[T]) (midlo, midhi int) {
 	m := int(uint(lo+hi) >> 1) // Written like this to avoid integer overflow.
 	if hi-lo > 40 {
 		// Tukey's ``Ninther,'' median of three medians of three.
@@ -171,7 +173,7 @@ func (s Slice[T]) doPivot(lo, hi int, lessThan LessThan[T]) (midlo, midhi int) {
 	return b - 1, c
 }
 
-func (s Slice[T]) quickSort(a, b, maxDepth int, lessThan LessThan[T]) {
+func (s Slice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.LessThan[T]) {
 	for b-a > 12 { // Use ShellSort for slices <= 12 elements
 		if maxDepth == 0 {
 			s.heapSort(a, b, lessThan)

@@ -16,47 +16,32 @@
 
 package genfuncs
 
-import "fmt"
+var (
+	// Orderings
 
-var NoSuchElement = fmt.Errorf("no such element")
+	F32NumericOrder        = OrderedLessThan[float32]()
+	F32ReverseNumericOrder = Reverse(F32NumericOrder)
+	INumericOrder          = OrderedLessThan[int]()
+	IReverseNumericOrder   = Reverse(INumericOrder)
+	I64NumericOrder        = OrderedLessThan[int64]()
+	I64ReverseNumericOrder = Reverse(I64NumericOrder)
+	SLexicalOrder          = OrderedLessThan[string]()
+	SReverseLexicalOrder   = Reverse(SLexicalOrder)
 
-type Queue[T any] interface {
-	Len() int
-	Add(t T)
-	Remove() T
-	Peek() T
+	// Predicates
+
+	IsBlank    = IsEqualComparable("")
+	IsNotBlank = IsBlank.Not()
+
+	F32IsZero = IsEqualComparable(float32(0.0))
+	F64IsZero = IsEqualComparable(0.0)
+	IIsZero   = IsEqualComparable(0)
+)
+
+func IsEqualComparable[C comparable](c C) Predicate[C] {
+	return func(a C) bool { return a == c }
 }
 
-var _ Queue[bool] = (*Fifo[bool])(nil)
-
-type Fifo[T any] struct {
-	slice Slice[T]
-}
-
-func NewFifo[T any](t ...T) *Fifo[T] {
-	f := &Fifo[T]{}
-	f.slice = make([]T, len(t))
-	copy(f.slice, t)
-	return f
-}
-
-func (f *Fifo[T]) Len() int {
-	return len(f.slice)
-}
-
-func (f *Fifo[T]) Add(t T) {
-	f.slice = append(f.slice, t)
-}
-
-func (f *Fifo[T]) Peek() T {
-	if f.Len() < 1 {
-		panic(NoSuchElement)
-	}
-	return f.slice[0]
-}
-
-func (f *Fifo[T]) Remove() T {
-	value := f.Peek()
-	f.slice = f.slice[1:]
-	return value
+func AreEqualComparable[C comparable](a, b C) bool {
+	return a == b
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -14,24 +14,18 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs_test
+package gentype
 
 import (
+	"strconv"
 	"testing"
 
-	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	letters    = []string{"t", "e", "s", "t"}
-	strCompare = genfuncs.OrderedLessThan[string]()
-)
-
-func TestSort(t *testing.T) {
+func TestKeys(t *testing.T) {
 	type args struct {
-		slice      genfuncs.Slice[string]
-		comparator genfuncs.LessThan[string]
+		m map[string]string
 	}
 	tests := []struct {
 		name string
@@ -41,61 +35,77 @@ func TestSort(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				slice:      []string{},
-				comparator: strCompare,
+				m: nil,
 			},
-			want: []string{},
+			want: nil,
 		},
 		{
-			name: "Single",
+			name: "One",
 			args: args{
-				slice:      []string{"a"},
-				comparator: strCompare,
+				m: map[string]string{"one": "one"},
 			},
-			want: []string{"a"},
+			want: []string{"one"},
 		},
 		{
-			name: "Double",
+			name: "Two",
 			args: args{
-				slice:      []string{"a", "b"},
-				comparator: strCompare,
+				m: map[string]string{"one": "one", "two": "two"},
 			},
-			want: []string{"a", "b"},
-		},
-		{
-			name: "Double Reverse",
-			args: args{
-				slice:      []string{"a", "b"},
-				comparator: genfuncs.Reverse(strCompare),
-			},
-			want: []string{"b", "a"},
-		},
-		{
-			name: "Min Max",
-			args: args{
-				slice:      letters,
-				comparator: strCompare,
-			},
-			want: []string{"e", "s", "t", "t"},
-		},
-		{
-			name: "Max Min",
-			args: args{
-				slice:      letters,
-				comparator: genfuncs.Reverse(strCompare),
-			},
-			want: []string{"t", "t", "s", "e"},
+			want: []string{"one", "two"},
 		},
 	}
 	for _, tt := range tests {
-
 		t.Run(tt.name, func(t *testing.T) {
-			dst := tt.args.slice.SortBy(tt.args.comparator)
-			assert.Equal(t, len(tt.want), len(dst))
-			for i := 0; i < len(tt.want); i++ {
-				assert.Equal(t, tt.want[i], dst[i])
+			keys := Keys(tt.args.m)
+			assert.Equal(t, len(tt.want), len(keys))
+			for _, k := range keys {
+				_, ok := tt.args.m[k]
+				assert.True(t, ok)
 			}
 		})
+	}
+}
 
+func TestValues(t *testing.T) {
+	type args struct {
+		m map[string]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{
+			name: "Empty",
+			args: args{
+				m: nil,
+			},
+			want: nil,
+		},
+		{
+			name: "One",
+			args: args{
+				m: map[string]int{"1": 1},
+			},
+			want: []int{1},
+		},
+		{
+			name: "Two",
+			args: args{
+				m: map[string]int{"1": 1, "5": 5},
+			},
+			want: []int{1, 5},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			values := Values(tt.args.m)
+			assert.Equal(t, len(tt.want), len(values))
+			for _, v := range values {
+				k := strconv.Itoa(v)
+				_, ok := tt.args.m[k]
+				assert.True(t, ok)
+			}
+		})
 	}
 }

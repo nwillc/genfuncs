@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -14,15 +14,32 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/*
+package gentype
 
-Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with slices. Many of the functions are based on Kotlin's Sequence. This package, though
-usable, is primarily a proof-of-concept since it is likely Go will provide similar at some point soon.
+// Contains tests if a map contains an entry for a given key.
+func Contains[K comparable, V any](m map[K]V, key K) bool {
+	_, ok := m[key]
+	return ok
+}
 
-A good set of use examples are found in [examples_test.go](./examples_test.go)
+// Keys returns a slice of all the keys in the map.
+func Keys[K comparable, V any](m map[K]V) Slice[K] {
+	keys := make([]K, len(m))
+	var i int
+	for k, _ := range m {
+		keys[i] = k
+		i++
+	}
+	return keys
+}
 
-The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/master/LICENSE.md
-
-*/
-package genfuncs
+// Values returns a slice of all the values in the map.
+func Values[K comparable, V any](m map[K]V) Slice[V] {
+	values := make([]V, len(m))
+	var i int
+	for _, v := range m {
+		values[i] = v
+		i++
+	}
+	return values
+}

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -14,21 +14,24 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs
+package gentype
 
-// Heap implements Queue interface
-var _ Queue[bool] = (*Heap[bool])(nil)
+import "github.com/nwillc/genfuncs"
+
+// Heap implements Queue.
+var _ Queue[int] = (*Heap[int])(nil)
 
 // Heap implements either a min or max ordered heap of any type.
 type Heap[T any] struct {
 	slice    Slice[T]
-	lessThan LessThan[T]
+	lessThan genfuncs.LessThan[T]
+	ordered  bool
 }
 
-// NewHeap return a heap ordered based on the LessThan.
-func NewHeap[T any](lessThan LessThan[T], t ...T) *Heap[T] {
+// NewHeap return a heap ordered based on the LessThan and pushes any values provided.
+func NewHeap[T any](lessThan genfuncs.LessThan[T], values ...T) *Heap[T] {
 	h := &Heap[T]{lessThan: lessThan}
-	h.PushAll(t...)
+	h.AddAll(values...)
 	return h
 }
 
@@ -39,19 +42,11 @@ func (h *Heap[T]) Len() int { return len(h.slice) }
 func (h *Heap[T]) Add(v T) {
 	h.slice = append(h.slice, v)
 	h.up(h.Len() - 1)
+	h.ordered = false
 }
 
-// Peek returns the next value without removing it.
-func (h *Heap[T]) Peek() T {
-	if h.Len() < 1 {
-		panic(NoSuchElement)
-	}
-	n := h.Len() - 1
-	return h.slice[n]
-}
-
-// PushAll the values onto the Heap.
-func (h *Heap[T]) PushAll(values ...T) {
+// AddAll the values onto the Heap.
+func (h *Heap[T]) AddAll(values ...T) {
 	end := h.Len()
 	h.slice = append(h.slice, values...)
 	for ; end < h.Len(); end++ {
@@ -59,15 +54,26 @@ func (h *Heap[T]) PushAll(values ...T) {
 	}
 }
 
+// Peek returns the next element without removing it.
+func (h *Heap[T]) Peek() T {
+	if h.Len() <= 0 {
+		panic(NoSuchElement)
+	}
+	n := h.Len() - 1
+	if n > 0 && !h.ordered {
+		h.slice.Swap(0, n)
+		h.down()
+		h.ordered = true
+	}
+	v := h.slice[n]
+	return v
+}
+
 // Remove an item off the heap.
 func (h *Heap[T]) Remove() T {
 	v := h.Peek()
-	n := h.Len() - 1
-	if n > 0 {
-		h.slice.Swap(0, n)
-		h.down()
-	}
 	h.slice = h.slice[0 : h.Len()-1]
+	h.ordered = false
 	return v
 }
 

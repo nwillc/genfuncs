@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -14,9 +14,10 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs_test
+package gentype_test
 
 import (
+	"github.com/nwillc/genfuncs/gentype"
 	"strconv"
 	"testing"
 
@@ -83,7 +84,7 @@ func TestAssociate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fNameMap := genfuncs.Associate(tt.args.slice, tt.args.transform)
+			fNameMap := gentype.Associate(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, len(fNameMap))
 			for k, _ := range fNameMap {
 				_, ok := fNameMap[k]
@@ -131,7 +132,7 @@ func TestAssociateWith(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultMap := genfuncs.AssociateWith(tt.args.slice, tt.args.transform)
+			resultMap := gentype.AssociateWith(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, len(resultMap))
 			for _, k := range tt.args.slice {
 				v, ok := resultMap[k]
@@ -175,17 +176,17 @@ func TestDistinct(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			distinct := genfuncs.Distinct(tt.args.slice)
+			distinct := gentype.Distinct(tt.args.slice)
 			assert.Equal(t, len(tt.want), len(distinct))
 		})
 	}
 }
 
 func TestFlatMap(t *testing.T) {
-	var trans = func(i int) genfuncs.Slice[string] { return []string{"#", strconv.Itoa(i)} }
+	var trans = func(i int) gentype.Slice[string] { return []string{"#", strconv.Itoa(i)} }
 	type args struct {
-		slice     genfuncs.Slice[int]
-		transform genfuncs.Function[int, genfuncs.Slice[string]]
+		slice     gentype.Slice[int]
+		transform genfuncs.Function[int, gentype.Slice[string]]
 	}
 	tests := []struct {
 		name string
@@ -211,10 +212,10 @@ func TestFlatMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genfuncs.FlatMap(tt.args.slice, tt.args.transform)
+			got := gentype.FlatMap(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, genfuncs.Slice[string](got).Contains(s, genfuncs.OrderedLessThan[string]()))
+				assert.True(t, got.Any(genfuncs.IsEqualComparable(s)))
 			}
 		})
 	}
@@ -222,19 +223,19 @@ func TestFlatMap(t *testing.T) {
 
 func TestFold(t *testing.T) {
 	si := []int{1, 2, 3}
-	sum := genfuncs.Fold(si, 10, func(r int, i int) int { return r + i })
+	sum := gentype.Fold(si, 10, func(r int, i int) int { return r + i })
 	assert.Equal(t, 16, sum)
 }
 
 func TestGroupBy(t *testing.T) {
 	type args struct {
-		slice       genfuncs.Slice[int]
+		slice       gentype.Slice[int]
 		keySelector genfuncs.KeyFor[int, string]
 	}
 	tests := []struct {
 		name string
 		args args
-		want map[string]genfuncs.Slice[int]
+		want map[string]gentype.Slice[int]
 	}{
 		{
 			name: "Odds Evens",
@@ -247,16 +248,16 @@ func TestGroupBy(t *testing.T) {
 					return "odd"
 				},
 			},
-			want: map[string]genfuncs.Slice[int]{"odd": {1, 3}, "even": {2, 4}},
+			want: map[string]gentype.Slice[int]{"odd": {1, 3}, "even": {2, 4}},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultsMap := genfuncs.GroupBy(tt.args.slice, tt.args.keySelector)
+			resultsMap := gentype.GroupBy(tt.args.slice, tt.args.keySelector)
 			assert.Equal(t, len(tt.want), len(resultsMap))
 			for k, v := range tt.want {
 				assert.True(t, v.All(func(i int) bool {
-					return genfuncs.Slice[int](resultsMap[k]).Contains(i, genfuncs.OrderedLessThan[int]())
+					return gentype.Slice[int](resultsMap[k]).Any(genfuncs.IsEqualComparable(i))
 				}))
 			}
 		})
@@ -266,7 +267,7 @@ func TestGroupBy(t *testing.T) {
 func TestMap(t *testing.T) {
 	var trans genfuncs.Function[int, string] = strconv.Itoa
 	type args struct {
-		slice     genfuncs.Slice[int]
+		slice     gentype.Slice[int]
 		transform genfuncs.Function[int, string]
 	}
 	tests := []struct {
@@ -293,10 +294,10 @@ func TestMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genfuncs.Map(tt.args.slice, tt.args.transform)
+			got := gentype.Map(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, genfuncs.Slice[string](got).Contains(s, genfuncs.OrderedLessThan[string]()))
+				assert.True(t, got.Any(genfuncs.IsEqualComparable(s)))
 			}
 		})
 	}

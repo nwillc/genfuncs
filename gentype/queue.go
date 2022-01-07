@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -14,26 +14,21 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs
+package gentype
 
-// Keys returns a slice of all the keys in the map.
-func Keys[K comparable, V any](m map[K]V) Slice[K] {
-	keys := make([]K, len(m))
-	var i int
-	for k, _ := range m {
-		keys[i] = k
-		i++
-	}
-	return keys
-}
+import "fmt"
 
-// Values returns a slice of all the values in the map.
-func Values[K comparable, V any](m map[K]V) Slice[V] {
-	values := make([]V, len(m))
-	var i int
-	for _, v := range m {
-		values[i] = v
-		i++
-	}
-	return values
+// NoSuchElement error is used by panics when attempts are made to access out of bounds.
+var NoSuchElement = fmt.Errorf("no such element")
+
+// Queue is an interface for various related data structures.
+type Queue[T any] interface {
+	// Add an element to the Queue.
+	Add(t T)
+	// Len returns length of the Queue.
+	Len() int
+	// Peek returns the next element without removing it.
+	Peek() T
+	// Remove and return next element from the Queue.
+	Remove() T
 }

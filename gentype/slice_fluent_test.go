@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -14,10 +14,11 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs_test
+package gentype_test
 
 import (
 	"fmt"
+	"github.com/nwillc/genfuncs/gentype"
 	"testing"
 	"time"
 
@@ -73,7 +74,7 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genfuncs.Slice[string](tt.args.slice).All(tt.args.predicate)
+			got := gentype.Slice[string](tt.args.slice).All(tt.args.predicate)
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -81,7 +82,7 @@ func TestAll(t *testing.T) {
 
 func TestAny(t *testing.T) {
 	type args struct {
-		slice     genfuncs.Slice[string]
+		slice     gentype.Slice[string]
 		predicate genfuncs.Predicate[string]
 	}
 	tests := []struct {
@@ -124,7 +125,7 @@ func TestAny(t *testing.T) {
 
 func TestContains(t *testing.T) {
 	type args struct {
-		slice   genfuncs.Slice[string]
+		slice   gentype.Slice[string]
 		element string
 	}
 	tests := []struct {
@@ -159,7 +160,7 @@ func TestContains(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.args.slice.Contains(tt.args.element, genfuncs.OrderedLessThan[string]())
+			got := tt.args.slice.Any(genfuncs.IsEqualComparable(tt.args.element))
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -167,13 +168,13 @@ func TestContains(t *testing.T) {
 
 func TestFilter(t *testing.T) {
 	type args struct {
-		slice     genfuncs.Slice[int]
+		slice     gentype.Slice[int]
 		predicate genfuncs.Predicate[int]
 	}
 	tests := []struct {
 		name string
 		args args
-		want genfuncs.Slice[int]
+		want gentype.Slice[int]
 	}{
 		{
 			name: "Empty",
@@ -195,17 +196,14 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.args.slice.Filter(tt.args.predicate)
-			assert.Equal(t, len(tt.want), len(result))
-			for _, v := range result {
-				assert.True(t, result.Any(func(i int) bool { return i == v }))
-			}
+			assert.True(t, result.Compare(tt.want, genfuncs.AreEqualComparable[int]))
 		})
 	}
 }
 
 func TestFind(t *testing.T) {
 	type args struct {
-		slice     genfuncs.Slice[float32]
+		slice     gentype.Slice[float32]
 		predicate genfuncs.Predicate[float32]
 	}
 	tests := []struct {
@@ -255,7 +253,7 @@ func TestFind(t *testing.T) {
 
 func TestFindLast(t *testing.T) {
 	type args struct {
-		slice     genfuncs.Slice[float32]
+		slice     gentype.Slice[float32]
 		predicate genfuncs.Predicate[float32]
 	}
 	tests := []struct {
@@ -306,7 +304,7 @@ func TestFindLast(t *testing.T) {
 func TestJoinToString(t *testing.T) {
 	personStringer := genfuncs.StringerStringer[PersonName]()
 	type args struct {
-		slice     genfuncs.Slice[PersonName]
+		slice     gentype.Slice[PersonName]
 		separator string
 		prefix    string
 		postfix   string
@@ -388,7 +386,7 @@ func TestSortBy(t *testing.T) {
 		genfuncs.OrderedLessThan[int64](),
 	)
 	type args struct {
-		slice      genfuncs.Slice[time.Time]
+		slice      gentype.Slice[time.Time]
 		comparator genfuncs.LessThan[time.Time]
 	}
 	now := time.Now()
@@ -426,9 +424,7 @@ func TestSortBy(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sorted := tt.args.slice.SortBy(tt.args.comparator)
 			assert.Equal(t, len(tt.want), len(sorted))
-			for i, tm := range tt.want {
-				assert.Equal(t, tm, sorted[i])
-			}
+			assert.True(t, sorted.Compare(tt.want, genfuncs.AreEqualComparable[time.Time]))
 		})
 	}
 }
