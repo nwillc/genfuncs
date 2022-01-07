@@ -11,7 +11,7 @@ import "github.com/nwillc/genfuncs"
 
 Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular when working with slices\. Many of the functions are based on Kotlin's Sequence\. This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
 
-A good set of use examples are found in \[examples\_test\.go\]\(\./examples\_test\.go\)
+A good set of use examples are found in [examples_test.go](./examples_test.go)
 
 The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/master/LICENSE.md
 
@@ -24,7 +24,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
 - [type KeyFor](<#type-keyfor>)
 - [type KeyValueFor](<#type-keyvaluefor>)
 - [type LessThan](<#type-lessthan>)
-  - [func OrderedLessThan[T constraints.Ordered]() LessThan[T]](<#func-orderedlessthan>)
+  - [func OrderedLessThan[T constraints.Ordered]\(\) LessThan[T]](<#func-orderedlessthan>)
   - [func Reverse[T any](lessThan LessThan[T]) LessThan[T]](<#func-reverse>)
   - [func TransformLessThan[T, R any](transform Function[T, R], lessThan LessThan[R]) LessThan[T]](<#func-transformlessthan>)
 - [type Predicate](<#type-predicate>)
@@ -33,7 +33,7 @@ The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/maste
   - [func IsLessThan[T constraints.Ordered](a T) Predicate[T]](<#func-islessthan>)
   - [func (p Predicate[T]) Not() Predicate[T]](<#func-badrecv-not>)
 - [type Stringer](<#type-stringer>)
-  - [func StringerStringer[T fmt.Stringer]() Stringer[T]](<#func-stringerstringer>)
+  - [func StringerStringer[T fmt.Stringer]\(\) Stringer[T]](<#func-stringerstringer>)
 - [type ValueFor](<#type-valuefor>)
 
 
