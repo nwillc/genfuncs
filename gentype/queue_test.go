@@ -14,10 +14,10 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs_test
+package gentype_test
 
 import (
-	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/gentype"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -48,51 +48,10 @@ func TestNewFifo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fifo := genfuncs.NewFifo(tt.args.data...)
+			fifo := gentype.NewFifo(tt.args.data...)
 			assert.Equal(t, len(tt.want), fifo.Len())
 			for _, e := range tt.want {
 				value := fifo.Remove()
-				assert.Equal(t, e, value)
-			}
-		})
-	}
-}
-
-func TestFifoAddPeekRemove(t *testing.T) {
-	type args struct {
-		data []int
-	}
-	tests := []struct {
-		name string
-		args args
-		want []int
-	}{
-		{
-			name: "empty",
-			args: args{
-				data: nil,
-			},
-			want: nil,
-		},
-		{
-			name: "1 2 3",
-			args: args{
-				data: []int{1, 2, 3},
-			},
-			want: []int{1, 2, 3},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			fifo := genfuncs.NewFifo[int]()
-			for _, e := range tt.want {
-				fifo.Add(e)
-			}
-			assert.Equal(t, len(tt.want), fifo.Len())
-			for _, e := range tt.want {
-				peek := fifo.Peek()
-				value := fifo.Remove()
-				assert.Equal(t, peek, value)
 				assert.Equal(t, e, value)
 			}
 		})
