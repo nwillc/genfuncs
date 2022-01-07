@@ -100,7 +100,7 @@ func ExampleNewHeap() {
 	heap := genfuncs.NewHeap(intCmp)
 	heap.PushAll(3, 1, 4, 2)
 	for heap.Len() > 0 {
-		fmt.Print(heap.Pop()) // 1234
+		fmt.Print(heap.Remove()) // 1234
 	}
 	fmt.Println()
 }

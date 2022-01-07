@@ -16,6 +16,9 @@
 
 package genfuncs
 
+// Heap implements Queue interface
+var _ Queue[bool] = (*Heap[bool])(nil)
+
 // Heap implements either a min or max ordered heap of any type.
 type Heap[T any] struct {
 	slice    Slice[T]
@@ -23,17 +26,28 @@ type Heap[T any] struct {
 }
 
 // NewHeap return a heap ordered based on the LessThan.
-func NewHeap[T any](lessThan LessThan[T]) *Heap[T] {
-	return &Heap[T]{lessThan: lessThan}
+func NewHeap[T any](lessThan LessThan[T], t ...T) *Heap[T] {
+	h := &Heap[T]{lessThan: lessThan}
+	h.PushAll(t...)
+	return h
 }
 
 // Len returns current length of the heap.
 func (h *Heap[T]) Len() int { return len(h.slice) }
 
-// Push a value onto the heap.
-func (h *Heap[T]) Push(v T) {
+// Add a value onto the heap.
+func (h *Heap[T]) Add(v T) {
 	h.slice = append(h.slice, v)
 	h.up(h.Len() - 1)
+}
+
+// Peek returns the next value without removing it.
+func (h *Heap[T]) Peek() T {
+	if h.Len() < 1 {
+		panic(NoSuchElement)
+	}
+	n := h.Len() - 1
+	return h.slice[n]
 }
 
 // PushAll the values onto the Heap.
@@ -45,15 +59,15 @@ func (h *Heap[T]) PushAll(values ...T) {
 	}
 }
 
-// Pop an item off the heap.
-func (h *Heap[T]) Pop() T {
+// Remove an item off the heap.
+func (h *Heap[T]) Remove() T {
+	v := h.Peek()
 	n := h.Len() - 1
 	if n > 0 {
 		h.slice.Swap(0, n)
 		h.down()
 	}
-	v := h.slice[n]
-	h.slice = h.slice[0:n]
+	h.slice = h.slice[0 : h.Len()-1]
 	return v
 }
 

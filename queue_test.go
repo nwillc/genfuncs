@@ -1,12 +1,12 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
  *  copyright notice and this permission notice appear in all copies.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF¬
+ *  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  *  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
  *  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  *  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
@@ -17,21 +17,14 @@
 package genfuncs_test
 
 import (
-	"github.com/stretchr/testify/require"
-	"testing"
-
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-var (
-	names = []string{"fred", "barney", "pebbles"}
-)
-
-func TestNewHeap(t *testing.T) {
+func TestNewFifo(t *testing.T) {
 	type args struct {
-		data     []string
-		lessThan genfuncs.LessThan[string]
+		data []string
 	}
 	tests := []struct {
 		name string
@@ -41,47 +34,21 @@ func TestNewHeap(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				data:     nil,
-				lessThan: strCompare,
+				data: nil,
 			},
 			want: nil,
 		},
 		{
-			name: "min a b c",
+			name: "a b c",
 			args: args{
-				data:     []string{"a", "b", "c"},
-				lessThan: strCompare,
+				data: []string{"a", "b", "c"},
 			},
 			want: []string{"a", "b", "c"},
-		},
-		{
-			name: "max a b c",
-			args: args{
-				data:     []string{"a", "b", "c"},
-				lessThan: genfuncs.Reverse(strCompare),
-			},
-			want: []string{"c", "b", "a"},
-		},
-		{
-			name: "min c b a",
-			args: args{
-				data:     []string{"c", "b", "a"},
-				lessThan: strCompare,
-			},
-			want: []string{"a", "b", "c"},
-		},
-		{
-			name: "max c b a",
-			args: args{
-				data:     []string{"c", "b", "a"},
-				lessThan: genfuncs.Reverse(strCompare),
-			},
-			want: []string{"c", "b", "a"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fifo := genfuncs.NewHeap(tt.args.lessThan, tt.args.data...)
+			fifo := genfuncs.NewFifo(tt.args.data...)
 			assert.Equal(t, len(tt.want), fifo.Len())
 			for _, e := range tt.want {
 				value := fifo.Remove()
@@ -91,11 +58,9 @@ func TestNewHeap(t *testing.T) {
 	}
 }
 
-func TestHeapAddPeekRemove(t *testing.T) {
-	numericOrder := genfuncs.OrderedLessThan[int]()
+func TestFifoAddPeekRemove(t *testing.T) {
 	type args struct {
-		data     []int
-		lessThan genfuncs.LessThan[int]
+		data []int
 	}
 	tests := []struct {
 		name string
@@ -105,32 +70,30 @@ func TestHeapAddPeekRemove(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				data:     nil,
-				lessThan: numericOrder,
+				data: nil,
 			},
 			want: nil,
 		},
 		{
-			name: "min 1 2 3",
+			name: "1 2 3",
 			args: args{
-				data:     []int{1, 2, 3},
-				lessThan: numericOrder,
+				data: []int{1, 2, 3},
 			},
 			want: []int{1, 2, 3},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			heap := genfuncs.NewHeap[int](tt.args.lessThan)
+			fifo := genfuncs.NewFifo[int]()
 			for _, e := range tt.want {
-				heap.Add(e)
+				fifo.Add(e)
 			}
-			assert.Equal(t, len(tt.want), heap.Len())
+			assert.Equal(t, len(tt.want), fifo.Len())
 			for _, e := range tt.want {
-				peek := heap.Peek()
-				value := heap.Remove()
-				require.Equal(t, peek, value)
-				require.Equal(t, e, value)
+				peek := fifo.Peek()
+				value := fifo.Remove()
+				assert.Equal(t, peek, value)
+				assert.Equal(t, e, value)
 			}
 		})
 	}

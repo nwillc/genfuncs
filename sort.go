@@ -60,7 +60,7 @@ func (s Slice[T]) heapSort(a, b int, lessThan LessThan[T]) {
 		s.siftDown(i, hi, first, lessThan)
 	}
 
-	// Pop elements, largest first, into end of data.
+	// Remove elements, largest first, into end of data.
 	for i := hi - 1; i >= 0; i-- {
 		s.Swap(first, first+i)
 		s.siftDown(lo, i, first, lessThan)
