@@ -6,8 +6,8 @@
 
 ## Packages
 
-- [github.com/nwillc/genfuncs](https://github.com/nwillc/genfuncs)
-- [github.com/nwillc/genfuncs/gentype](https://github.com/nwillc/genfuncs/gentype)
+- [github.com/nwillc/genfuncs](../README.md)
+- [github.com/nwillc/genfuncs/gentype](./README.md)
 
 # gentype
 
