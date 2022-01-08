@@ -1,7 +1,11 @@
-output: "{{.Dir}}/README.md"
+output: "README.md"
+embed: "."
 header: |+
   [![License](https://img.shields.io/github/license/nwillc/genfuncs.svg)](https://tldrlegal.com/license/-isc-license)
+  [![CI](https://github.com/nwillc/genfuncs/workflows/CI/badge.svg)](https://github.com/nwillc/genfuncs/actions/workflows/CI.yml)
   [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
 
 repository:
+  url: https://github.com/nwillc/genfuncs
   defaultBranch: master
+  path: /
