@@ -12,7 +12,7 @@ import "github.com/nwillc/genfuncs"
 
 Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular when working with slices\. Many of the functions are based on Kotlin's Sequence\. This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
 
-A good set of use examples are found in \[examples\_test\.go\]\(\./examples\_test\.go\)
+A large set of examples are found in https://github.com/nwillc/genfuncs/blob/master/examples_test.go
 
 The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/master/LICENSE.md
 
