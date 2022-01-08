@@ -43,6 +43,7 @@ func TestFunctionExamples(t *testing.T) {
 	// Heap
 	ExampleNewHeap()
 	// Map
+	ExampleContains()
 	ExampleKeys()
 	ExampleValues()
 	// Slice fluent
@@ -80,7 +81,7 @@ func ExampleReverseComparator() {
 func ExampleStringerStringer() {
 	var epoch time.Time
 	fmt.Println(epoch.String()) // 0001-01-01 00:00:00 +0000 UTC
-	stringer := genfuncs.StringerStringer[time.Time]()
+	stringer := genfuncs.StringerToString[time.Time]()
 	fmt.Println(stringer(epoch)) // 0001-01-01 00:00:00 +0000 UTC
 }
 
@@ -99,6 +100,11 @@ func ExampleNewHeap() {
 	}
 	fmt.Println()
 	// 1234
+}
+
+func ExampleContains() {
+	fmt.Println(gentype.Contains(wordPositions, "hello")) // true
+	fmt.Println(gentype.Contains(wordPositions, "no"))    // false
 }
 
 func ExampleKeys() {
@@ -139,7 +145,7 @@ func ExampleSlice_FindLast() {
 }
 
 func ExampleSlice_JoinToString() {
-	var toString genfuncs.Stringer[string] = func(s string) string { return s }
+	var toString genfuncs.ToString[string] = func(s string) string { return s }
 	fmt.Println(words.JoinToString(
 		toString,
 		" ",

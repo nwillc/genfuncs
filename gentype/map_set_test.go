@@ -23,7 +23,7 @@ import (
 )
 
 func TestSet(t *testing.T) {
-	set := gentype.NewHashSet[string]()
+	set := gentype.NewMapSet[string]()
 	assert.Equal(t, 0, set.Len())
 	assert.False(t, set.Contains("foo"))
 	set.Add("foo")

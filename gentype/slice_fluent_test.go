@@ -302,7 +302,7 @@ func TestFindLast(t *testing.T) {
 }
 
 func TestJoinToString(t *testing.T) {
-	personStringer := genfuncs.StringerStringer[PersonName]()
+	personStringer := genfuncs.StringerToString[PersonName]()
 	type args struct {
 		slice     gentype.Slice[PersonName]
 		separator string

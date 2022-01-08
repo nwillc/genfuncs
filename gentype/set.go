@@ -28,35 +28,3 @@ type Set[T comparable] interface {
 	// Values in the Set as a Slice.
 	Values() Slice[T]
 }
-
-var _ Set[bool] = (*MapSet[bool])(nil)
-
-// MapSet is a Set implementation based on a map.
-type MapSet[T comparable] struct {
-	set map[T]struct{}
-}
-
-func NewHashSet[T comparable]() *MapSet[T] {
-	return &MapSet[T]{set: make(map[T]struct{})}
-}
-
-func (h *MapSet[T]) Add(t T) {
-	h.set[t] = struct{}{}
-}
-
-func (h *MapSet[T]) Contains(t T) bool {
-	_, ok := h.set[t]
-	return ok
-}
-
-func (h *MapSet[T]) Len() int {
-	return len(h.set)
-}
-
-func (h *MapSet[T]) Remove(t T) {
-	delete(h.set, t)
-}
-
-func (h *MapSet[T]) Values() Slice[T] {
-	return Keys(h.set)
-}

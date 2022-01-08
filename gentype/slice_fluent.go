@@ -95,7 +95,7 @@ func (s Slice[T]) FindLast(predicate genfuncs.Predicate[T]) (T, bool) {
 
 // JoinToString creates a string from all the elements using the stringer on each, separating them using separator, and
 // using the given prefix and postfix.
-func (s Slice[T]) JoinToString(stringer genfuncs.Stringer[T], separator string, prefix string, postfix string) string {
+func (s Slice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string {
 	var sb strings.Builder
 	sb.WriteString(prefix)
 	last := len(s) - 1

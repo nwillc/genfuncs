@@ -48,8 +48,8 @@ func IsLessThan[T constraints.Ordered](a T) Predicate[T] { return func(b T) bool
 // IsGreaterThan creates a Predicate that tests if its argument is greater than a given value.
 func IsGreaterThan[T constraints.Ordered](a T) Predicate[T] { return func(b T) bool { return b > a } }
 
-// Stringer is used to create string representations, it accepts any type and returns a string.
-type Stringer[T any] func(T) string
+// ToString is used to create string representations, it accepts any type and returns a string.
+type ToString[T any] func(T) string
 
 // ValueFor given a comparable key will return a value for it.
 type ValueFor[K comparable, T any] Function[K, T]
@@ -66,8 +66,8 @@ func Reverse[T any](lessThan LessThan[T]) LessThan[T] {
 	return func(a, b T) bool { return lessThan(b, a) }
 }
 
-// StringerStringer creates a Stringer for any type that implements fmt.Stringer.
-func StringerStringer[T fmt.Stringer]() Stringer[T] {
+// StringerToString creates a ToString for any type that implements fmt.Stringer.
+func StringerToString[T fmt.Stringer]() ToString[T] {
 	return func(t T) string { return t.String() }
 }
 
