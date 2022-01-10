@@ -16,6 +16,8 @@
 
 package genfuncs
 
+import "constraints"
+
 var (
 	// Orderings
 
@@ -38,10 +40,28 @@ var (
 	IIsZero   = IsEqualComparable(0)
 )
 
+// IsEqualComparable creates a Predicate that tests equality with a given comparable value.
 func IsEqualComparable[C comparable](c C) Predicate[C] {
 	return func(a C) bool { return a == c }
 }
 
+// AreEqualComparable tests equality of two given comparable values.
 func AreEqualComparable[C comparable](a, b C) bool {
 	return a == b
+}
+
+// Max returns max value of two constraints.Ordered values,
+func Max[T constraints.Ordered](a, b T) T {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// Min returns min value of two constraints.Ordered values,
+func Min[T constraints.Ordered](a, b T) T {
+	if a < b {
+		return a
+	}
+	return b
 }

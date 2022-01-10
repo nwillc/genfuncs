@@ -36,10 +36,12 @@ func TestFunctionExamples(t *testing.T) {
 		t.Skip("skipping: RUN_EXAMPLES not set")
 	}
 	// Functions
+	ExampleFunctionComparator()
+	ExampleMax()
+	ExampleMin()
 	ExampleOrderedComparator()
 	ExampleReverseComparator()
 	ExampleStringerStringer()
-	ExampleFunctionComparator()
 	// Heap
 	ExampleNewHeap()
 	// Map
@@ -67,6 +69,24 @@ func TestFunctionExamples(t *testing.T) {
 	ExampleSort()
 }
 
+func ExampleFunctionComparator() {
+	var unixTime = func(t time.Time) int64 { return t.Unix() }
+	var chronoOrder = genfuncs.TransformLessThan(unixTime, genfuncs.I64NumericOrder)
+
+	now := time.Now()
+	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
+}
+
+func ExampleMax() {
+	fmt.Println(genfuncs.Max(1, 2))         // 2
+	fmt.Println(genfuncs.Max("dog", "cat")) // dog
+}
+
+func ExampleMin() {
+	fmt.Println(genfuncs.Min(1, 2))         // 1
+	fmt.Println(genfuncs.Min("dog", "cat")) // cat
+}
+
 func ExampleOrderedComparator() {
 	fmt.Println(genfuncs.SLexicalOrder("a", "b")) // true
 	fmt.Println(genfuncs.SLexicalOrder("a", "a")) // false
@@ -83,14 +103,6 @@ func ExampleStringerStringer() {
 	fmt.Println(epoch.String()) // 0001-01-01 00:00:00 +0000 UTC
 	stringer := genfuncs.StringerToString[time.Time]()
 	fmt.Println(stringer(epoch)) // 0001-01-01 00:00:00 +0000 UTC
-}
-
-func ExampleFunctionComparator() {
-	var unixTime = func(t time.Time) int64 { return t.Unix() }
-	var chronoOrder = genfuncs.TransformLessThan(unixTime, genfuncs.I64NumericOrder)
-
-	now := time.Now()
-	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
 }
 
 func ExampleNewHeap() {
