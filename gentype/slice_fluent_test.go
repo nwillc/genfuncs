@@ -40,7 +40,7 @@ func (p PersonName) String() string {
 func TestAll(t *testing.T) {
 	type args struct {
 		slice     []string
-		predicate genfuncs.Predicate[string]
+		predicate genfuncs.Function[string, bool]
 	}
 	tests := []struct {
 		name string
@@ -83,7 +83,7 @@ func TestAll(t *testing.T) {
 func TestAny(t *testing.T) {
 	type args struct {
 		slice     gentype.Slice[string]
-		predicate genfuncs.Predicate[string]
+		predicate genfuncs.Function[string, bool]
 	}
 	tests := []struct {
 		name string
@@ -169,7 +169,7 @@ func TestContains(t *testing.T) {
 func TestFilter(t *testing.T) {
 	type args struct {
 		slice     gentype.Slice[int]
-		predicate genfuncs.Predicate[int]
+		predicate genfuncs.Function[int, bool]
 	}
 	tests := []struct {
 		name string
@@ -196,7 +196,7 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.args.slice.Filter(tt.args.predicate)
-			assert.True(t, result.Compare(tt.want, genfuncs.AreEqualComparable[int]))
+			assert.True(t, result.Compare(tt.want, genfuncs.EqualComparable[int]))
 		})
 	}
 }
@@ -204,7 +204,7 @@ func TestFilter(t *testing.T) {
 func TestFind(t *testing.T) {
 	type args struct {
 		slice     gentype.Slice[float32]
-		predicate genfuncs.Predicate[float32]
+		predicate genfuncs.Function[float32, bool]
 	}
 	tests := []struct {
 		name      string
@@ -254,7 +254,7 @@ func TestFind(t *testing.T) {
 func TestFindLast(t *testing.T) {
 	type args struct {
 		slice     gentype.Slice[float32]
-		predicate genfuncs.Predicate[float32]
+		predicate genfuncs.Function[float32, bool]
 	}
 	tests := []struct {
 		name      string
@@ -381,13 +381,13 @@ func TestJoinToString(t *testing.T) {
 }
 
 func TestSortBy(t *testing.T) {
-	timeComparator := genfuncs.TransformLessThan[time.Time, int64](
+	timeComparator := genfuncs.TransformArgs(
 		func(t time.Time) int64 { return t.Unix() },
-		genfuncs.OrderedLessThan[int64](),
+		genfuncs.I64NumericOrder,
 	)
 	type args struct {
 		slice      gentype.Slice[time.Time]
-		comparator genfuncs.LessThan[time.Time]
+		comparator genfuncs.BiFunction[time.Time, time.Time, bool]
 	}
 	now := time.Now()
 	tests := []struct {
@@ -424,7 +424,7 @@ func TestSortBy(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sorted := tt.args.slice.SortBy(tt.args.comparator)
 			assert.Equal(t, len(tt.want), len(sorted))
-			assert.True(t, sorted.Compare(tt.want, genfuncs.AreEqualComparable[time.Time]))
+			assert.True(t, sorted.Compare(tt.want, genfuncs.EqualComparable[time.Time]))
 		})
 	}
 }

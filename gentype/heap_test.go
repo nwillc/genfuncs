@@ -37,7 +37,7 @@ func TestHeapNew(t *testing.T) {
 func TestHeapAddPeekRemove(t *testing.T) {
 	type args struct {
 		slice    []int
-		lessThan genfuncs.LessThan[int]
+		lessThan genfuncs.BiFunction[int, int, bool]
 	}
 	tests := []struct {
 		name string

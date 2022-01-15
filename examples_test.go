@@ -27,7 +27,7 @@ import (
 	"github.com/nwillc/genfuncs"
 )
 
-var greaterThanZero = genfuncs.IsGreaterThan(0)
+var greaterThanZero = genfuncs.IsGreaterThanOrdered(0)
 var wordPositions = map[string]int{"hello": 1, "world": 2}
 var words gentype.Slice[string] = []string{"hello", "world"}
 
@@ -71,8 +71,8 @@ func TestFunctionExamples(t *testing.T) {
 
 func ExampleFunctionComparator() {
 	var unixTime = func(t time.Time) int64 { return t.Unix() }
-	var chronoOrder = genfuncs.TransformLessThan(unixTime, genfuncs.I64NumericOrder)
-
+	// var chronoOrder = genfuncs.TransformLessThan(unixTime, genfuncs.I64NumericOrder)
+	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.I64NumericOrder)
 	now := time.Now()
 	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
 }
@@ -137,8 +137,8 @@ func ExampleSlice_All() {
 func ExampleSlice_Any() {
 	var fruits gentype.Slice[string] = []string{"apple", "banana", "grape"}
 	isPear := genfuncs.IsEqualComparable("pear")
-	fmt.Println(fruits.Any(isPear))       // false
-	fmt.Println(fruits.Any(isPear.Not())) // true
+	fmt.Println(fruits.Any(isPear))               // false
+	fmt.Println(fruits.Any(genfuncs.Not(isPear))) // true
 }
 
 func ExampleSlice_Filter() {

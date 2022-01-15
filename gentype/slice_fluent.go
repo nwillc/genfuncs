@@ -25,7 +25,7 @@ import (
 type Slice[T any] []T
 
 // All returns true if all elements of slice match the predicate.
-func (s Slice[T]) All(predicate genfuncs.Predicate[T]) bool {
+func (s Slice[T]) All(predicate genfuncs.Function[T, bool]) bool {
 	for _, e := range s {
 		if !predicate(e) {
 			return false
@@ -35,7 +35,7 @@ func (s Slice[T]) All(predicate genfuncs.Predicate[T]) bool {
 }
 
 // Any returns true if any element of the slice matches the predicate.
-func (s Slice[T]) Any(predicate genfuncs.Predicate[T]) bool {
+func (s Slice[T]) Any(predicate genfuncs.Function[T, bool]) bool {
 	for _, e := range s {
 		if predicate(e) {
 			return true
@@ -59,7 +59,7 @@ func (s Slice[T]) Compare(s2 Slice[T], comparison genfuncs.BiFunction[T, T, bool
 }
 
 // Filter returns a slice containing only elements matching the given predicate.
-func (s Slice[T]) Filter(predicate genfuncs.Predicate[T]) Slice[T] {
+func (s Slice[T]) Filter(predicate genfuncs.Function[T, bool]) Slice[T] {
 	var results []T
 	for _, t := range s {
 		if predicate(t) {
@@ -70,7 +70,7 @@ func (s Slice[T]) Filter(predicate genfuncs.Predicate[T]) Slice[T] {
 }
 
 // Find returns the first element matching the given predicate and true, or false when no such element was found.
-func (s Slice[T]) Find(predicate genfuncs.Predicate[T]) (T, bool) {
+func (s Slice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
 	for _, t := range s {
 		if predicate(t) {
 			return t, true
@@ -81,7 +81,7 @@ func (s Slice[T]) Find(predicate genfuncs.Predicate[T]) (T, bool) {
 }
 
 // FindLast returns the last element matching the given predicate and true, or false when no such element was found.
-func (s Slice[T]) FindLast(predicate genfuncs.Predicate[T]) (T, bool) {
+func (s Slice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
 	var last T
 	var found = false
 	for _, t := range s {
@@ -111,7 +111,7 @@ func (s Slice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, 
 }
 
 // SortBy copies a slice, sorts the copy applying the Comparator and returns it.
-func (s Slice[T]) SortBy(lessThan genfuncs.LessThan[T]) Slice[T] {
+func (s Slice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) Slice[T] {
 	dst := make([]T, len(s))
 	copy(dst, s)
 	Slice[T](dst).Sort(lessThan)

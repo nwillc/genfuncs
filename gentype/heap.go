@@ -24,12 +24,12 @@ var _ Queue[int] = (*Heap[int])(nil)
 // Heap implements either a min or max ordered heap of any type.
 type Heap[T any] struct {
 	slice    Slice[T]
-	lessThan genfuncs.LessThan[T]
+	lessThan genfuncs.BiFunction[T, T, bool]
 	ordered  bool
 }
 
 // NewHeap return a heap ordered based on the LessThan and pushes any values provided.
-func NewHeap[T any](lessThan genfuncs.LessThan[T], values ...T) *Heap[T] {
+func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T] {
 	h := &Heap[T]{lessThan: lessThan}
 	h.AddAll(values...)
 	return h

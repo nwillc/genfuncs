@@ -31,7 +31,7 @@ var (
 func TestSort(t *testing.T) {
 	type args struct {
 		slice      gentype.Slice[string]
-		comparator genfuncs.LessThan[string]
+		comparator genfuncs.BiFunction[string, string, bool]
 	}
 	tests := []struct {
 		name string

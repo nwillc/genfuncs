@@ -26,10 +26,10 @@ import (
 )
 
 func TestAssociate(t *testing.T) {
-	var firstLast genfuncs.KeyValueFor[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
+	var firstLast genfuncs.MapKeyValueFor[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
 	type args struct {
 		slice     []PersonName
-		transform genfuncs.KeyValueFor[PersonName, string, string]
+		transform genfuncs.MapKeyValueFor[PersonName, string, string]
 	}
 	tests := []struct {
 		name     string
@@ -95,10 +95,10 @@ func TestAssociate(t *testing.T) {
 }
 
 func TestAssociateWith(t *testing.T) {
-	var valueSelector genfuncs.ValueFor[int, int] = func(i int) int { return i * 2 }
+	var valueSelector genfuncs.MapValueFor[int, int] = func(i int) int { return i * 2 }
 	type args struct {
 		slice     []int
-		transform genfuncs.ValueFor[int, int]
+		transform genfuncs.MapValueFor[int, int]
 	}
 	tests := []struct {
 		name     string
@@ -186,7 +186,7 @@ func TestFlatMap(t *testing.T) {
 	var trans = func(i int) gentype.Slice[string] { return []string{"#", strconv.Itoa(i)} }
 	type args struct {
 		slice     gentype.Slice[int]
-		transform genfuncs.Function[int, gentype.Slice[string]]
+		transform func(int) gentype.Slice[string]
 	}
 	tests := []struct {
 		name string
@@ -230,7 +230,7 @@ func TestFold(t *testing.T) {
 func TestGroupBy(t *testing.T) {
 	type args struct {
 		slice       gentype.Slice[int]
-		keySelector genfuncs.KeyFor[int, string]
+		keySelector genfuncs.MapKeyFor[int, string]
 	}
 	tests := []struct {
 		name string
@@ -265,10 +265,10 @@ func TestGroupBy(t *testing.T) {
 }
 
 func TestMap(t *testing.T) {
-	var trans genfuncs.Function[int, string] = strconv.Itoa
+	var trans = strconv.Itoa
 	type args struct {
 		slice     gentype.Slice[int]
-		transform genfuncs.Function[int, string]
+		transform func(int) string
 	}
 	tests := []struct {
 		name string

@@ -19,7 +19,7 @@ package gentype
 import "github.com/nwillc/genfuncs"
 
 // Associate returns a map containing key/values created by applying a function to elements of the slice.
-func Associate[T, V any, K comparable](slice Slice[T], keyValueFor genfuncs.KeyValueFor[T, K, V]) map[K]V {
+func Associate[T, V any, K comparable](slice Slice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) map[K]V {
 	m := make(map[K]V)
 	for _, e := range slice {
 		k, v := keyValueFor(e)
@@ -30,7 +30,7 @@ func Associate[T, V any, K comparable](slice Slice[T], keyValueFor genfuncs.KeyV
 
 // AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the
 // valueSelector function applied to each element.
-func AssociateWith[K comparable, V any](slice Slice[K], valueFor genfuncs.ValueFor[K, V]) map[K]V {
+func AssociateWith[K comparable, V any](slice Slice[K], valueFor genfuncs.MapValueFor[K, V]) map[K]V {
 	m := make(map[K]V)
 	for _, k := range slice {
 		v := valueFor(k)
@@ -75,7 +75,7 @@ func Fold[T, R any](slice Slice[T], initial R, biFunction genfuncs.BiFunction[R,
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to
 // each element and returns a map where each group key is associated with a slice of corresponding elements.
-func GroupBy[T any, K comparable](slice Slice[T], keyFor genfuncs.KeyFor[T, K]) map[K]Slice[T] {
+func GroupBy[T any, K comparable](slice Slice[T], keyFor genfuncs.MapKeyFor[T, K]) map[K]Slice[T] {
 	m := make(map[K]Slice[T])
 	for _, e := range slice {
 		k := keyFor(e)
