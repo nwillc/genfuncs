@@ -16,8 +16,11 @@
 
 package gentype
 
-// MapSet implements Set
-var _ Set[bool] = (*MapSet[bool])(nil)
+var (
+	// MapSet implements Set
+	_           Set[bool] = (*MapSet[bool])(nil)
+	mapNilEntry           = struct{}{}
+)
 
 // MapSet is a Set implementation based on a map.
 type MapSet[T comparable] struct {
@@ -31,7 +34,14 @@ func NewMapSet[T comparable]() *MapSet[T] {
 
 // Add element to MapSet.
 func (h *MapSet[T]) Add(t T) {
-	h.set[t] = struct{}{}
+	h.set[t] = mapNilEntry
+}
+
+// AddAll elements to MapSet.
+func (h *MapSet[T]) AddAll(t ...T) {
+	for _, e := range t {
+		h.set[e] = mapNilEntry
+	}
 }
 
 // Contains returns true if MapSet contains element.

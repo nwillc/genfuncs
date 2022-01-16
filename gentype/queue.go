@@ -23,12 +23,9 @@ var NoSuchElement = fmt.Errorf("no such element")
 
 // Queue is an interface for various related data structures.
 type Queue[T any] interface {
-	// Add an element to the Queue.
-	Add(t T)
-	// Len returns length of the Queue.
-	Len() int
+	Bag[T]
 	// Peek returns the next element without removing it.
 	Peek() T
-	// Remove and return next element from the Queue.
+	// Remove a given element from the Queue.
 	Remove() T
 }

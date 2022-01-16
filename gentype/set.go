@@ -17,14 +17,11 @@
 package gentype
 
 type Set[T comparable] interface {
-	// Add an element to the Queue.
-	Add(t T)
+	Bag[T]
 	// Contains returns true if the Set contains a given element.
 	Contains(t T) bool
-	// Len returns length of the Queue.
-	Len() int
-	// Remove a given element from the Set.
-	Remove(t T)
 	// Values in the Set as a Slice.
 	Values() Slice[T]
+	// Remove a given element from the Set.
+	Remove(t T)
 }

@@ -53,20 +53,22 @@ func IsEqualComparable[C comparable](a C) Function[C, bool] {
 	return Curried(EqualComparable[C], a)
 }
 
-// GreaterThanOrdered
+// GreaterThanOrdered tests if constraints.Ordered a is greater than b.
 func GreaterThanOrdered[O constraints.Ordered](a, b O) bool {
 	return a > b
 }
 
+// IsGreaterThanOrdered return a GreaterThanOrdered for a.
 func IsGreaterThanOrdered[O constraints.Ordered](a O) Function[O, bool] {
 	return Curried(GreaterThanOrdered[O], a)
 }
 
-// LessThanOrdered
+// LessThanOrdered tests if constraints.Ordered a is less than b.
 func LessThanOrdered[O constraints.Ordered](a, b O) bool {
 	return a < b
 }
 
+// IsLessThanOrdered returns a LessThanOrdered for a.
 func IsLessThanOrdered[O constraints.Ordered](a O) Function[O, bool] {
 	return Curried(LessThanOrdered[O], a)
 }
@@ -97,16 +99,19 @@ func StringerToString[T fmt.Stringer]() ToString[T] {
 	return func(t T) string { return t.String() }
 }
 
+// TransformArgs uses the function to the arguments to be passed to the BiFunction.
 func TransformArgs[T1, T2, R any](function Function[T1, T2], biFunction BiFunction[T2, T2, R]) BiFunction[T1, T1, R] {
 	return func(a, b T1) R {
 		return biFunction(function(a), function(b))
 	}
 }
 
+// Curried takes a BiFunction and one argument, and Curries the function to return a single argument Function.
 func Curried[A, B, R any](biFunction BiFunction[A, B, R], a A) Function[B, R] {
 	return func(b B) R { return biFunction(a, b) }
 }
 
+// Not takes a Function returning a bool and returns a Function that inverts the result.
 func Not[T any](function Function[T, bool]) Function[T, bool] {
 	return func(a T) bool { return !function(a) }
 }

@@ -14,46 +14,13 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype_test
+package gentype
 
-import (
-	"github.com/nwillc/genfuncs/gentype"
-	"github.com/stretchr/testify/assert"
-	"testing"
-)
-
-func TestNewFifo(t *testing.T) {
-	type args struct {
-		data []string
-	}
-	tests := []struct {
-		name string
-		args args
-		want []string
-	}{
-		{
-			name: "empty",
-			args: args{
-				data: nil,
-			},
-			want: nil,
-		},
-		{
-			name: "a b c",
-			args: args{
-				data: []string{"a", "b", "c"},
-			},
-			want: []string{"a", "b", "c"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			fifo := gentype.NewFifo(tt.args.data...)
-			assert.Equal(t, len(tt.want), fifo.Len())
-			for _, e := range tt.want {
-				value := fifo.Remove()
-				assert.Equal(t, e, value)
-			}
-		})
-	}
+type Bag[T any] interface {
+	// Add an element to the Bag.
+	Add(t T)
+	// AddAll elements to the Bag.
+	AddAll(t ...T)
+	// Len returns length of the Bag.
+	Len() int
 }
