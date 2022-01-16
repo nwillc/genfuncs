@@ -71,7 +71,6 @@ func TestFunctionExamples(t *testing.T) {
 
 func ExampleFunctionComparator() {
 	var unixTime = func(t time.Time) int64 { return t.Unix() }
-	// var chronoOrder = genfuncs.TransformLessThan(unixTime, genfuncs.I64NumericOrder)
 	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.I64NumericOrder)
 	now := time.Now()
 	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
