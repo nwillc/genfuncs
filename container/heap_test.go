@@ -14,10 +14,10 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype_test
+package container_test
 
 import (
-	"github.com/nwillc/genfuncs/gentype"
+	"github.com/nwillc/genfuncs/container"
 	"testing"
 
 	"github.com/nwillc/genfuncs"
@@ -29,7 +29,7 @@ var (
 )
 
 func TestHeapNew(t *testing.T) {
-	heap := gentype.NewHeap(genfuncs.SLexicalOrder)
+	heap := container.NewHeap(genfuncs.SLexicalOrder)
 	assert.NotNil(t, heap)
 	assert.Equal(t, 0, heap.Len())
 }
@@ -88,7 +88,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			heap := gentype.NewHeap(tt.args.lessThan, tt.args.slice...)
+			heap := container.NewHeap(tt.args.lessThan, tt.args.slice...)
 			assert.Equal(t, len(tt.want), heap.Len())
 			for _, ii := range tt.want {
 				v1 := heap.Peek()
@@ -101,7 +101,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 }
 
 func TestHeapInserting(t *testing.T) {
-	h := gentype.NewHeap(genfuncs.INumericOrder, 4, 2, 3, 1)
+	h := container.NewHeap(genfuncs.INumericOrder, 4, 2, 3, 1)
 	assert.Equal(t, 1, h.Remove())
 	assert.Equal(t, 2, h.Remove())
 	assert.Equal(t, 3, h.Peek())

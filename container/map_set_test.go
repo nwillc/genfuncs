@@ -14,16 +14,16 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype_test
+package container_test
 
 import (
-	"github.com/nwillc/genfuncs/gentype"
+	"github.com/nwillc/genfuncs/container"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestSet(t *testing.T) {
-	set := gentype.NewMapSet[string]()
+	set := container.NewMapSet[string]()
 	assert.Equal(t, 0, set.Len())
 	assert.False(t, set.Contains("foo"))
 	set.Add("foo")

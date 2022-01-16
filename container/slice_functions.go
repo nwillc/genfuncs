@@ -14,9 +14,11 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype
+package container
 
-import "github.com/nwillc/genfuncs"
+import (
+	"github.com/nwillc/genfuncs"
+)
 
 // Associate returns a map containing key/values created by applying a function to elements of the slice.
 func Associate[T, V any, K comparable](slice Slice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) map[K]V {

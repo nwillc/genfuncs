@@ -14,11 +14,11 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype_test
+package container_test
 
 import (
 	"fmt"
-	"github.com/nwillc/genfuncs/gentype"
+	"github.com/nwillc/genfuncs/container"
 	"testing"
 	"time"
 
@@ -74,7 +74,7 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := gentype.Slice[string](tt.args.slice).All(tt.args.predicate)
+			got := container.Slice[string](tt.args.slice).All(tt.args.predicate)
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -82,7 +82,7 @@ func TestAll(t *testing.T) {
 
 func TestAny(t *testing.T) {
 	type args struct {
-		slice     gentype.Slice[string]
+		slice     container.Slice[string]
 		predicate genfuncs.Function[string, bool]
 	}
 	tests := []struct {
@@ -125,7 +125,7 @@ func TestAny(t *testing.T) {
 
 func TestContains(t *testing.T) {
 	type args struct {
-		slice   gentype.Slice[string]
+		slice   container.Slice[string]
 		element string
 	}
 	tests := []struct {
@@ -168,13 +168,13 @@ func TestContains(t *testing.T) {
 
 func TestFilter(t *testing.T) {
 	type args struct {
-		slice     gentype.Slice[int]
+		slice     container.Slice[int]
 		predicate genfuncs.Function[int, bool]
 	}
 	tests := []struct {
 		name string
 		args args
-		want gentype.Slice[int]
+		want container.Slice[int]
 	}{
 		{
 			name: "Empty",
@@ -203,7 +203,7 @@ func TestFilter(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	type args struct {
-		slice     gentype.Slice[float32]
+		slice     container.Slice[float32]
 		predicate genfuncs.Function[float32, bool]
 	}
 	tests := []struct {
@@ -253,7 +253,7 @@ func TestFind(t *testing.T) {
 
 func TestFindLast(t *testing.T) {
 	type args struct {
-		slice     gentype.Slice[float32]
+		slice     container.Slice[float32]
 		predicate genfuncs.Function[float32, bool]
 	}
 	tests := []struct {
@@ -304,7 +304,7 @@ func TestFindLast(t *testing.T) {
 func TestJoinToString(t *testing.T) {
 	personStringer := genfuncs.StringerToString[PersonName]()
 	type args struct {
-		slice     gentype.Slice[PersonName]
+		slice     container.Slice[PersonName]
 		separator string
 		prefix    string
 		postfix   string
@@ -386,7 +386,7 @@ func TestSortBy(t *testing.T) {
 		genfuncs.I64NumericOrder,
 	)
 	type args struct {
-		slice      gentype.Slice[time.Time]
+		slice      container.Slice[time.Time]
 		comparator genfuncs.BiFunction[time.Time, time.Time, bool]
 	}
 	now := time.Now()

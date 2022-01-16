@@ -14,9 +14,11 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype
+package container
 
-import "github.com/nwillc/genfuncs"
+import (
+	"github.com/nwillc/genfuncs"
+)
 
 // Heap implements Queue.
 var _ Queue[int] = (*Heap[int])(nil)

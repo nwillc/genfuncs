@@ -14,9 +14,11 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype
+package container
 
-import "github.com/nwillc/genfuncs"
+import (
+	"github.com/nwillc/genfuncs"
+)
 
 // Sort sorts a slice by the LessThan order.
 func (s Slice[T]) Sort(lessThan genfuncs.BiFunction[T, T, bool]) {

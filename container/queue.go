@@ -14,32 +14,13 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype
+package container
 
-// Contains tests if a map contains an entry for a given key.
-func Contains[K comparable, V any](m map[K]V, key K) bool {
-	_, ok := m[key]
-	return ok
-}
-
-// Keys returns a slice of all the keys in the map.
-func Keys[K comparable, V any](m map[K]V) Slice[K] {
-	keys := make([]K, len(m))
-	var i int
-	for k, _ := range m {
-		keys[i] = k
-		i++
-	}
-	return keys
-}
-
-// Values returns a slice of all the values in the map.
-func Values[K comparable, V any](m map[K]V) Slice[V] {
-	values := make([]V, len(m))
-	var i int
-	for _, v := range m {
-		values[i] = v
-		i++
-	}
-	return values
+// Queue is an interface for various related data structures.
+type Queue[T any] interface {
+	Bag[T]
+	// Peek returns the next element without removing it.
+	Peek() T
+	// Remove a given element from the Queue.
+	Remove() T
 }

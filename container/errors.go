@@ -14,18 +14,9 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype
+package container
 
 import "fmt"
 
 // NoSuchElement error is used by panics when attempts are made to access out of bounds.
 var NoSuchElement = fmt.Errorf("no such element")
-
-// Queue is an interface for various related data structures.
-type Queue[T any] interface {
-	Bag[T]
-	// Peek returns the next element without removing it.
-	Peek() T
-	// Remove a given element from the Queue.
-	Remove() T
-}

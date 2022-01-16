@@ -14,45 +14,45 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype_test
+package container_test
 
 import (
 	"testing"
 
-	"github.com/nwillc/genfuncs/gentype"
+	"github.com/nwillc/genfuncs/container"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDeque_New(t *testing.T) {
-	deque := gentype.NewDeque[int]()
+	deque := container.NewDeque[int]()
 	assert.NotNil(t, deque)
 	assert.Equal(t, 0, deque.Len())
 }
 
 func TestDeque_Bounds(t *testing.T) {
-	deque := gentype.NewDeque[bool]()
-	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+	deque := container.NewDeque[bool]()
+	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
 		_ = deque.Remove()
 	})
-	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
 		_ = deque.RemoveRight()
 	})
-	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
 		_ = deque.RemoveLeft()
 	})
-	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
 		_ = deque.Peek()
 	})
-	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
 		_ = deque.PeekRight()
 	})
-	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
 		_ = deque.PeekLeft()
 	})
 }
 
 func TestDeque_Inserting(t *testing.T) {
-	deque := gentype.NewDeque(1, 3, 2, 4)
+	deque := container.NewDeque(1, 3, 2, 4)
 	assert.Equal(t, 1, deque.Remove())
 	assert.Equal(t, 3, deque.Remove())
 	assert.Equal(t, 2, deque.Peek())
@@ -64,11 +64,11 @@ func TestDeque_Inserting(t *testing.T) {
 
 func TestDeque_AddAll(t *testing.T) {
 	type args struct {
-		slice gentype.Slice[string]
+		slice container.Slice[string]
 	}
 	tests := []struct {
 		name string
-		want gentype.Slice[string]
+		want container.Slice[string]
 		args args
 	}{
 		{
@@ -81,7 +81,7 @@ func TestDeque_AddAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := gentype.NewDeque[string]()
+			d := container.NewDeque[string]()
 			d.AddAll(tt.args.slice...)
 			for _, e := range tt.want {
 				assert.Equal(t, e, d.Remove())
@@ -124,7 +124,7 @@ func TestDequeFifo_AddPeekRemove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := gentype.NewDeque(tt.args.slice...)
+			d := container.NewDeque(tt.args.slice...)
 			assert.Equal(t, len(tt.want), d.Len())
 			for _, ii := range tt.want {
 				v1 := d.Peek()
@@ -170,7 +170,7 @@ func TestDequeLifo_AddPeekRemove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := gentype.NewDeque(tt.args.slice...)
+			d := container.NewDeque(tt.args.slice...)
 			assert.Equal(t, len(tt.want), d.Len())
 			for _, ii := range tt.want {
 				v1 := d.PeekRight()

@@ -14,10 +14,10 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype_test
+package container_test
 
 import (
-	"github.com/nwillc/genfuncs/gentype"
+	"github.com/nwillc/genfuncs/container"
 	"testing"
 
 	"github.com/nwillc/genfuncs"
@@ -30,7 +30,7 @@ var (
 
 func TestSort(t *testing.T) {
 	type args struct {
-		slice      gentype.Slice[string]
+		slice      container.Slice[string]
 		comparator genfuncs.BiFunction[string, string, bool]
 	}
 	tests := []struct {

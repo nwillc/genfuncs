@@ -14,7 +14,7 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gentype
+package container
 
 type Bag[T any] interface {
 	// Add an element to the Bag.
