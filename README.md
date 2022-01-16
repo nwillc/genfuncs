@@ -4,13 +4,17 @@
 [![CI](https://github.com/nwillc/genfuncs/workflows/CI/badge.svg)](https://github.com/nwillc/genfuncs/actions/workflows/CI.yml)
 [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
 
+# Packages
+- [genfuncs](<#genfuncs>)
+- [genfuncs/container](<#container>)
+
 # genfuncs
 
 ```go
 import "github.com/nwillc/genfuncs"
 ```
 
-Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular when working with slices\. Many of the functions are based on Kotlin's Sequence\. This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
+Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code, in particular when working with slices. Many of the functions are based on Kotlin's Sequence. This package, though usable, is primarily a proof-of-concept since it is likely Go will provide similar at some point soon.
 
 A large set of examples are found in https://github.com/nwillc/genfuncs/blob/master/examples_test.go
 
