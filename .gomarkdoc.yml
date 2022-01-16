@@ -5,6 +5,10 @@ header: |+
   [![CI](https://github.com/nwillc/genfuncs/workflows/CI/badge.svg)](https://github.com/nwillc/genfuncs/actions/workflows/CI.yml)
   [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
 
+  # Packages
+  - [genfuncs](<#genfuncs>)
+  - [genfuncs/container](<#container>)
+
 repository:
   url: https://github.com/nwillc/genfuncs
   defaultBranch: master
