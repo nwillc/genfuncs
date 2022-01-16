@@ -16,6 +16,7 @@
 
 package container
 
+// Bag is a minimal container that accepts elements.
 type Bag[T any] interface {
 	// Add an element to the Bag.
 	Add(t T)

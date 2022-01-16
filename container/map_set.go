@@ -22,7 +22,7 @@ var (
 	mapNilEntry           = struct{}{}
 )
 
-// MapSet is a Set implementation based on a map.
+// MapSet is a Set implementation based on a map. MapSet implements Set.
 type MapSet[T comparable] struct {
 	set map[T]struct{}
 }

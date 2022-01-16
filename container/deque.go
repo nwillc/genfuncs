@@ -19,7 +19,7 @@ package container
 // Deque implements Queue.
 var _ Queue[bool] = (*Deque[bool])(nil)
 
-// Deque is a doubly ended queue with default behavior of a Fifo but provides left and right access.
+// Deque is a doubly ended queue with default behavior of a Fifo but provides left and right access. Deque implements Queue.
 type Deque[T any] struct {
 	slice Slice[T]
 }

@@ -16,6 +16,7 @@
 
 package container
 
+// Set is a container that contains no duplicate elements.
 type Set[T comparable] interface {
 	Bag[T]
 	// Contains returns true if the Set contains a given element.

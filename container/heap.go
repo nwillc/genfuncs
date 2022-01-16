@@ -23,7 +23,7 @@ import (
 // Heap implements Queue.
 var _ Queue[int] = (*Heap[int])(nil)
 
-// Heap implements either a min or max ordered heap of any type.
+// Heap implements either a min or max ordered heap of any type. Heap implements Queue.
 type Heap[T any] struct {
 	slice    Slice[T]
 	lessThan genfuncs.BiFunction[T, T, bool]

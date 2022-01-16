@@ -14,7 +14,7 @@
 import "github.com/nwillc/genfuncs"
 ```
 
-Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code, in particular when working with slices. Many of the functions are based on Kotlin's Sequence. This package, though usable, is primarily a proof-of-concept since it is likely Go will provide similar at some point soon.
+Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular when working with slices\. Many of the functions are based on Kotlin's Sequence\. This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
 
 A large set of examples are found in https://github.com/nwillc/genfuncs/blob/master/examples_test.go
 
@@ -369,7 +369,9 @@ func GroupBy[T any, K comparable](slice Slice[T], keyFor genfuncs.MapKeyFor[T, K
 
 GroupBy groups elements of the slice by the key returned by the given keySelector function applied to each element and returns a map where each group key is associated with a slice of corresponding elements\.
 
-## type [Bag](<https://github.com/nwillc/genfuncs/blob/master/container/bag.go#L19-L26>)
+## type [Bag](<https://github.com/nwillc/genfuncs/blob/master/container/bag.go#L20-L27>)
+
+Bag is a minimal container that accepts elements\.
 
 ```go
 type Bag[T any] interface {
@@ -384,7 +386,7 @@ type Bag[T any] interface {
 
 ## type [Deque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L23-L25>)
 
-Deque is a doubly ended queue with default behavior of a Fifo but provides left and right access\.
+Deque is a doubly ended queue with default behavior of a Fifo but provides left and right access\. Deque implements Queue\.
 
 ```go
 type Deque[T any] struct {
@@ -490,7 +492,7 @@ RemoveRight and return the right most element in the Deque\.
 
 ## type [Heap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L27-L31>)
 
-Heap implements either a min or max ordered heap of any type\.
+Heap implements either a min or max ordered heap of any type\. Heap implements Queue\.
 
 ```go
 type Heap[T any] struct {
@@ -548,7 +550,7 @@ Remove an item off the heap\.
 
 ## type [MapSet](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L26-L28>)
 
-MapSet is a Set implementation based on a map\.
+MapSet is a Set implementation based on a map\. MapSet implements Set\.
 
 ```go
 type MapSet[T comparable] struct {
@@ -614,7 +616,7 @@ Values returns the elements in the MapSet as a Slice\.
 
 ## type [Queue](<https://github.com/nwillc/genfuncs/blob/master/container/queue.go#L20-L26>)
 
-Queue is an interface for various related data structures\.
+Queue is a container providing some define order when accessing elements\.
 
 ```go
 type Queue[T any] interface {
@@ -627,7 +629,9 @@ type Queue[T any] interface {
 }
 ```
 
-## type [Set](<https://github.com/nwillc/genfuncs/blob/master/container/set.go#L19-L27>)
+## type [Set](<https://github.com/nwillc/genfuncs/blob/master/container/set.go#L20-L28>)
+
+Set is a container that contains no duplicate elements\.
 
 ```go
 type Set[T comparable] interface {
@@ -786,7 +790,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.5.1"
+const Version = "v0.6.0"
 ```
 
 

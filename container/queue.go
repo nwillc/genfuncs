@@ -16,7 +16,7 @@
 
 package container
 
-// Queue is an interface for various related data structures.
+// Queue is a container providing some define order when accessing elements.
 type Queue[T any] interface {
 	Bag[T]
 	// Peek returns the next element without removing it.
