@@ -122,3 +122,10 @@ func (s Slice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) Slice[T] {
 func (s Slice[T]) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
+
+// inBounds panics if given index out of Slice's bounds.
+func (s Slice[T]) inBounds(i int) {
+	if i < 0 || i > len(s)-1 {
+		panic(NoSuchElement)
+	}
+}

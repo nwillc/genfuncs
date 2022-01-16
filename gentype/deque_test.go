@@ -29,6 +29,28 @@ func TestDeque_New(t *testing.T) {
 	assert.Equal(t, 0, deque.Len())
 }
 
+func TestDeque_Bounds(t *testing.T) {
+	deque := gentype.NewDeque[bool]()
+	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+		_ = deque.Remove()
+	})
+	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+		_ = deque.RemoveRight()
+	})
+	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+		_ = deque.RemoveLeft()
+	})
+	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+		_ = deque.Peek()
+	})
+	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+		_ = deque.PeekRight()
+	})
+	assert.PanicsWithError(t, gentype.NoSuchElement.Error(), func() {
+		_ = deque.PeekLeft()
+	})
+}
+
 func TestDeque_Inserting(t *testing.T) {
 	deque := gentype.NewDeque(1, 3, 2, 4)
 	assert.Equal(t, 1, deque.Remove())

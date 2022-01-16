@@ -19,7 +19,7 @@ package gentype
 // Deque implements Queue.
 var _ Queue[bool] = (*Deque[bool])(nil)
 
-// Deque is a doubly ended queue with default behavior of a Fifo.
+// Deque is a doubly ended queue with default behavior of a Fifo but provides left and right access.
 type Deque[T any] struct {
 	slice Slice[T]
 }
@@ -32,25 +32,25 @@ func NewDeque[T any](t ...T) *Deque[T] {
 	return f
 }
 
-// Add an element to the Deque.
+// Add an element to the right of the Deque.
 func (d *Deque[T]) Add(t T) {
 	d.AddRight(t)
 }
 
-// AddAll elements to the Deque.
+// AddAll elements to the right of the Deque.
 func (d *Deque[T]) AddAll(t ...T) {
 	for _, e := range t {
 		d.AddRight(e)
 	}
 }
 
-// AddLeft an element to the Deque.
+// AddLeft an element to the left of the Deque.
 func (d *Deque[T]) AddLeft(t T) {
 	d.slice = append(d.slice[:1], d.slice[0:]...)
 	d.slice[0] = t
 }
 
-// AddRight an element to the Deque.
+// AddRight an element to the right of the Deque.
 func (d *Deque[T]) AddRight(t T) {
 	d.slice = append(d.slice, t)
 }
@@ -60,40 +60,36 @@ func (d *Deque[T]) Len() int {
 	return len(d.slice)
 }
 
-// Peek returns the next element in the Deque without removing it.
+// Peek returns the left most element in the Deque without removing it.
 func (d *Deque[T]) Peek() T {
 	return d.PeekLeft()
 }
 
-// PeekLeft returns the next element in the Deque without removing it.
+// PeekLeft returns the left most element in the Deque without removing it.
 func (d *Deque[T]) PeekLeft() T {
-	if d.Len() < 1 {
-		panic(NoSuchElement)
-	}
+	d.slice.inBounds(0)
 	return d.slice[0]
 }
 
-// PeekRight returns the next element in the Deque without removing it.
+// PeekRight returns the right most element in the Deque without removing it.
 func (d *Deque[T]) PeekRight() T {
-	if d.Len() < 1 {
-		panic(NoSuchElement)
-	}
+	d.slice.inBounds(d.Len() - 1)
 	return d.slice[d.Len()-1]
 }
 
-// Remove and return the next element in the Deque.
+// Remove and return the left most element in the Deque.
 func (d *Deque[T]) Remove() T {
 	return d.RemoveLeft()
 }
 
-// RemoveLeft and return the next element in the Deque.
+// RemoveLeft and return the left most element in the Deque.
 func (d *Deque[T]) RemoveLeft() T {
 	v := d.PeekLeft()
 	d.slice = d.slice[1:]
 	return v
 }
 
-// RemoveRight and return the next element in the Deque.
+// RemoveRight and return the right most element in the Deque.
 func (d *Deque[T]) RemoveRight() T {
 	v := d.PeekRight()
 	d.slice = d.slice[:d.Len()-1]
