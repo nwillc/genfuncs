@@ -16,7 +16,7 @@ import "github.com/nwillc/genfuncs"
 
 Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code\, in particular when working with slices\. Many of the functions are based on Kotlin's Sequence\. This package\, though usable\, is primarily a proof\-of\-concept since it is likely Go will provide similar at some point soon\.
 
-A large set of examples are found in https://github.com/nwillc/genfuncs/blob/master/examples_test.go
+Examples are found in examples\_test\.go files or projects like https://github.com/nwillc/gordle
 
 The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/master/LICENSE.md
 
@@ -170,6 +170,29 @@ func TransformArgs[T1, T2, R any](function Function[T1, T2], biFunction BiFuncti
 
 TransformArgs uses the function to the arguments to be passed to the BiFunction\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"time"
+)
+
+func main() {
+	var unixTime = func(t time.Time) int64 { return t.Unix() }
+	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.I64NumericOrder)
+	now := time.Now()
+	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
+}
+```
+
+</p>
+</details>
+
 ## type [Function](<https://github.com/nwillc/genfuncs/blob/master/functions.go#L23>)
 
 Function is a single argument function\.
@@ -258,6 +281,29 @@ func StringerToString[T fmt.Stringer]() ToString[T]
 
 StringerToString creates a ToString for any type that implements fmt\.Stringer\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"time"
+)
+
+func main() {
+	var epoch time.Time
+	fmt.Println(epoch.String()) // 0001-01-01 00:00:00 +0000 UTC
+	stringer := genfuncs.StringerToString[time.Time]()
+	fmt.Println(stringer(epoch)) // 0001-01-01 00:00:00 +0000 UTC
+}
+```
+
+</p>
+</details>
+
 # container
 
 ```go
@@ -294,7 +340,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (h *Heap[T]) Peek() T](<#func-heap-peek>)
   - [func (h *Heap[T]) Remove() T](<#func-heap-remove>)
 - [type MapSet](<#type-mapset>)
-  - [func NewMapSet[T comparable]\(\) *MapSet[T]](<#func-newmapset>)
+  - [func NewMapSet[T comparable](t ...T) *MapSet[T]](<#func-newmapset>)
   - [func (h *MapSet[T]) Add(t T)](<#func-mapset-add>)
   - [func (h *MapSet[T]) AddAll(t ...T)](<#func-mapset-addall>)
   - [func (h *MapSet[T]) Contains(t T) bool](<#func-mapset-contains>)
@@ -337,6 +383,32 @@ func Associate[T, V any, K comparable](slice Slice[T], keyValueFor genfuncs.MapK
 
 Associate returns a map containing key/values created by applying a function to elements of the slice\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+	"strings"
+)
+
+func main() {
+	byLastName := func(n string) (string, string) {
+		parts := strings.Split(n, " ")
+		return parts[1], n
+	}
+	names := []string{"fred flintstone", "barney rubble"}
+	nameMap := container.Associate(names, byLastName)
+	fmt.Println(nameMap["rubble"]) // barney rubble
+}
+```
+
+</p>
+</details>
+
 ## func [AssociateWith](<https://github.com/nwillc/genfuncs/blob/master/container/slice_functions.go#L35>)
 
 ```go
@@ -344,6 +416,34 @@ func AssociateWith[K comparable, V any](slice Slice[K], valueFor genfuncs.MapVal
 ```
 
 AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the valueSelector function applied to each element\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+)
+
+func main() {
+	oddEven := func(i int) string {
+		if i%2 == 0 {
+			return "EVEN"
+		}
+		return "ODD"
+	}
+	numbers := []int{1, 2, 3, 4}
+	odsEvensMap := container.AssociateWith(numbers, oddEven)
+	fmt.Println(odsEvensMap[2]) // EVEN
+	fmt.Println(odsEvensMap[3]) // ODD
+}
+```
+
+</p>
+</details>
 
 ## func [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/map_functions.go#L20>)
 
@@ -353,6 +453,28 @@ func Contains[K comparable, V any](m map[K]V, key K) bool
 
 Contains tests if a map contains an entry for a given key\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+)
+
+var wordPositions = map[string]int{"hello": 1, "world": 2}
+
+func main() {
+	fmt.Println(container.Contains(wordPositions, "hello")) // true
+	fmt.Println(container.Contains(wordPositions, "no"))    // false
+}
+```
+
+</p>
+</details>
+
 ## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/slice_functions.go#L70>)
 
 ```go
@@ -361,6 +483,27 @@ func Fold[T, R any](slice Slice[T], initial R, biFunction genfuncs.BiFunction[R,
 
 Fold accumulates a value starting with initial value and applying operation from left to right to current accumulated value and each element\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+)
+
+func main() {
+	numbers := []int{1, 2, 3, 4, 5}
+	sum := func(a int, b int) int { return a + b }
+	fmt.Println(container.Fold(numbers, 0, sum)) // 15
+}
+```
+
+</p>
+</details>
+
 ## func [GroupBy](<https://github.com/nwillc/genfuncs/blob/master/container/slice_functions.go#L80>)
 
 ```go
@@ -368,6 +511,33 @@ func GroupBy[T any, K comparable](slice Slice[T], keyFor genfuncs.MapKeyFor[T, K
 ```
 
 GroupBy groups elements of the slice by the key returned by the given keySelector function applied to each element and returns a map where each group key is associated with a slice of corresponding elements\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+)
+
+func main() {
+	oddEven := func(i int) string {
+		if i%2 == 0 {
+			return "EVEN"
+		}
+		return "ODD"
+	}
+	numbers := []int{1, 2, 3, 4}
+	grouped := container.GroupBy(numbers, oddEven)
+	fmt.Println(grouped["ODD"]) // [1 3]
+}
+```
+
+</p>
+</details>
 
 ## type [Bag](<https://github.com/nwillc/genfuncs/blob/master/container/bag.go#L20-L27>)
 
@@ -508,6 +678,31 @@ func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap
 
 NewHeap return a heap ordered based on the LessThan and pushes any values provided\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container"
+)
+
+func main() {
+	heap := container.NewHeap(genfuncs.INumericOrder, 3, 1, 4, 2)
+	for heap.Len() > 0 {
+		fmt.Print(heap.Remove())
+	}
+	fmt.Println()
+	// 1234
+}
+```
+
+</p>
+</details>
+
 ### func \(\*Heap\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L44>)
 
 ```go
@@ -561,12 +756,12 @@ type MapSet[T comparable] struct {
 ### func [NewMapSet](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L31>)
 
 ```go
-func NewMapSet[T comparable]() *MapSet[T]
+func NewMapSet[T comparable](t ...T) *MapSet[T]
 ```
 
-NewMapSet returns a new MapSet\.
+NewMapSet returns a new MapSet containing given values\.
 
-### func \(\*MapSet\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L36>)
+### func \(\*MapSet\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L38>)
 
 ```go
 func (h *MapSet[T]) Add(t T)
@@ -574,7 +769,7 @@ func (h *MapSet[T]) Add(t T)
 
 Add element to MapSet\.
 
-### func \(\*MapSet\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L41>)
+### func \(\*MapSet\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L43>)
 
 ```go
 func (h *MapSet[T]) AddAll(t ...T)
@@ -582,7 +777,7 @@ func (h *MapSet[T]) AddAll(t ...T)
 
 AddAll elements to MapSet\.
 
-### func \(\*MapSet\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L48>)
+### func \(\*MapSet\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L50>)
 
 ```go
 func (h *MapSet[T]) Contains(t T) bool
@@ -590,7 +785,7 @@ func (h *MapSet[T]) Contains(t T) bool
 
 Contains returns true if MapSet contains element\.
 
-### func \(\*MapSet\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L54>)
+### func \(\*MapSet\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L56>)
 
 ```go
 func (h *MapSet[T]) Len() int
@@ -598,7 +793,7 @@ func (h *MapSet[T]) Len() int
 
 Len returns the length of the MapSet\.
 
-### func \(\*MapSet\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L59>)
+### func \(\*MapSet\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L61>)
 
 ```go
 func (h *MapSet[T]) Remove(t T)
@@ -606,7 +801,7 @@ func (h *MapSet[T]) Remove(t T)
 
 Remove an element from the MapSet\.
 
-### func \(\*MapSet\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L64>)
+### func \(\*MapSet\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L66>)
 
 ```go
 func (h *MapSet[T]) Values() Slice[T]
@@ -662,6 +857,26 @@ func Distinct[T comparable](slice Slice[T]) Slice[T]
 
 Distinct returns a slice containing only distinct elements from the given slice\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+)
+
+func main() {
+	values := []int{1, 2, 2, 3, 1, 3}
+	fmt.Println(container.Distinct(values)) // [1 2 3]
+}
+```
+
+</p>
+</details>
+
 ### func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/slice_functions.go#L60>)
 
 ```go
@@ -669,6 +884,30 @@ func FlatMap[T, R any](slice Slice[T], function genfuncs.Function[T, Slice[R]]) 
 ```
 
 FlatMap returns a slice of all elements from results of transform function being invoked on each element of original slice\, and those resultant slices concatenated\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container"
+	"strings"
+)
+
+var words container.Slice[string] = []string{"hello", "world"}
+
+func main() {
+	slicer := func(s string) container.Slice[string] { return strings.Split(s, "") }
+	fmt.Println(container.FlatMap(words.SortBy(genfuncs.SLexicalOrder), slicer)) // [h e l l o w o r l d]
+}
+```
+
+</p>
+</details>
 
 ### func [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/map_functions.go#L26>)
 
@@ -678,6 +917,28 @@ func Keys[K comparable, V any](m map[K]V) Slice[K]
 
 Keys returns a slice of all the keys in the map\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+)
+
+var wordPositions = map[string]int{"hello": 1, "world": 2}
+
+func main() {
+	keys := container.Keys(wordPositions)
+	fmt.Println(keys) // [hello, world]
+}
+```
+
+</p>
+</details>
+
 ### func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/slice_functions.go#L90>)
 
 ```go
@@ -686,6 +947,27 @@ func Map[T, R any](slice Slice[T], function genfuncs.Function[T, R]) Slice[R]
 
 Map returns a slice containing the results of applying the given transform function to each element in the original slice\.
 
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+)
+
+func main() {
+	numbers := []int{69, 88, 65, 77, 80, 76, 69}
+	toString := func(i int) string { return string(rune(i)) }
+	fmt.Println(container.Map(numbers, toString)) // [E X A M P L E]
+}
+```
+
+</p>
+</details>
+
 ### func [Values](<https://github.com/nwillc/genfuncs/blob/master/container/map_functions.go#L37>)
 
 ```go
@@ -693,6 +975,28 @@ func Values[K comparable, V any](m map[K]V) Slice[V]
 ```
 
 Values returns a slice of all the values in the map\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container"
+)
+
+var wordPositions = map[string]int{"hello": 1, "world": 2}
+
+func main() {
+	values := container.Values(wordPositions)
+	fmt.Println(values) // [1, 2]
+}
+```
+
+</p>
+</details>
 
 ### func \(Slice\) [All](<https://github.com/nwillc/genfuncs/blob/master/container/slice.go#L28>)
 
@@ -790,7 +1094,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.6.0"
+const Version = "v0.6.1"
 ```
 
 
