@@ -18,7 +18,13 @@ package container
 
 import (
 	"github.com/nwillc/genfuncs"
+	"math/rand"
 	"strings"
+	"time"
+)
+
+var (
+	random = rand.New(rand.NewSource(time.Now().Unix()))
 )
 
 // Slice is a generic type corresponding to a standard Go slice.
@@ -108,6 +114,10 @@ func (s Slice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, 
 	}
 	sb.WriteString(postfix)
 	return sb.String()
+}
+
+func (s Slice[T]) Random() T {
+	return s[random.Intn(len(s))]
 }
 
 // SortBy copies a slice, sorts the copy applying the Comparator and returns it.

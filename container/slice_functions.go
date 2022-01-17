@@ -94,3 +94,7 @@ func Map[T, R any](slice Slice[T], function genfuncs.Function[T, R]) Slice[R] {
 	}
 	return results
 }
+
+func ToSet[T comparable](slice Slice[T]) *MapSet[T] {
+	return NewMapSet(slice...)
+}
