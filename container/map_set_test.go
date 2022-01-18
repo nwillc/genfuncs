@@ -31,3 +31,10 @@ func TestSet(t *testing.T) {
 	s := set.Values()
 	assert.Equal(t, "foo", s[0])
 }
+
+func TestRemove(t *testing.T) {
+	set := container.NewMapSet("a")
+	assert.Equal(t, true, set.Contains("a"))
+	set.Remove("a")
+	assert.Equal(t, false, set.Contains("a"))
+}
