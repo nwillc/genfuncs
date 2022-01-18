@@ -181,3 +181,10 @@ func TestDequeLifo_AddPeekRemove(t *testing.T) {
 		})
 	}
 }
+
+func TestDeque_AddLeft(t *testing.T) {
+	d := container.NewDeque(1, 2)
+	assert.Equal(t, 1, d.PeekLeft())
+	d.AddLeft(0)
+	assert.Equal(t, 0, d.PeekLeft())
+}
