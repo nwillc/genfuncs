@@ -263,3 +263,89 @@ func TestIsLessThanOrdered(t *testing.T) {
 		})
 	}
 }
+
+func TestMin(t *testing.T) {
+	type args struct {
+		a int
+		b int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "Greater",
+			args: args{
+				a: 2,
+				b: 1,
+			},
+			want: 1,
+		},
+		{
+			name: "Equal",
+			args: args{
+				a: 1,
+				b: 1,
+			},
+			want: 1,
+		},
+		{
+			name: "Less",
+			args: args{
+				a: 0,
+				b: 1,
+			},
+			want: 0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := genfuncs.Min(tt.args.a, tt.args.b)
+			assert.Equal(t, v, tt.want, v)
+		})
+	}
+}
+
+func TestMax(t *testing.T) {
+	type args struct {
+		a int
+		b int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "Greater",
+			args: args{
+				a: 2,
+				b: 1,
+			},
+			want: 2,
+		},
+		{
+			name: "Equal",
+			args: args{
+				a: 1,
+				b: 1,
+			},
+			want: 1,
+		},
+		{
+			name: "Less",
+			args: args{
+				a: 0,
+				b: 1,
+			},
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := genfuncs.Max(tt.args.a, tt.args.b)
+			assert.Equal(t, v, tt.want, v)
+		})
+	}
+}
