@@ -438,3 +438,46 @@ func TestRandom(t *testing.T) {
 		assert.True(t, s.Any(p))
 	}
 }
+
+func TestCompare(t *testing.T) {
+	type args struct {
+		a container.Slice[string]
+		b container.Slice[string]
+	}
+	tests := []struct {
+		name     string
+		args     args
+		want     bool
+		wanPanic bool
+	}{
+		{
+			name: "Mismatched length",
+			args: args{
+				a: []string{"a"},
+				b: []string{},
+			},
+			want: false,
+		},
+		{
+			name: "Matched",
+			args: args{
+				a: []string{"a", "b"},
+				b: []string{"a", "b"},
+			},
+			want: true,
+		},
+		{
+			name: "Mismatched",
+			args: args{
+				a: []string{"a", "b"},
+				b: []string{"a", "c"},
+			},
+			want: false,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			test.args.a.Compare(test.args.b, genfuncs.EqualComparable[string])
+		})
+	}
+}
