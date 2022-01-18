@@ -25,7 +25,8 @@ import (
 )
 
 var (
-	letters = []string{"t", "e", "s", "t"}
+	letters  = []string{"t", "e", "s", "t"}
+	alphabet = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "t", "u", "v", "w", "x", "y", "z"}
 )
 
 func TestSort(t *testing.T) {
@@ -86,9 +87,16 @@ func TestSort(t *testing.T) {
 			},
 			want: []string{"t", "t", "s", "e"},
 		},
+		{
+			name: "More than 12",
+			args: args{
+				slice:      alphabet,
+				comparator: genfuncs.SLexicalOrder,
+			},
+			want: alphabet,
+		},
 	}
 	for _, tt := range tests {
-
 		t.Run(tt.name, func(t *testing.T) {
 			dst := tt.args.slice.SortBy(tt.args.comparator)
 			assert.Equal(t, len(tt.want), len(dst))
@@ -96,6 +104,5 @@ func TestSort(t *testing.T) {
 				assert.Equal(t, tt.want[i], dst[i])
 			}
 		})
-
 	}
 }
