@@ -14,9 +14,10 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package container
+package container_test
 
 import (
+	"github.com/nwillc/genfuncs/container"
 	"strconv"
 	"testing"
 
@@ -56,7 +57,7 @@ func TestKeys(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			keys := Keys(tt.args.m)
+			keys := container.Keys(tt.args.m)
 			assert.Equal(t, len(tt.want), len(keys))
 			for _, k := range keys {
 				_, ok := tt.args.m[k]
@@ -99,7 +100,7 @@ func TestValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			values := Values(tt.args.m)
+			values := container.Values(tt.args.m)
 			assert.Equal(t, len(tt.want), len(values))
 			for _, v := range values {
 				k := strconv.Itoa(v)
@@ -108,4 +109,11 @@ func TestValues(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMapContains(t *testing.T) {
+	m := map[string]bool{"a": true}
+	assert.Equal(t, true, container.Contains(m, "a"))
+	delete(m, "a")
+	assert.Equal(t, false, container.Contains(m, "a"))
 }
