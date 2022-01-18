@@ -19,6 +19,7 @@ package genfuncs_test
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -394,13 +395,6 @@ func TestReverse(t *testing.T) {
 	}
 }
 
-func TestStringerToString(t *testing.T) {
-	now := time.Now()
-	ts := genfuncs.StringerToString[time.Time]()
-
-	assert.Equal(t, ts(now), now.String())
-}
-
 func TestNot(t *testing.T) {
 	var echo genfuncs.Function[bool, bool] = func(b bool) bool { return b }
 	var notEcho = genfuncs.Not(echo)
@@ -408,4 +402,19 @@ func TestNot(t *testing.T) {
 	assert.Equal(t, notEcho(true), false)
 	assert.Equal(t, echo(false), false)
 	assert.Equal(t, notEcho(false), true)
+}
+
+func TestStringerToString(t *testing.T) {
+	now := time.Now()
+	ts := genfuncs.StringerToString[time.Time]()
+
+	assert.Equal(t, ts(now), now.String())
+}
+
+func TestTransformArgs(t *testing.T) {
+	var atoi genfuncs.Function[string, int] = func(s string) int { i, _ := strconv.Atoi(s); return i }
+	var adder = func(a, b int) int { return a + b }
+	strAdder := genfuncs.TransformArgs(atoi, adder)
+
+	assert.Equal(t, 10, strAdder("5", "5"))
 }
