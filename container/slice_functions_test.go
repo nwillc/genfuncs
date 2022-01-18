@@ -302,3 +302,12 @@ func TestMap(t *testing.T) {
 		})
 	}
 }
+
+func TestToSet(t *testing.T) {
+	s := container.Slice[string]{"a", "b", "c", "b", "a"}
+	set := container.ToSet(s)
+	assert.Equal(t, 3, set.Len())
+	for _, l := range s {
+		assert.True(t, set.Contains(l))
+	}
+}
