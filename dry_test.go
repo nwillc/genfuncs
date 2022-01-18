@@ -400,3 +400,12 @@ func TestStringerToString(t *testing.T) {
 
 	assert.Equal(t, ts(now), now.String())
 }
+
+func TestNot(t *testing.T) {
+	var echo genfuncs.Function[bool, bool] = func(b bool) bool { return b }
+	var notEcho = genfuncs.Not(echo)
+	assert.Equal(t, echo(true), true)
+	assert.Equal(t, notEcho(true), false)
+	assert.Equal(t, echo(false), false)
+	assert.Equal(t, notEcho(false), true)
+}
