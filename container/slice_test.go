@@ -428,3 +428,13 @@ func TestSortBy(t *testing.T) {
 		})
 	}
 }
+
+func TestRandom(t *testing.T) {
+	var s container.Slice[int] = []int{1, 2, 3}
+
+	for c := 0; c < 2*len(s); c++ {
+		i := s.Random()
+		p := genfuncs.IsEqualComparable(i)
+		assert.True(t, s.Any(p))
+	}
+}
