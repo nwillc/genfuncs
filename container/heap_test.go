@@ -109,4 +109,7 @@ func TestHeapInserting(t *testing.T) {
 	assert.Equal(t, 1, h.Remove())
 	assert.Equal(t, 3, h.Remove())
 	assert.Equal(t, 4, h.Remove())
+	assert.PanicsWithError(t, "no such element", func() {
+		h.Peek()
+	})
 }
