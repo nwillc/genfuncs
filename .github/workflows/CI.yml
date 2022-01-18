@@ -25,3 +25,6 @@ jobs:
     - name: Test
       run: go test -gcflags=-l -v  -coverprofile=coverage.txt -covermode=atomic ./...
 
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      
