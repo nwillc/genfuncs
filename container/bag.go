@@ -24,4 +24,6 @@ type Bag[T any] interface {
 	AddAll(t ...T)
 	// Len returns length of the Bag.
 	Len() int
+	// Values returns a copy of the current values in the Bag without modifying the contents.
+	Values() Slice[T]
 }

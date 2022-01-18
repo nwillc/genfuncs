@@ -79,6 +79,11 @@ func (h *Heap[T]) Remove() T {
 	return v
 }
 
+// Values returns a slice of the values in the Heap in no particular order.
+func (h *Heap[T]) Values() Slice[T] {
+	return h.slice
+}
+
 func (h *Heap[T]) up(jj int) {
 	for {
 		i := parent(jj)

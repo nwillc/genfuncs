@@ -95,3 +95,7 @@ func (d *Deque[T]) RemoveRight() T {
 	d.slice = d.slice[:d.Len()-1]
 	return v
 }
+
+func (d *Deque[T]) Values() Slice[T] {
+	return d.slice
+}
