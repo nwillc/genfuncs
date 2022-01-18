@@ -20,6 +20,7 @@ import (
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func TestEqualComparable(t *testing.T) {
@@ -264,6 +265,49 @@ func TestIsLessThanOrdered(t *testing.T) {
 	}
 }
 
+func TestMax(t *testing.T) {
+	type args struct {
+		a int
+		b int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "Greater",
+			args: args{
+				a: 2,
+				b: 1,
+			},
+			want: 2,
+		},
+		{
+			name: "Equal",
+			args: args{
+				a: 1,
+				b: 1,
+			},
+			want: 1,
+		},
+		{
+			name: "Less",
+			args: args{
+				a: 0,
+				b: 1,
+			},
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := genfuncs.Max(tt.args.a, tt.args.b)
+			assert.Equal(t, v, tt.want, v)
+		})
+	}
+}
+
 func TestMin(t *testing.T) {
 	type args struct {
 		a int
@@ -307,7 +351,8 @@ func TestMin(t *testing.T) {
 	}
 }
 
-func TestMax(t *testing.T) {
+func TestReverse(t *testing.T) {
+	reversed := genfuncs.Reverse(genfuncs.LessThanOrdered[int])
 	type args struct {
 		a int
 		b int
@@ -315,37 +360,43 @@ func TestMax(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want int
 	}{
 		{
-			name: "Greater",
+			name: "Less",
 			args: args{
-				a: 2,
-				b: 1,
+				a: 1,
+				b: 2,
 			},
-			want: 2,
 		},
 		{
 			name: "Equal",
 			args: args{
-				a: 1,
-				b: 1,
+				a: 0,
+				b: 0,
 			},
-			want: 1,
 		},
 		{
-			name: "Less",
+			name: "Greater",
 			args: args{
-				a: 0,
-				b: 1,
+				a: 1,
+				b: 0,
 			},
-			want: 1,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.Max(tt.args.a, tt.args.b)
-			assert.Equal(t, v, tt.want, v)
+			v := genfuncs.LessThanOrdered(tt.args.a, tt.args.b)
+			assert.Equal(t, tt.args.a < tt.args.b, v)
+			r := reversed(tt.args.a, tt.args.b)
+			assert.Equal(t, tt.args.b < tt.args.a, r)
 		})
 	}
+}
+
+func TestStringerToString(t *testing.T) {
+	now := time.Now()
+	ts := genfuncs.StringerToString[time.Time]()
+
+	assert.Equal(t, ts(now), now.String())
 }
