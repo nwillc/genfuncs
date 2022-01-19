@@ -17,6 +17,7 @@
 package container_test
 
 import (
+	"github.com/nwillc/genfuncs"
 	"testing"
 
 	"github.com/nwillc/genfuncs/container"
@@ -183,8 +184,15 @@ func TestDequeLifo_AddPeekRemove(t *testing.T) {
 }
 
 func TestDeque_AddLeft(t *testing.T) {
-	d := container.NewDeque(1, 2)
+	d := container.NewDeque[int]()
+	d.AddLeft(1)
 	assert.Equal(t, 1, d.PeekLeft())
 	d.AddLeft(0)
 	assert.Equal(t, 0, d.PeekLeft())
+}
+
+func TestDeque_Values(t *testing.T) {
+	s := container.Slice[int]{1, 2, 3}
+	d := container.NewDeque(s...)
+	assert.True(t, s.Compare(d.Values(), genfuncs.EqualComparable[int]))
 }

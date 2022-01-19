@@ -113,3 +113,9 @@ func TestHeapInserting(t *testing.T) {
 		h.Peek()
 	})
 }
+
+func TestHeap_Values(t *testing.T) {
+	s := container.Slice[int]{1, 2, 3}
+	h := container.NewHeap(genfuncs.INumericOrder, s...)
+	assert.True(t, s.Compare(h.Values(), genfuncs.EqualComparable[int]))
+}

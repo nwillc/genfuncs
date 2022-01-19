@@ -46,8 +46,12 @@ func (d *Deque[T]) AddAll(t ...T) {
 
 // AddLeft an element to the left of the Deque.
 func (d *Deque[T]) AddLeft(t T) {
-	d.slice = append(d.slice[:1], d.slice[0:]...)
-	d.slice[0] = t
+	if d.Len() == 0 {
+		d.Add(t)
+	} else {
+		d.slice = append(d.slice[:1], d.slice[0:]...)
+		d.slice[0] = t
+	}
 }
 
 // AddRight an element to the right of the Deque.
