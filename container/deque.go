@@ -27,6 +27,7 @@ type Deque[T any] struct {
 	head  int
 	tail  int
 	count int
+	tNil  T
 }
 
 // NewDeque creates a Deque containing any provided elements.
@@ -95,6 +96,7 @@ func (d *Deque[T]) Remove() T {
 // RemoveLeft and return the left most element in the Deque.
 func (d *Deque[T]) RemoveLeft() T {
 	v := d.PeekLeft()
+	d.slice[d.head] = d.tNil
 	d.head = d.next(d.head)
 	d.count--
 	d.contract()
@@ -105,6 +107,7 @@ func (d *Deque[T]) RemoveLeft() T {
 func (d *Deque[T]) RemoveRight() T {
 	v := d.PeekRight()
 	d.tail = d.prev(d.tail)
+	d.slice[d.tail] = d.tNil
 	d.count--
 	d.contract()
 	return v
