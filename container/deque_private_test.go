@@ -52,3 +52,23 @@ func TestDeque_prev(t *testing.T) {
 		})
 	}
 }
+
+func TestExpandContract(t *testing.T) {
+	s := make(Slice[int], minimumCapacity)
+	for i := 0; i < minimumCapacity; i++ {
+		s[i] = i
+	}
+	d := NewDeque[int]()
+	// expand to hold 3*minimumCapacity
+	d.AddAll(s...)
+	d.AddAll(s...)
+	d.AddAll(s...)
+	assert.Equal(t, 3*minimumCapacity, d.Len())
+	assert.Equal(t, 4*minimumCapacity, d.Cap())
+	// remove 2*minimumCapacity
+	for i := 0; i < 2*minimumCapacity; i++ {
+		d.Remove()
+	}
+	assert.Equal(t, minimumCapacity, d.Len())
+	assert.Equal(t, 2*minimumCapacity, d.Cap())
+}
