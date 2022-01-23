@@ -16,20 +16,24 @@
 
 package container
 
+const minimumCapacity = 16
+
 // Deque implements Queue.
 var _ Queue[bool] = (*Deque[bool])(nil)
 
-// Deque is a doubly ended queue with default behavior of a Fifo but provides left and right access. Deque implements Queue.
+// Deque is a doubly ended Queue with default behavior of a Fifo but provides left and right access.
 type Deque[T any] struct {
 	slice Slice[T]
+	head  int
+	tail  int
+	count int
 }
 
 // NewDeque creates a Deque containing any provided elements.
 func NewDeque[T any](t ...T) *Deque[T] {
-	f := &Deque[T]{}
-	f.slice = make(Slice[T], len(t))
-	copy(f.slice, t)
-	return f
+	d := &Deque[T]{}
+	d.AddAll(t...)
+	return d
 }
 
 // Add an element to the right of the Deque.
@@ -46,22 +50,23 @@ func (d *Deque[T]) AddAll(t ...T) {
 
 // AddLeft an element to the left of the Deque.
 func (d *Deque[T]) AddLeft(t T) {
-	if d.Len() == 0 {
-		d.Add(t)
-	} else {
-		d.slice = append(d.slice[:1], d.slice[0:]...)
-		d.slice[0] = t
-	}
+	d.expand()
+	d.head = d.prev(d.head)
+	d.slice[d.head] = t
+	d.count++
 }
 
 // AddRight an element to the right of the Deque.
 func (d *Deque[T]) AddRight(t T) {
-	d.slice = append(d.slice, t)
+	d.expand()
+	d.slice[d.tail] = t
+	d.tail = d.next(d.tail)
+	d.count++
 }
 
 // Len reports the length of the Deque.
 func (d *Deque[T]) Len() int {
-	return len(d.slice)
+	return d.count
 }
 
 // Peek returns the left most element in the Deque without removing it.
@@ -71,14 +76,15 @@ func (d *Deque[T]) Peek() T {
 
 // PeekLeft returns the left most element in the Deque without removing it.
 func (d *Deque[T]) PeekLeft() T {
-	d.slice.inBounds(0)
-	return d.slice[0]
+	d.slice.inBounds(d.head)
+	return d.slice[d.head]
 }
 
 // PeekRight returns the right most element in the Deque without removing it.
 func (d *Deque[T]) PeekRight() T {
-	d.slice.inBounds(d.Len() - 1)
-	return d.slice[d.Len()-1]
+	p := d.prev(d.tail)
+	d.slice.inBounds(p)
+	return d.slice[p]
 }
 
 // Remove and return the left most element in the Deque.
@@ -89,17 +95,79 @@ func (d *Deque[T]) Remove() T {
 // RemoveLeft and return the left most element in the Deque.
 func (d *Deque[T]) RemoveLeft() T {
 	v := d.PeekLeft()
-	d.slice = d.slice[1:]
+	d.head = d.next(d.head)
+	d.count--
+	d.contract()
 	return v
 }
 
 // RemoveRight and return the right most element in the Deque.
 func (d *Deque[T]) RemoveRight() T {
 	v := d.PeekRight()
-	d.slice = d.slice[:d.Len()-1]
+	d.tail = d.prev(d.tail)
+	d.count--
+	d.contract()
 	return v
 }
 
+// Values in the Deque returned in a new Slice.
 func (d *Deque[T]) Values() Slice[T] {
-	return d.slice
+	newSlice := make(Slice[T], d.Len())
+	d.copy(newSlice)
+	return newSlice
+}
+
+// Cap returns the capacity of the Deque.
+func (d *Deque[T]) Cap() int {
+	return len(d.slice)
+}
+
+// expand the Deque capacity if needed.
+func (d *Deque[T]) expand() {
+	if d.Len() != d.Cap() {
+		return
+	}
+	if d.Cap() == 0 {
+		d.slice = make(Slice[T], minimumCapacity)
+		return
+	}
+	d.resize()
+}
+
+// contract Deque capacity if only 1/4 full.
+func (d *Deque[T]) contract() {
+	if d.Cap() > minimumCapacity && (d.Len()<<2) == d.Cap() {
+		d.resize()
+	}
+}
+
+// resize the Deque to fit exactly twice its current contents.  This is
+// used to grow the queue when it is full, and also to shrink it when it is
+// only a quarter full.
+func (d *Deque[T]) resize() {
+	newSlice := make([]T, d.count<<1)
+	d.copy(newSlice)
+	d.head = 0
+	d.tail = d.count
+	d.slice = newSlice
+}
+
+// copy the values, in order, from the Deque to a Slice.
+func (d *Deque[T]) copy(slice Slice[T]) {
+	if d.tail > d.head {
+		copy(slice, d.slice[d.head:d.tail])
+	} else {
+		n := copy(slice, d.slice[d.head:])
+		copy(slice[n:], d.slice[:d.tail])
+	}
+}
+
+// prev returns the previous buffer position wrapping around buffer.
+func (d *Deque[T]) prev(i int) int {
+	return (i - 1) & (d.Cap() - 1) // bitwise modulus
+}
+
+// next returns the next buffer position wrapping around buffer.
+func (d *Deque[T]) next(i int) int {
+	return (i + 1) & (d.Cap() - 1) // bitwise modulus
 }
