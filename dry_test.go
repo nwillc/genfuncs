@@ -268,42 +268,50 @@ func TestIsLessThanOrdered(t *testing.T) {
 
 func TestMax(t *testing.T) {
 	type args struct {
-		a int
-		b int
+		v []int
 	}
 	tests := []struct {
-		name string
-		args args
-		want int
+		name    string
+		args    args
+		want    int
+		wantErr error
 	}{
+		{
+			name:    "No Args",
+			args:    args{},
+			wantErr: genfuncs.IllegalArguments,
+		},
 		{
 			name: "Greater",
 			args: args{
-				a: 2,
-				b: 1,
+				v: []int{2, 1},
 			},
 			want: 2,
 		},
 		{
 			name: "Equal",
 			args: args{
-				a: 1,
-				b: 1,
+				v: []int{1, 1},
 			},
 			want: 1,
 		},
 		{
 			name: "Less",
 			args: args{
-				a: 0,
-				b: 1,
+				v: []int{0, 1},
 			},
 			want: 1,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.Max(tt.args.a, tt.args.b)
+			if tt.wantErr != nil {
+				assert.Panics(t, func() {
+					genfuncs.Max(tt.args.v...)
+				})
+				return
+			}
+			v := genfuncs.Max(tt.args.v...)
 			assert.Equal(t, v, tt.want, v)
 		})
 	}
@@ -311,42 +319,50 @@ func TestMax(t *testing.T) {
 
 func TestMin(t *testing.T) {
 	type args struct {
-		a int
-		b int
+		v []int
 	}
 	tests := []struct {
-		name string
-		args args
-		want int
+		name    string
+		args    args
+		want    int
+		wantErr error
 	}{
+		{
+			name:    "No Args",
+			args:    args{},
+			wantErr: genfuncs.IllegalArguments,
+		},
 		{
 			name: "Greater",
 			args: args{
-				a: 2,
-				b: 1,
+				v: []int{2, 1},
 			},
 			want: 1,
 		},
 		{
 			name: "Equal",
 			args: args{
-				a: 1,
-				b: 1,
+				v: []int{1, 1},
 			},
 			want: 1,
 		},
 		{
 			name: "Less",
 			args: args{
-				a: 0,
-				b: 1,
+				v: []int{0, 1},
 			},
 			want: 0,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.Min(tt.args.a, tt.args.b)
+			if tt.wantErr != nil {
+				assert.Panics(t, func() {
+					genfuncs.Min(tt.args.v...)
+				})
+				return
+			}
+			v := genfuncs.Min(tt.args.v...)
 			assert.Equal(t, v, tt.want, v)
 		})
 	}

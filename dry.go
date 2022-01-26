@@ -74,19 +74,31 @@ func IsLessThanOrdered[O constraints.Ordered](a O) Function[O, bool] {
 }
 
 // Max returns max value of two constraints.Ordered values,
-func Max[T constraints.Ordered](a, b T) T {
-	if a > b {
-		return a
+func Max[T constraints.Ordered](v ...T) T {
+	if len(v) == 0 {
+		panic(fmt.Errorf("%w: at leat one value required", IllegalArguments))
 	}
-	return b
+	max := v[0]
+	for _, val := range v {
+		if val > max {
+			max = val
+		}
+	}
+	return max
 }
 
 // Min returns min value of two constraints.Ordered values,
-func Min[T constraints.Ordered](a, b T) T {
-	if a < b {
-		return a
+func Min[T constraints.Ordered](v ...T) T {
+	if len(v) == 0 {
+		panic(fmt.Errorf("%w: at leat one value required", IllegalArguments))
 	}
-	return b
+	min := v[0]
+	for _, val := range v {
+		if val < min {
+			min = val
+		}
+	}
+	return min
 }
 
 // Reverse reverses a LessThan to facilitate reverse sort ordering.

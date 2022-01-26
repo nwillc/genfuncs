@@ -59,7 +59,7 @@ func (h *Heap[T]) AddAll(values ...T) {
 // Peek returns the next element without removing it.
 func (h *Heap[T]) Peek() T {
 	if h.Len() <= 0 {
-		panic(NoSuchElement)
+		panic(genfuncs.NoSuchElement)
 	}
 	n := h.Len() - 1
 	if n > 0 && !h.ordered {

@@ -51,7 +51,7 @@ func (s Slice[T]) Any(predicate genfuncs.Function[T, bool]) bool {
 }
 
 // Compare one Slice to another, applying a comparison to each pair of corresponding entries. Compare returns true
-// if all the pairs comparison return true. While the comparison might test equality it could have any behavior.
+// if all the pair's comparison return true. While the comparison might test equality it could have any behavior.
 func (s Slice[T]) Compare(s2 Slice[T], comparison genfuncs.BiFunction[T, T, bool]) bool {
 	if len(s) != len(s2) {
 		return false
@@ -67,11 +67,11 @@ func (s Slice[T]) Compare(s2 Slice[T], comparison genfuncs.BiFunction[T, T, bool
 // Filter returns a slice containing only elements matching the given predicate.
 func (s Slice[T]) Filter(predicate genfuncs.Function[T, bool]) Slice[T] {
 	var results []T
-	for _, t := range s {
+	s.ForEach(func(t T) {
 		if predicate(t) {
 			results = append(results, t)
 		}
-	}
+	})
 	return results
 }
 
@@ -90,13 +90,29 @@ func (s Slice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
 func (s Slice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
 	var last T
 	var found = false
-	for _, t := range s {
+	s.ForEach(func(t T) {
 		if predicate(t) {
 			found = true
 			last = t
 		}
-	}
+	})
 	return last, found
+}
+
+// ForEach element of the Slice invoke given function with the element. Syntactic sugar for a range that intends to
+// traverse all the elements, i.e. no exiting midway through.
+func (s Slice[T]) ForEach(fn func(t T)) {
+	for _, t := range s {
+		fn(t)
+	}
+}
+
+// ForEachI element of the Slice invoke given function with the element and its index in the Slice.
+// Syntactic sugar for a range that intends to traverse all the elements, i.e. no exiting midway through.
+func (s Slice[T]) ForEachI(fn func(i int, t T)) {
+	for i, t := range s {
+		fn(i, t)
+	}
 }
 
 // JoinToString creates a string from all the elements using the stringer on each, separating them using separator, and
@@ -105,13 +121,12 @@ func (s Slice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, 
 	var sb strings.Builder
 	sb.WriteString(prefix)
 	last := len(s) - 1
-	for i, e := range s {
-		sb.WriteString(stringer(e))
-		if i == last {
-			continue
+	s.ForEachI(func(i int, t T) {
+		sb.WriteString(stringer(t))
+		if i != last {
+			sb.WriteString(separator)
 		}
-		sb.WriteString(separator)
-	}
+	})
 	sb.WriteString(postfix)
 	return sb.String()
 }
@@ -136,6 +151,6 @@ func (s Slice[T]) Swap(i, j int) {
 // inBounds panics if given index out of Slice's bounds.
 func (s Slice[T]) inBounds(i int) {
 	if i < 0 || i > len(s)-1 {
-		panic(NoSuchElement)
+		panic(genfuncs.NoSuchElement)
 	}
 }

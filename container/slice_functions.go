@@ -43,16 +43,7 @@ func AssociateWith[K comparable, V any](slice Slice[K], valueFor genfuncs.MapVal
 
 // Distinct returns a slice containing only distinct elements from the given slice.
 func Distinct[T comparable](slice Slice[T]) Slice[T] {
-	var resultSet []T
-	distinctMap := make(map[T]struct{})
-	for _, e := range slice {
-		if _, ok := distinctMap[e]; ok {
-			continue
-		}
-		distinctMap[e] = struct{}{}
-		resultSet = append(resultSet, e)
-	}
-	return resultSet
+	return NewMapSet(slice...).Values()
 }
 
 // FlatMap returns a slice of all elements from results of transform function being invoked on each element of

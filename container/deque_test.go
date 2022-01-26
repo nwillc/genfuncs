@@ -32,22 +32,22 @@ func TestDeque_New(t *testing.T) {
 
 func TestDeque_Bounds(t *testing.T) {
 	deque := container.NewDeque[bool]()
-	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, genfuncs.NoSuchElement.Error(), func() {
 		_ = deque.Remove()
 	})
-	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, genfuncs.NoSuchElement.Error(), func() {
 		_ = deque.RemoveRight()
 	})
-	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, genfuncs.NoSuchElement.Error(), func() {
 		_ = deque.RemoveLeft()
 	})
-	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, genfuncs.NoSuchElement.Error(), func() {
 		_ = deque.Peek()
 	})
-	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, genfuncs.NoSuchElement.Error(), func() {
 		_ = deque.PeekRight()
 	})
-	assert.PanicsWithError(t, container.NoSuchElement.Error(), func() {
+	assert.PanicsWithError(t, genfuncs.NoSuchElement.Error(), func() {
 		_ = deque.PeekLeft()
 	})
 }

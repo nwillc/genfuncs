@@ -481,3 +481,68 @@ func TestCompare(t *testing.T) {
 		})
 	}
 }
+
+func TestSlice_ForEach(t *testing.T) {
+	tests := []struct {
+		name string
+		s    container.Slice[int]
+		want int
+	}{
+		{
+			name: "Nil",
+			want: 0,
+		},
+		{
+			name: "Empty",
+			s:    container.Slice[int]{},
+			want: 0,
+		},
+		{
+			name: "Two",
+			s:    container.Slice[int]{1, 1},
+			want: 2,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			count := 0
+			tt.s.ForEach(func(i int) {
+				count++
+			})
+			assert.Equal(t, tt.want, count)
+		})
+	}
+}
+
+func TestSlice_ForEachI(t *testing.T) {
+	tests := []struct {
+		name string
+		s    container.Slice[int]
+		want int
+	}{
+		{
+			name: "Nil",
+			want: 0,
+		},
+		{
+			name: "Empty",
+			s:    container.Slice[int]{},
+			want: 0,
+		},
+		{
+			name: "Two",
+			s:    container.Slice[int]{0, 1},
+			want: 2,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			count := 0
+			tt.s.ForEachI(func(i, v int) {
+				assert.Equal(t, count, i)
+				count++
+			})
+			assert.Equal(t, tt.want, count)
+		})
+	}
+}

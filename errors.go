@@ -14,9 +14,10 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package container
+package genfuncs
 
 import "fmt"
 
 // NoSuchElement error is used by panics when attempts are made to access out of bounds.
 var NoSuchElement = fmt.Errorf("no such element")
+var IllegalArguments = fmt.Errorf("illegal arguments")
