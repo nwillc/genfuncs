@@ -25,7 +25,7 @@ var _ Queue[int] = (*Heap[int])(nil)
 
 // Heap implements either a min or max ordered heap of any type. Heap implements Queue.
 type Heap[T any] struct {
-	slice    Slice[T]
+	slice    GSlice[T]
 	lessThan genfuncs.BiFunction[T, T, bool]
 	ordered  bool
 }
@@ -80,7 +80,7 @@ func (h *Heap[T]) Remove() T {
 }
 
 // Values returns a slice of the values in the Heap in no particular order.
-func (h *Heap[T]) Values() Slice[T] {
+func (h *Heap[T]) Values() GSlice[T] {
 	return h.slice
 }
 

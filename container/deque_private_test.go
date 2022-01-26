@@ -54,7 +54,7 @@ func TestDeque_prev(t *testing.T) {
 }
 
 func TestExpandContract(t *testing.T) {
-	s := make(Slice[int], minimumCapacity)
+	s := make(GSlice[int], minimumCapacity)
 	for i := 0; i < minimumCapacity; i++ {
 		s[i] = i
 	}

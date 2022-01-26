@@ -183,10 +183,10 @@ func TestDistinct(t *testing.T) {
 }
 
 func TestFlatMap(t *testing.T) {
-	var trans = func(i int) container.Slice[string] { return []string{"#", strconv.Itoa(i)} }
+	var trans = func(i int) container.GSlice[string] { return []string{"#", strconv.Itoa(i)} }
 	type args struct {
-		slice     container.Slice[int]
-		transform func(int) container.Slice[string]
+		slice     container.GSlice[int]
+		transform func(int) container.GSlice[string]
 	}
 	tests := []struct {
 		name string
@@ -229,13 +229,13 @@ func TestFold(t *testing.T) {
 
 func TestGroupBy(t *testing.T) {
 	type args struct {
-		slice       container.Slice[int]
+		slice       container.GSlice[int]
 		keySelector genfuncs.MapKeyFor[int, string]
 	}
 	tests := []struct {
 		name string
 		args args
-		want map[string]container.Slice[int]
+		want map[string]container.GSlice[int]
 	}{
 		{
 			name: "Odds Evens",
@@ -248,7 +248,7 @@ func TestGroupBy(t *testing.T) {
 					return "odd"
 				},
 			},
-			want: map[string]container.Slice[int]{"odd": {1, 3}, "even": {2, 4}},
+			want: map[string]container.GSlice[int]{"odd": {1, 3}, "even": {2, 4}},
 		},
 	}
 	for _, tt := range tests {
@@ -257,7 +257,7 @@ func TestGroupBy(t *testing.T) {
 			assert.Equal(t, len(tt.want), len(resultsMap))
 			for k, v := range tt.want {
 				assert.True(t, v.All(func(i int) bool {
-					return container.Slice[int](resultsMap[k]).Any(genfuncs.IsEqualComparable(i))
+					return container.GSlice[int](resultsMap[k]).Any(genfuncs.IsEqualComparable(i))
 				}))
 			}
 		})
@@ -267,7 +267,7 @@ func TestGroupBy(t *testing.T) {
 func TestMap(t *testing.T) {
 	var trans = strconv.Itoa
 	type args struct {
-		slice     container.Slice[int]
+		slice     container.GSlice[int]
 		transform func(int) string
 	}
 	tests := []struct {
@@ -304,7 +304,7 @@ func TestMap(t *testing.T) {
 }
 
 func TestToSet(t *testing.T) {
-	s := container.Slice[string]{"a", "b", "c", "b", "a"}
+	s := container.GSlice[string]{"a", "b", "c", "b", "a"}
 	set := container.ToSet(s)
 	assert.Equal(t, 3, set.Len())
 	for _, l := range s {

@@ -16,16 +16,19 @@
 
 package container
 
-// Contains tests if a map contains an entry for a given key.
-func Contains[K comparable, V any](m map[K]V, key K) bool {
+// GMap is a generic type corresponding to a standard Go map.
+type GMap[K comparable, V any] map[K]V
+
+// Contains returns true if the GMap contains the given key.
+func (m GMap[K, V]) Contains(key K) bool {
 	_, ok := m[key]
 	return ok
 }
 
-// Keys returns a slice of all the keys in the map.
-func Keys[K comparable, V any](m map[K]V) Slice[K] {
-	keys := make([]K, len(m))
-	var i int
+// Keys return a GSlice containing the keys of the GMap.
+func (m GMap[K, V]) Keys() GSlice[K] {
+	keys := make(GSlice[K], len(m))
+	i := 0
 	for k, _ := range m {
 		keys[i] = k
 		i++
@@ -33,10 +36,10 @@ func Keys[K comparable, V any](m map[K]V) Slice[K] {
 	return keys
 }
 
-// Values returns a slice of all the values in the map.
-func Values[K comparable, V any](m map[K]V) Slice[V] {
-	values := make([]V, len(m))
-	var i int
+// Values returns a GSlice of all the values in the GMap.
+func (m GMap[K, V]) Values() GSlice[V] {
+	values := make(GSlice[V], len(m))
+	i := 0
 	for _, v := range m {
 		values[i] = v
 		i++

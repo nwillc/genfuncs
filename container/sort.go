@@ -21,12 +21,12 @@ import (
 )
 
 // Sort sorts a slice by the LessThan order.
-func (s Slice[T]) Sort(lessThan genfuncs.BiFunction[T, T, bool]) {
+func (s GSlice[T]) Sort(lessThan genfuncs.BiFunction[T, T, bool]) {
 	n := len(s)
 	s.quickSort(0, n, maxDepth(n), lessThan)
 }
 
-func (s Slice[T]) insertionSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool]) {
+func (s GSlice[T]) insertionSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool]) {
 	for i := a + 1; i < b; i++ {
 		for j := i; j > a && lessThan(s[j], s[j-1]); j-- {
 			s.Swap(j, j-1)
@@ -36,7 +36,7 @@ func (s Slice[T]) insertionSort(a, b int, lessThan genfuncs.BiFunction[T, T, boo
 
 // siftDown implements the heap property on data[lo:hi].
 // first is an offset into the array where the root of the heap lies.
-func (s Slice[T]) siftDown(lo, hi, first int, lessThan genfuncs.BiFunction[T, T, bool]) {
+func (s GSlice[T]) siftDown(lo, hi, first int, lessThan genfuncs.BiFunction[T, T, bool]) {
 	root := lo
 	for {
 		child := 2*root + 1
@@ -54,7 +54,7 @@ func (s Slice[T]) siftDown(lo, hi, first int, lessThan genfuncs.BiFunction[T, T,
 	}
 }
 
-func (s Slice[T]) heapSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool]) {
+func (s GSlice[T]) heapSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool]) {
 	first := a
 	lo := 0
 	hi := b - a
@@ -72,7 +72,7 @@ func (s Slice[T]) heapSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool]) {
 }
 
 // medianOfThree moves the median of the three values data[m0], data[m1], data[m2] into data[m1].
-func (s Slice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T, T, bool]) {
+func (s GSlice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T, T, bool]) {
 	// sort 3 elements
 	if lessThan(s[m1], s[m0]) {
 		s.Swap(m1, m0)
@@ -88,7 +88,7 @@ func (s Slice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T, 
 	// now data[m0] <= data[m1] <= data[m2]
 }
 
-func (s Slice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool]) (midlo, midhi int) {
+func (s GSlice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool]) (midlo, midhi int) {
 	m := int(uint(lo+hi) >> 1) // Written like this to avoid integer overflow.
 	if hi-lo > 40 {
 		// Tukey's ``Ninther,'' median of three medians of three.
@@ -175,7 +175,7 @@ func (s Slice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool]) 
 	return b - 1, c
 }
 
-func (s Slice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T, T, bool]) {
+func (s GSlice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T, T, bool]) {
 	for b-a > 12 { // Use ShellSort for slices <= 12 elements
 		if maxDepth == 0 {
 			s.heapSort(a, b, lessThan)

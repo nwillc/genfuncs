@@ -21,7 +21,7 @@ import (
 )
 
 // Associate returns a map containing key/values created by applying a function to elements of the slice.
-func Associate[T, V any, K comparable](slice Slice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) map[K]V {
+func Associate[T, V any, K comparable](slice GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) GMap[K, V] {
 	m := make(map[K]V)
 	for _, e := range slice {
 		k, v := keyValueFor(e)
@@ -32,7 +32,7 @@ func Associate[T, V any, K comparable](slice Slice[T], keyValueFor genfuncs.MapK
 
 // AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the
 // valueSelector function applied to each element.
-func AssociateWith[K comparable, V any](slice Slice[K], valueFor genfuncs.MapValueFor[K, V]) map[K]V {
+func AssociateWith[K comparable, V any](slice GSlice[K], valueFor genfuncs.MapValueFor[K, V]) GMap[K, V] {
 	m := make(map[K]V)
 	for _, k := range slice {
 		v := valueFor(k)
@@ -42,13 +42,13 @@ func AssociateWith[K comparable, V any](slice Slice[K], valueFor genfuncs.MapVal
 }
 
 // Distinct returns a slice containing only distinct elements from the given slice.
-func Distinct[T comparable](slice Slice[T]) Slice[T] {
+func Distinct[T comparable](slice GSlice[T]) GSlice[T] {
 	return NewMapSet(slice...).Values()
 }
 
 // FlatMap returns a slice of all elements from results of transform function being invoked on each element of
 // original slice, and those resultant slices concatenated.
-func FlatMap[T, R any](slice Slice[T], function genfuncs.Function[T, Slice[R]]) Slice[R] {
+func FlatMap[T, R any](slice GSlice[T], function genfuncs.Function[T, GSlice[R]]) GSlice[R] {
 	var results []R
 	for _, e := range slice {
 		results = append(results, function(e)...)
@@ -58,7 +58,7 @@ func FlatMap[T, R any](slice Slice[T], function genfuncs.Function[T, Slice[R]]) 
 
 // Fold accumulates a value starting with initial value and applying operation from left to right to current
 // accumulated value and each element.
-func Fold[T, R any](slice Slice[T], initial R, biFunction genfuncs.BiFunction[R, T, R]) R {
+func Fold[T, R any](slice GSlice[T], initial R, biFunction genfuncs.BiFunction[R, T, R]) R {
 	r := initial
 	for _, t := range slice {
 		r = biFunction(r, t)
@@ -68,8 +68,8 @@ func Fold[T, R any](slice Slice[T], initial R, biFunction genfuncs.BiFunction[R,
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to
 // each element and returns a map where each group key is associated with a slice of corresponding elements.
-func GroupBy[T any, K comparable](slice Slice[T], keyFor genfuncs.MapKeyFor[T, K]) map[K]Slice[T] {
-	m := make(map[K]Slice[T])
+func GroupBy[T any, K comparable](slice GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) GMap[K, GSlice[T]] {
+	m := make(map[K]GSlice[T])
 	for _, e := range slice {
 		k := keyFor(e)
 		m[k] = append(m[k], e)
@@ -78,7 +78,7 @@ func GroupBy[T any, K comparable](slice Slice[T], keyFor genfuncs.MapKeyFor[T, K
 }
 
 // Map returns a slice containing the results of applying the given transform function to each element in the original slice.
-func Map[T, R any](slice Slice[T], function genfuncs.Function[T, R]) Slice[R] {
+func Map[T, R any](slice GSlice[T], function genfuncs.Function[T, R]) GSlice[R] {
 	var results = make([]R, len(slice))
 	for i, e := range slice {
 		results[i] = function(e)
@@ -86,6 +86,6 @@ func Map[T, R any](slice Slice[T], function genfuncs.Function[T, R]) Slice[R] {
 	return results
 }
 
-func ToSet[T comparable](slice Slice[T]) *MapSet[T] {
+func ToSet[T comparable](slice GSlice[T]) *MapSet[T] {
 	return NewMapSet(slice...)
 }

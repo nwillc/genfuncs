@@ -65,11 +65,11 @@ func TestDeque_Inserting(t *testing.T) {
 
 func TestDeque_AddAll(t *testing.T) {
 	type args struct {
-		slice container.Slice[string]
+		slice container.GSlice[string]
 	}
 	tests := []struct {
 		name string
-		want container.Slice[string]
+		want container.GSlice[string]
 		args args
 	}{
 		{
@@ -192,7 +192,7 @@ func TestDeque_AddLeft(t *testing.T) {
 }
 
 func TestDeque_Values(t *testing.T) {
-	s := container.Slice[int]{1, 2, 3}
+	s := container.GSlice[int]{1, 2, 3}
 	d := container.NewDeque(s...)
 	assert.True(t, s.Compare(d.Values(), genfuncs.EqualComparable[int]))
 }

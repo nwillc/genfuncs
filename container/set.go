@@ -21,8 +21,8 @@ type Set[T comparable] interface {
 	Bag[T]
 	// Contains returns true if the Set contains a given element.
 	Contains(t T) bool
-	// Values in the Set as a Slice.
-	Values() Slice[T]
+	// Values in the Set as a GSlice.
+	Values() GSlice[T]
 	// Remove a given element from the Set.
 	Remove(t T)
 }

@@ -74,7 +74,7 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := container.Slice[string](tt.args.slice).All(tt.args.predicate)
+			got := container.GSlice[string](tt.args.slice).All(tt.args.predicate)
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -82,7 +82,7 @@ func TestAll(t *testing.T) {
 
 func TestAny(t *testing.T) {
 	type args struct {
-		slice     container.Slice[string]
+		slice     container.GSlice[string]
 		predicate genfuncs.Function[string, bool]
 	}
 	tests := []struct {
@@ -125,7 +125,7 @@ func TestAny(t *testing.T) {
 
 func TestContains(t *testing.T) {
 	type args struct {
-		slice   container.Slice[string]
+		slice   container.GSlice[string]
 		element string
 	}
 	tests := []struct {
@@ -168,13 +168,13 @@ func TestContains(t *testing.T) {
 
 func TestFilter(t *testing.T) {
 	type args struct {
-		slice     container.Slice[int]
+		slice     container.GSlice[int]
 		predicate genfuncs.Function[int, bool]
 	}
 	tests := []struct {
 		name string
 		args args
-		want container.Slice[int]
+		want container.GSlice[int]
 	}{
 		{
 			name: "Empty",
@@ -203,7 +203,7 @@ func TestFilter(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	type args struct {
-		slice     container.Slice[float32]
+		slice     container.GSlice[float32]
 		predicate genfuncs.Function[float32, bool]
 	}
 	tests := []struct {
@@ -253,7 +253,7 @@ func TestFind(t *testing.T) {
 
 func TestFindLast(t *testing.T) {
 	type args struct {
-		slice     container.Slice[float32]
+		slice     container.GSlice[float32]
 		predicate genfuncs.Function[float32, bool]
 	}
 	tests := []struct {
@@ -304,7 +304,7 @@ func TestFindLast(t *testing.T) {
 func TestJoinToString(t *testing.T) {
 	personStringer := genfuncs.StringerToString[PersonName]()
 	type args struct {
-		slice     container.Slice[PersonName]
+		slice     container.GSlice[PersonName]
 		separator string
 		prefix    string
 		postfix   string
@@ -386,7 +386,7 @@ func TestSortBy(t *testing.T) {
 		genfuncs.I64NumericOrder,
 	)
 	type args struct {
-		slice      container.Slice[time.Time]
+		slice      container.GSlice[time.Time]
 		comparator genfuncs.BiFunction[time.Time, time.Time, bool]
 	}
 	now := time.Now()
@@ -430,7 +430,7 @@ func TestSortBy(t *testing.T) {
 }
 
 func TestRandom(t *testing.T) {
-	var s container.Slice[int] = []int{1, 2, 3}
+	var s container.GSlice[int] = []int{1, 2, 3}
 
 	for c := 0; c < 2*len(s); c++ {
 		i := s.Random()
@@ -441,8 +441,8 @@ func TestRandom(t *testing.T) {
 
 func TestCompare(t *testing.T) {
 	type args struct {
-		a container.Slice[string]
-		b container.Slice[string]
+		a container.GSlice[string]
+		b container.GSlice[string]
 	}
 	tests := []struct {
 		name     string
@@ -485,7 +485,7 @@ func TestCompare(t *testing.T) {
 func TestSlice_ForEach(t *testing.T) {
 	tests := []struct {
 		name string
-		s    container.Slice[int]
+		s    container.GSlice[int]
 		want int
 	}{
 		{
@@ -494,12 +494,12 @@ func TestSlice_ForEach(t *testing.T) {
 		},
 		{
 			name: "Empty",
-			s:    container.Slice[int]{},
+			s:    container.GSlice[int]{},
 			want: 0,
 		},
 		{
 			name: "Two",
-			s:    container.Slice[int]{1, 1},
+			s:    container.GSlice[int]{1, 1},
 			want: 2,
 		},
 	}
@@ -517,7 +517,7 @@ func TestSlice_ForEach(t *testing.T) {
 func TestSlice_ForEachI(t *testing.T) {
 	tests := []struct {
 		name string
-		s    container.Slice[int]
+		s    container.GSlice[int]
 		want int
 	}{
 		{
@@ -526,12 +526,12 @@ func TestSlice_ForEachI(t *testing.T) {
 		},
 		{
 			name: "Empty",
-			s:    container.Slice[int]{},
+			s:    container.GSlice[int]{},
 			want: 0,
 		},
 		{
 			name: "Two",
-			s:    container.Slice[int]{0, 1},
+			s:    container.GSlice[int]{0, 1},
 			want: 2,
 		},
 	}

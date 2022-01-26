@@ -18,15 +18,21 @@ package container_test
 
 import (
 	"github.com/nwillc/genfuncs/container"
+	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
+
+func TestGMapContains(t *testing.T) {
+	var m container.GMap[string, bool] = map[string]bool{"a": true}
+	assert.Equal(t, true, m.Contains("a"))
+	delete(m, "a")
+	assert.Equal(t, false, m.Contains("a"))
+}
 
 func TestKeys(t *testing.T) {
 	type args struct {
-		m map[string]string
+		m container.GMap[string, string]
 	}
 	tests := []struct {
 		name string
@@ -57,7 +63,7 @@ func TestKeys(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			keys := container.Keys(tt.args.m)
+			keys := tt.args.m.Keys()
 			assert.Equal(t, len(tt.want), len(keys))
 			for _, k := range keys {
 				_, ok := tt.args.m[k]
@@ -69,7 +75,7 @@ func TestKeys(t *testing.T) {
 
 func TestValues(t *testing.T) {
 	type args struct {
-		m map[string]int
+		m container.GMap[string, int]
 	}
 	tests := []struct {
 		name string
@@ -100,7 +106,7 @@ func TestValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			values := container.Values(tt.args.m)
+			values := tt.args.m.Values()
 			assert.Equal(t, len(tt.want), len(values))
 			for _, v := range values {
 				k := strconv.Itoa(v)
@@ -109,11 +115,4 @@ func TestValues(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestMapContains(t *testing.T) {
-	m := map[string]bool{"a": true}
-	assert.Equal(t, true, container.Contains(m, "a"))
-	delete(m, "a")
-	assert.Equal(t, false, container.Contains(m, "a"))
 }

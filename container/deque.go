@@ -23,7 +23,7 @@ var _ Queue[bool] = (*Deque[bool])(nil)
 
 // Deque is a doubly ended Queue with default behavior of a Fifo but provides left and right access.
 type Deque[T any] struct {
-	slice Slice[T]
+	slice GSlice[T]
 	head  int
 	tail  int
 	count int
@@ -113,9 +113,9 @@ func (d *Deque[T]) RemoveRight() T {
 	return v
 }
 
-// Values in the Deque returned in a new Slice.
-func (d *Deque[T]) Values() Slice[T] {
-	newSlice := make(Slice[T], d.Len())
+// Values in the Deque returned in a new GSlice.
+func (d *Deque[T]) Values() GSlice[T] {
+	newSlice := make(GSlice[T], d.Len())
 	d.copy(newSlice)
 	return newSlice
 }
@@ -131,7 +131,7 @@ func (d *Deque[T]) expand() {
 		return
 	}
 	if d.Cap() == 0 {
-		d.slice = make(Slice[T], minimumCapacity)
+		d.slice = make(GSlice[T], minimumCapacity)
 		return
 	}
 	d.resize()
@@ -155,8 +155,8 @@ func (d *Deque[T]) resize() {
 	d.slice = newSlice
 }
 
-// copy the values, in order, from the Deque to a Slice.
-func (d *Deque[T]) copy(slice Slice[T]) {
+// copy the values, in order, from the Deque to a GSlice.
+func (d *Deque[T]) copy(slice GSlice[T]) {
 	if d.tail > d.head {
 		copy(slice, d.slice[d.head:d.tail])
 	} else {

@@ -26,8 +26,8 @@ import (
 )
 
 var greaterThanZero = genfuncs.IsGreaterThanOrdered(0)
-var wordPositions = map[string]int{"hello": 1, "world": 2}
-var words container.Slice[string] = []string{"hello", "world"}
+var wordPositions = container.GMap[string, int]{"hello": 1, "world": 2}
+var words container.GSlice[string] = []string{"hello", "world"}
 
 func TestFunctionExamples(t *testing.T) {
 	if _, ok := os.LookupEnv("RUN_EXAMPLES"); !ok {
@@ -39,7 +39,7 @@ func TestFunctionExamples(t *testing.T) {
 	ExampleContains()
 	ExampleKeys()
 	ExampleValues()
-	// Slice fluent
+	// GSlice fluent
 	ExampleSlice_All()
 	ExampleSlice_Any()
 	ExampleSlice_Filter()
@@ -70,44 +70,42 @@ func ExampleNewHeap() {
 }
 
 func ExampleContains() {
-	fmt.Println(container.Contains(wordPositions, "hello")) // true
-	fmt.Println(container.Contains(wordPositions, "no"))    // false
+	fmt.Println(wordPositions.Contains("hello")) // true
+	fmt.Println(wordPositions.Contains("no"))    // false
 }
 
 func ExampleKeys() {
-	keys := container.Keys(wordPositions)
-	fmt.Println(keys) // [hello, world]
+	fmt.Println(wordPositions.Keys()) // [hello, world]
 }
 
 func ExampleValues() {
-	values := container.Values(wordPositions)
-	fmt.Println(values) // [1, 2]
+	fmt.Println(wordPositions.Values()) // [1, 2]
 }
 
 func ExampleSlice_All() {
-	var numbers container.Slice[int] = []int{1, 2, 3, 4}
+	var numbers container.GSlice[int] = []int{1, 2, 3, 4}
 	fmt.Println(numbers.All(greaterThanZero)) // true
 }
 
 func ExampleSlice_Any() {
-	var fruits container.Slice[string] = []string{"apple", "banana", "grape"}
+	var fruits container.GSlice[string] = []string{"apple", "banana", "grape"}
 	isPear := genfuncs.IsEqualComparable("pear")
 	fmt.Println(fruits.Any(isPear))               // false
 	fmt.Println(fruits.Any(genfuncs.Not(isPear))) // true
 }
 
 func ExampleSlice_Filter() {
-	var values container.Slice[int] = []int{1, -2, 2, -3}
+	var values container.GSlice[int] = []int{1, -2, 2, -3}
 	fmt.Println(values.Filter(greaterThanZero)) // [1 2]
 }
 
 func ExampleSlice_Find() {
-	var values container.Slice[int] = []int{-1, -2, 2, -3}
+	var values container.GSlice[int] = []int{-1, -2, 2, -3}
 	fmt.Println(values.Find(greaterThanZero)) // 2 true
 }
 
 func ExampleSlice_FindLast() {
-	var values container.Slice[int] = []int{-1, -2, 2, 3}
+	var values container.GSlice[int] = []int{-1, -2, 2, 3}
 	fmt.Println(values.FindLast(greaterThanZero)) // 3 true
 }
 
@@ -122,7 +120,7 @@ func ExampleSlice_JoinToString() {
 }
 
 func ExampleSlice_SortBy() {
-	var numbers container.Slice[int] = []int{1, 0, 9, 6, 0}
+	var numbers container.GSlice[int] = []int{1, 0, 9, 6, 0}
 	fmt.Println(numbers)                                // [1 0 9 6 0]
 	fmt.Println(numbers.SortBy(genfuncs.INumericOrder)) // [0 0 1 6 9]
 }
@@ -163,7 +161,7 @@ func ExampleDistinct() {
 }
 
 func ExampleFlatMap() {
-	slicer := func(s string) container.Slice[string] { return strings.Split(s, "") }
+	slicer := func(s string) container.GSlice[string] { return strings.Split(s, "") }
 	fmt.Println(container.FlatMap(words.SortBy(genfuncs.SLexicalOrder), slicer)) // [h e l l o w o r l d]
 }
 
@@ -192,7 +190,7 @@ func ExampleMap() {
 }
 
 func ExampleSort() {
-	var letters container.Slice[string] = strings.Split("example", "")
+	var letters container.GSlice[string] = strings.Split("example", "")
 
 	letters.Sort(genfuncs.SLexicalOrder)
 	fmt.Println(letters) // [a e e l m p x]

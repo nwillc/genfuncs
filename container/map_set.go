@@ -24,7 +24,7 @@ var (
 
 // MapSet is a Set implementation based on a map. MapSet implements Set.
 type MapSet[T comparable] struct {
-	set map[T]struct{}
+	set GMap[T, struct{}]
 }
 
 // NewMapSet returns a new MapSet containing given values.
@@ -62,7 +62,7 @@ func (h *MapSet[T]) Remove(t T) {
 	delete(h.set, t)
 }
 
-// Values returns the elements in the MapSet as a Slice.
-func (h *MapSet[T]) Values() Slice[T] {
-	return Keys(h.set)
+// Values returns the elements in the MapSet as a GSlice.
+func (h *MapSet[T]) Values() GSlice[T] {
+	return h.set.Keys()
 }

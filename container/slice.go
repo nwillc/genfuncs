@@ -27,11 +27,11 @@ var (
 	random = rand.New(rand.NewSource(time.Now().Unix()))
 )
 
-// Slice is a generic type corresponding to a standard Go slice.
-type Slice[T any] []T
+// GSlice is a generic type corresponding to a standard Go slice.
+type GSlice[T any] []T
 
 // All returns true if all elements of slice match the predicate.
-func (s Slice[T]) All(predicate genfuncs.Function[T, bool]) bool {
+func (s GSlice[T]) All(predicate genfuncs.Function[T, bool]) bool {
 	for _, e := range s {
 		if !predicate(e) {
 			return false
@@ -41,7 +41,7 @@ func (s Slice[T]) All(predicate genfuncs.Function[T, bool]) bool {
 }
 
 // Any returns true if any element of the slice matches the predicate.
-func (s Slice[T]) Any(predicate genfuncs.Function[T, bool]) bool {
+func (s GSlice[T]) Any(predicate genfuncs.Function[T, bool]) bool {
 	for _, e := range s {
 		if predicate(e) {
 			return true
@@ -50,9 +50,9 @@ func (s Slice[T]) Any(predicate genfuncs.Function[T, bool]) bool {
 	return false
 }
 
-// Compare one Slice to another, applying a comparison to each pair of corresponding entries. Compare returns true
+// Compare one GSlice to another, applying a comparison to each pair of corresponding entries. Compare returns true
 // if all the pair's comparison return true. While the comparison might test equality it could have any behavior.
-func (s Slice[T]) Compare(s2 Slice[T], comparison genfuncs.BiFunction[T, T, bool]) bool {
+func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, bool]) bool {
 	if len(s) != len(s2) {
 		return false
 	}
@@ -65,7 +65,7 @@ func (s Slice[T]) Compare(s2 Slice[T], comparison genfuncs.BiFunction[T, T, bool
 }
 
 // Filter returns a slice containing only elements matching the given predicate.
-func (s Slice[T]) Filter(predicate genfuncs.Function[T, bool]) Slice[T] {
+func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T] {
 	var results []T
 	s.ForEach(func(t T) {
 		if predicate(t) {
@@ -76,7 +76,7 @@ func (s Slice[T]) Filter(predicate genfuncs.Function[T, bool]) Slice[T] {
 }
 
 // Find returns the first element matching the given predicate and true, or false when no such element was found.
-func (s Slice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
+func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
 	for _, t := range s {
 		if predicate(t) {
 			return t, true
@@ -87,7 +87,7 @@ func (s Slice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
 }
 
 // FindLast returns the last element matching the given predicate and true, or false when no such element was found.
-func (s Slice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
+func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
 	var last T
 	var found = false
 	s.ForEach(func(t T) {
@@ -99,17 +99,17 @@ func (s Slice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
 	return last, found
 }
 
-// ForEach element of the Slice invoke given function with the element. Syntactic sugar for a range that intends to
+// ForEach element of the GSlice invoke given function with the element. Syntactic sugar for a range that intends to
 // traverse all the elements, i.e. no exiting midway through.
-func (s Slice[T]) ForEach(fn func(t T)) {
+func (s GSlice[T]) ForEach(fn func(t T)) {
 	for _, t := range s {
 		fn(t)
 	}
 }
 
-// ForEachI element of the Slice invoke given function with the element and its index in the Slice.
+// ForEachI element of the GSlice invoke given function with the element and its index in the GSlice.
 // Syntactic sugar for a range that intends to traverse all the elements, i.e. no exiting midway through.
-func (s Slice[T]) ForEachI(fn func(i int, t T)) {
+func (s GSlice[T]) ForEachI(fn func(i int, t T)) {
 	for i, t := range s {
 		fn(i, t)
 	}
@@ -117,7 +117,7 @@ func (s Slice[T]) ForEachI(fn func(i int, t T)) {
 
 // JoinToString creates a string from all the elements using the stringer on each, separating them using separator, and
 // using the given prefix and postfix.
-func (s Slice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string {
+func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string {
 	var sb strings.Builder
 	sb.WriteString(prefix)
 	last := len(s) - 1
@@ -131,25 +131,25 @@ func (s Slice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, 
 	return sb.String()
 }
 
-func (s Slice[T]) Random() T {
+func (s GSlice[T]) Random() T {
 	return s[random.Intn(len(s))]
 }
 
 // SortBy copies a slice, sorts the copy applying the Comparator and returns it.
-func (s Slice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) Slice[T] {
+func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T] {
 	dst := make([]T, len(s))
 	copy(dst, s)
-	Slice[T](dst).Sort(lessThan)
+	GSlice[T](dst).Sort(lessThan)
 	return dst
 }
 
 // Swap two values in the slice.
-func (s Slice[T]) Swap(i, j int) {
+func (s GSlice[T]) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-// inBounds panics if given index out of Slice's bounds.
-func (s Slice[T]) inBounds(i int) {
+// inBounds panics if given index out of GSlice's bounds.
+func (s GSlice[T]) inBounds(i int) {
 	if i < 0 || i > len(s)-1 {
 		panic(genfuncs.NoSuchElement)
 	}
