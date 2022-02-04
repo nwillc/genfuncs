@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-go@v2
       with:
         stable: 'false'
-        go-version: '1.18.0-beta1'
+        go-version: '1.18.0-beta2'
 
     - name: Build
       run: go build -v ./...
@@ -27,4 +27,4 @@ jobs:
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
-      
+
