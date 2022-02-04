@@ -5,6 +5,12 @@ header: |+
   [![CI](https://github.com/nwillc/genfuncs/workflows/CI/badge.svg)](https://github.com/nwillc/genfuncs/actions/workflows/CI.yml)
   [![codecov.io](https://codecov.io/github/nwillc/genfuncs/coverage.svg?branch=master)](https://codecov.io/github/nwillc/genfuncs?branch=master)
   [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
+  
+  # Go Get
+  
+  ```bash
+  go get github.com/nwillc/genfuncs
+  ```
 
   # Packages
   - [genfuncs](<#genfuncs>)
