@@ -113,7 +113,7 @@ LessThanOrdered tests if constraints\.Ordered a is less than b\.
 func Max[T constraints.Ordered](v ...T) T
 ```
 
-Max returns max value of two constraints\.Ordered values\,
+Max returns max value one or more constraints\.Ordered values\,
 
 <details><summary>Example</summary>
 <p>
@@ -141,7 +141,7 @@ func main() {
 func Min[T constraints.Ordered](v ...T) T
 ```
 
-Min returns min value of two constraints\.Ordered values\,
+Min returns min value of one or more constraints\.Ordered values\,
 
 <details><summary>Example</summary>
 <p>
