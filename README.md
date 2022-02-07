@@ -329,7 +329,13 @@ import "github.com/nwillc/genfuncs/container"
 
 ## Index
 
+- [Constants](<#constants>)
+- [Variables](<#variables>)
 - [func Fold[T, R any](slice GSlice[T], initial R, biFunction genfuncs.BiFunction[R, T, R]) R](<#func-fold>)
+- [func left(i int) int](<#func-left>)
+- [func maxDepth(n int) int](<#func-maxdepth>)
+- [func parent(i int) int](<#func-parent>)
+- [func right(i int) int](<#func-right>)
 - [type Bag](<#type-bag>)
 - [type Deque](<#type-deque>)
   - [func NewDeque[T any](t ...T) *Deque[T]](<#func-newdeque>)
@@ -346,6 +352,12 @@ import "github.com/nwillc/genfuncs/container"
   - [func (d *Deque[T]) RemoveLeft() T](<#func-dequet-removeleft>)
   - [func (d *Deque[T]) RemoveRight() T](<#func-dequet-removeright>)
   - [func (d *Deque[T]) Values() GSlice[T]](<#func-dequet-values>)
+  - [func (d *Deque[T]) contract()](<#func-dequet-contract>)
+  - [func (d *Deque[T]) copy(slice GSlice[T])](<#func-dequet-copy>)
+  - [func (d *Deque[T]) expand()](<#func-dequet-expand>)
+  - [func (d *Deque[T]) next(i int) int](<#func-dequet-next>)
+  - [func (d *Deque[T]) prev(i int) int](<#func-dequet-prev>)
+  - [func (d *Deque[T]) resize()](<#func-dequet-resize>)
 - [type GMap](<#type-gmap>)
   - [func Associate[T, V any, K comparable](slice GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) GMap[K, V]](<#func-associate>)
   - [func AssociateWith[T comparable, V any](slice GSlice[T], valueFor genfuncs.MapValueFor[T, V]) GMap[T, V]](<#func-associatewith>)
@@ -371,6 +383,13 @@ import "github.com/nwillc/genfuncs/container"
   - [func (s GSlice[T]) Sort(lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-sort>)
   - [func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]](<#func-gslicet-sortby>)
   - [func (s GSlice[T]) Swap(i, j int)](<#func-gslicet-swap>)
+  - [func (s GSlice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool]) (midlo, midhi int)](<#func-gslicet-dopivot>)
+  - [func (s GSlice[T]) heapSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-heapsort>)
+  - [func (s GSlice[T]) inBounds(i int)](<#func-gslicet-inbounds>)
+  - [func (s GSlice[T]) insertionSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-insertionsort>)
+  - [func (s GSlice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-medianofthree>)
+  - [func (s GSlice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-quicksort>)
+  - [func (s GSlice[T]) siftDown(lo, hi, first int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-siftdown>)
 - [type Heap](<#type-heap>)
   - [func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T]](<#func-newheap>)
   - [func (h *Heap[T]) Add(v T)](<#func-heapt-add>)
@@ -379,6 +398,8 @@ import "github.com/nwillc/genfuncs/container"
   - [func (h *Heap[T]) Peek() T](<#func-heapt-peek>)
   - [func (h *Heap[T]) Remove() T](<#func-heapt-remove>)
   - [func (h *Heap[T]) Values() GSlice[T]](<#func-heapt-values>)
+  - [func (h *Heap[T]) down()](<#func-heapt-down>)
+  - [func (h *Heap[T]) up(jj int)](<#func-heapt-up>)
 - [type MapSet](<#type-mapset>)
   - [func NewMapSet[T comparable](t ...T) *MapSet[T]](<#func-newmapset>)
   - [func ToSet[T comparable](slice GSlice[T]) *MapSet[T]](<#func-toset>)
@@ -391,6 +412,20 @@ import "github.com/nwillc/genfuncs/container"
 - [type Queue](<#type-queue>)
 - [type Set](<#type-set>)
 
+
+## Constants
+
+```go
+const minimumCapacity = 16
+```
+
+## Variables
+
+```go
+var (
+    random = rand.New(rand.NewSource(time.Now().Unix()))
+)
+```
 
 ## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L61>)
 
@@ -421,6 +456,32 @@ func main() {
 </p>
 </details>
 
+## func [left](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L118>)
+
+```go
+func left(i int) int
+```
+
+## func [maxDepth](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L210>)
+
+```go
+func maxDepth(n int) int
+```
+
+maxDepth returns a threshold at which quicksort should switch to heapsort\. It returns 2\*ceil\(lg\(n\+1\)\)\.
+
+## func [parent](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L117>)
+
+```go
+func parent(i int) int
+```
+
+## func [right](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L119>)
+
+```go
+func right(i int) int
+```
+
 ## type [Bag](<https://github.com/nwillc/genfuncs/blob/master/container/bag.go#L20-L29>)
 
 Bag is a minimal container that accepts elements\.
@@ -438,17 +499,22 @@ type Bag[T any] interface {
 }
 ```
 
-## type [Deque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L25-L31>)
+## type [Deque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L22-L29>)
 
 Deque is a doubly ended Queue with default behavior of a Fifo but provides left and right access\.
 
 ```go
 type Deque[T any] struct {
-    // contains filtered or unexported fields
+    Queue[T]
+    slice GSlice[T]
+    head  int
+    tail  int
+    count int
+    tNil  T
 }
 ```
 
-### func [NewDeque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L34>)
+### func [NewDeque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L32>)
 
 ```go
 func NewDeque[T any](t ...T) *Deque[T]
@@ -456,7 +522,7 @@ func NewDeque[T any](t ...T) *Deque[T]
 
 NewDeque creates a Deque containing any provided elements\.
 
-### func \(\*Deque\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L41>)
+### func \(\*Deque\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L39>)
 
 ```go
 func (d *Deque[T]) Add(t T)
@@ -464,7 +530,7 @@ func (d *Deque[T]) Add(t T)
 
 Add an element to the right of the Deque\.
 
-### func \(\*Deque\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L46>)
+### func \(\*Deque\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L44>)
 
 ```go
 func (d *Deque[T]) AddAll(t ...T)
@@ -472,7 +538,7 @@ func (d *Deque[T]) AddAll(t ...T)
 
 AddAll elements to the right of the Deque\.
 
-### func \(\*Deque\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L53>)
+### func \(\*Deque\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L51>)
 
 ```go
 func (d *Deque[T]) AddLeft(t T)
@@ -480,7 +546,7 @@ func (d *Deque[T]) AddLeft(t T)
 
 AddLeft an element to the left of the Deque\.
 
-### func \(\*Deque\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L61>)
+### func \(\*Deque\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L59>)
 
 ```go
 func (d *Deque[T]) AddRight(t T)
@@ -488,7 +554,7 @@ func (d *Deque[T]) AddRight(t T)
 
 AddRight an element to the right of the Deque\.
 
-### func \(\*Deque\[T\]\) [Cap](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L124>)
+### func \(\*Deque\[T\]\) [Cap](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L122>)
 
 ```go
 func (d *Deque[T]) Cap() int
@@ -496,7 +562,7 @@ func (d *Deque[T]) Cap() int
 
 Cap returns the capacity of the Deque\.
 
-### func \(\*Deque\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L69>)
+### func \(\*Deque\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L67>)
 
 ```go
 func (d *Deque[T]) Len() int
@@ -504,7 +570,7 @@ func (d *Deque[T]) Len() int
 
 Len reports the length of the Deque\.
 
-### func \(\*Deque\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L74>)
+### func \(\*Deque\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L72>)
 
 ```go
 func (d *Deque[T]) Peek() T
@@ -512,7 +578,7 @@ func (d *Deque[T]) Peek() T
 
 Peek returns the left most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L79>)
+### func \(\*Deque\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L77>)
 
 ```go
 func (d *Deque[T]) PeekLeft() T
@@ -520,7 +586,7 @@ func (d *Deque[T]) PeekLeft() T
 
 PeekLeft returns the left most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L85>)
+### func \(\*Deque\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L83>)
 
 ```go
 func (d *Deque[T]) PeekRight() T
@@ -528,7 +594,7 @@ func (d *Deque[T]) PeekRight() T
 
 PeekRight returns the right most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L92>)
+### func \(\*Deque\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L90>)
 
 ```go
 func (d *Deque[T]) Remove() T
@@ -536,7 +602,7 @@ func (d *Deque[T]) Remove() T
 
 Remove and return the left most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [RemoveLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L97>)
+### func \(\*Deque\[T\]\) [RemoveLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L95>)
 
 ```go
 func (d *Deque[T]) RemoveLeft() T
@@ -544,7 +610,7 @@ func (d *Deque[T]) RemoveLeft() T
 
 RemoveLeft and return the left most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [RemoveRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L107>)
+### func \(\*Deque\[T\]\) [RemoveRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L105>)
 
 ```go
 func (d *Deque[T]) RemoveRight() T
@@ -552,13 +618,61 @@ func (d *Deque[T]) RemoveRight() T
 
 RemoveRight and return the right most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L117>)
+### func \(\*Deque\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L115>)
 
 ```go
 func (d *Deque[T]) Values() GSlice[T]
 ```
 
 Values in the Deque returned in a new GSlice\.
+
+### func \(\*Deque\[T\]\) [contract](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L139>)
+
+```go
+func (d *Deque[T]) contract()
+```
+
+contract Deque capacity if only 1/4 full\.
+
+### func \(\*Deque\[T\]\) [copy](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L157>)
+
+```go
+func (d *Deque[T]) copy(slice GSlice[T])
+```
+
+copy the values\, in order\, from the Deque to a GSlice\.
+
+### func \(\*Deque\[T\]\) [expand](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L127>)
+
+```go
+func (d *Deque[T]) expand()
+```
+
+expand the Deque capacity if needed\.
+
+### func \(\*Deque\[T\]\) [next](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L172>)
+
+```go
+func (d *Deque[T]) next(i int) int
+```
+
+next returns the next buffer position wrapping around buffer\.
+
+### func \(\*Deque\[T\]\) [prev](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L167>)
+
+```go
+func (d *Deque[T]) prev(i int) int
+```
+
+prev returns the previous buffer position wrapping around buffer\.
+
+### func \(\*Deque\[T\]\) [resize](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L148>)
+
+```go
+func (d *Deque[T]) resize()
+```
+
+resize the Deque to fit exactly twice its current contents\.  This is used to grow the queue when it is full\, and also to shrink it when it is only a quarter full\.
 
 ## type [GMap](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L20>)
 
@@ -872,11 +986,13 @@ func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string,
 
 JoinToString creates a string from all the elements using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
 
-### func \(GSlice\[T\]\) [Random](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L134>)
+### func \(GSlice\[T\]\) [Random](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L135>)
 
 ```go
 func (s GSlice[T]) Random() T
 ```
+
+Random returns a random element of the GSlice\.
 
 ### func \(GSlice\[T\]\) [Sort](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L24>)
 
@@ -886,7 +1002,7 @@ func (s GSlice[T]) Sort(lessThan genfuncs.BiFunction[T, T, bool])
 
 Sort sorts a slice by the LessThan order\.
 
-### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L139>)
+### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L140>)
 
 ```go
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]
@@ -894,7 +1010,7 @@ func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]
 
 SortBy copies a slice\, sorts the copy applying the Comparator and returns it\.
 
-### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L147>)
+### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L148>)
 
 ```go
 func (s GSlice[T]) Swap(i, j int)
@@ -902,17 +1018,68 @@ func (s GSlice[T]) Swap(i, j int)
 
 Swap two values in the slice\.
 
-## type [Heap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L27-L31>)
+### func \(GSlice\[T\]\) [doPivot](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L91>)
+
+```go
+func (s GSlice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool]) (midlo, midhi int)
+```
+
+### func \(GSlice\[T\]\) [heapSort](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L57>)
+
+```go
+func (s GSlice[T]) heapSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool])
+```
+
+### func \(GSlice\[T\]\) [inBounds](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L153>)
+
+```go
+func (s GSlice[T]) inBounds(i int)
+```
+
+inBounds panics if given index out of GSlice's bounds\.
+
+### func \(GSlice\[T\]\) [insertionSort](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L29>)
+
+```go
+func (s GSlice[T]) insertionSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool])
+```
+
+### func \(GSlice\[T\]\) [medianOfThree](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L75>)
+
+```go
+func (s GSlice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T, T, bool])
+```
+
+medianOfThree moves the median of the three values data\[m0\]\, data\[m1\]\, data\[m2\] into data\[m1\]\.
+
+### func \(GSlice\[T\]\) [quickSort](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L178>)
+
+```go
+func (s GSlice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T, T, bool])
+```
+
+### func \(GSlice\[T\]\) [siftDown](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L39>)
+
+```go
+func (s GSlice[T]) siftDown(lo, hi, first int, lessThan genfuncs.BiFunction[T, T, bool])
+```
+
+siftDown implements the heap property on data\[lo:hi\]\. first is an offset into the array where the root of the heap lies\.
+
+## type [Heap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L24-L29>)
 
 Heap implements either a min or max ordered heap of any type\. Heap implements Queue\.
 
 ```go
 type Heap[T any] struct {
-    // contains filtered or unexported fields
+    Queue[T]
+    slice    GSlice[T]
+    lessThan genfuncs.BiFunction[T, T, bool]
+    ordered  bool
 }
 ```
 
-### func [NewHeap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L34>)
+### func [NewHeap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L32>)
 
 ```go
 func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T]
@@ -945,7 +1112,7 @@ func main() {
 </p>
 </details>
 
-### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L44>)
+### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L42>)
 
 ```go
 func (h *Heap[T]) Add(v T)
@@ -953,7 +1120,7 @@ func (h *Heap[T]) Add(v T)
 
 Add a value onto the heap\.
 
-### func \(\*Heap\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L51>)
+### func \(\*Heap\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L49>)
 
 ```go
 func (h *Heap[T]) AddAll(values ...T)
@@ -961,7 +1128,7 @@ func (h *Heap[T]) AddAll(values ...T)
 
 AddAll the values onto the Heap\.
 
-### func \(\*Heap\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L41>)
+### func \(\*Heap\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L39>)
 
 ```go
 func (h *Heap[T]) Len() int
@@ -969,7 +1136,7 @@ func (h *Heap[T]) Len() int
 
 Len returns current length of the heap\.
 
-### func \(\*Heap\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L60>)
+### func \(\*Heap\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L58>)
 
 ```go
 func (h *Heap[T]) Peek() T
@@ -977,7 +1144,7 @@ func (h *Heap[T]) Peek() T
 
 Peek returns the next element without removing it\.
 
-### func \(\*Heap\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L75>)
+### func \(\*Heap\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L73>)
 
 ```go
 func (h *Heap[T]) Remove() T
@@ -985,7 +1152,7 @@ func (h *Heap[T]) Remove() T
 
 Remove an item off the heap\.
 
-### func \(\*Heap\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L83>)
+### func \(\*Heap\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L81>)
 
 ```go
 func (h *Heap[T]) Values() GSlice[T]
@@ -993,13 +1160,25 @@ func (h *Heap[T]) Values() GSlice[T]
 
 Values returns a slice of the values in the Heap in no particular order\.
 
+### func \(\*Heap\[T\]\) [down](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L96>)
+
+```go
+func (h *Heap[T]) down()
+```
+
+### func \(\*Heap\[T\]\) [up](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L85>)
+
+```go
+func (h *Heap[T]) up(jj int)
+```
+
 ## type [MapSet](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L26-L28>)
 
 MapSet is a Set implementation based on a map\. MapSet implements Set\.
 
 ```go
 type MapSet[T comparable] struct {
-    // contains filtered or unexported fields
+    set GMap[T, struct{}]
 }
 ```
 
@@ -1067,16 +1246,15 @@ Values returns the elements in the MapSet as a GSlice\.
 
 ## type [Queue](<https://github.com/nwillc/genfuncs/blob/master/container/queue.go#L20-L26>)
 
-Queue is a container providing some define order when accessing elements\.
+Queue is a container providing some define order when accessing elements\. Queue implements Bag\.
 
 ```go
 type Queue[T any] interface {
-
+    Bag[T]
     // Peek returns the next element without removing it.
     Peek() T
     // Remove a given element from the Queue.
     Remove() T
-    // contains filtered or unexported methods
 }
 ```
 
@@ -1086,15 +1264,22 @@ Set is a container that contains no duplicate elements\.
 
 ```go
 type Set[T comparable] interface {
-
+    Bag[T]
     // Contains returns true if the Set contains a given element.
     Contains(t T) bool
     // Values in the Set as a GSlice.
     Values() GSlice[T]
     // Remove a given element from the Set.
     Remove(t T)
-    // contains filtered or unexported methods
 }
+```
+
+```go
+var (
+    // MapSet implements Set
+    _           Set[bool] = (*MapSet[bool])(nil)
+    mapNilEntry           = struct{}{}
+)
 ```
 
 # version
