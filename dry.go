@@ -17,8 +17,8 @@
 package genfuncs
 
 import (
-	"constraints"
 	"fmt"
+	"golang.org/x/exp/constraints"
 )
 
 var (
@@ -73,7 +73,7 @@ func IsLessThanOrdered[O constraints.Ordered](a O) Function[O, bool] {
 	return Curried(LessThanOrdered[O], a)
 }
 
-// Max returns max value of two constraints.Ordered values,
+// Max returns max value one or more constraints.Ordered values,
 func Max[T constraints.Ordered](v ...T) T {
 	if len(v) == 0 {
 		panic(fmt.Errorf("%w: at leat one value required", IllegalArguments))
@@ -87,7 +87,7 @@ func Max[T constraints.Ordered](v ...T) T {
 	return max
 }
 
-// Min returns min value of two constraints.Ordered values,
+// Min returns min value of one or more constraints.Ordered values,
 func Min[T constraints.Ordered](v ...T) T {
 	if len(v) == 0 {
 		panic(fmt.Errorf("%w: at leat one value required", IllegalArguments))

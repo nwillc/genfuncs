@@ -18,11 +18,9 @@ package container
 
 const minimumCapacity = 16
 
-// Deque implements Queue.
-var _ Queue[bool] = (*Deque[bool])(nil)
-
 // Deque is a doubly ended Queue with default behavior of a Fifo but provides left and right access.
 type Deque[T any] struct {
+	Queue[T]
 	slice GSlice[T]
 	head  int
 	tail  int

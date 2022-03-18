@@ -14,15 +14,29 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/*
+package container_test
 
-Package genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with slices. Many of the functions are based on Kotlin's Sequence. This package, though
-usable, is primarily a proof-of-concept since it is likely Go will provide similar at some point soon.
+import (
+	"fmt"
+	"os"
+	"testing"
 
-Examples are found in examples_test.go files or projects like https://github.com/nwillc/gordle
+	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container"
+)
 
-The code is under the ISC License: https://github.com/nwillc/genfuncs/blob/master/LICENSE.md
+func TestHeapFunctionExamples(t *testing.T) {
+	if _, ok := os.LookupEnv("RUN_EXAMPLES"); !ok {
+		t.Skip("skipping: RUN_EXAMPLES not set")
+	}
+	// Heap
+	ExampleNewHeap()
+}
 
-*/
-package genfuncs
+func ExampleNewHeap() {
+	heap := container.NewHeap(genfuncs.INumericOrder, 3, 1, 4, 2)
+	for heap.Len() > 0 {
+		fmt.Print(heap.Remove())
+	}
+	fmt.Println() // 1234
+}

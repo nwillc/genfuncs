@@ -6,12 +6,26 @@ header: |+
   [![codecov.io](https://codecov.io/github/nwillc/genfuncs/coverage.svg?branch=master)](https://codecov.io/github/nwillc/genfuncs?branch=master)
   [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
   
-  # Go Get
+  # Genfuncs
+  
+  Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
+  in particular when working with slices. Many of the functions are based on Kotlin's Sequence. This package, though
+  usable, is primarily a proof-of-concept since it is likely Go will provide similar at some point soon.
+  
+  Examples are found in examples_test.go files or projects like [gordle](https://github.com/nwillc/gordle).
+  
+  The code is under the [ISC License](https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
+  
+  # Requirements
+  
+  Build with Go 1.18
+  
+  # Getting
   
   ```bash
   go get github.com/nwillc/genfuncs
   ```
-
+  
   # Packages
   - [genfuncs](<#genfuncs>)
   - [genfuncs/container](<#container>)

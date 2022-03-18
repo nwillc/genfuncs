@@ -131,6 +131,7 @@ func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string,
 	return sb.String()
 }
 
+// Random returns a random element of the GSlice.
 func (s GSlice[T]) Random() T {
 	return s[random.Intn(len(s))]
 }

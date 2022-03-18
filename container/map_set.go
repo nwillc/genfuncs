@@ -17,13 +17,12 @@
 package container
 
 var (
-	// MapSet implements Set
-	_           Set[bool] = (*MapSet[bool])(nil)
-	mapNilEntry           = struct{}{}
+	mapNilEntry = struct{}{}
 )
 
 // MapSet is a Set implementation based on a map. MapSet implements Set.
 type MapSet[T comparable] struct {
+	Set[T]
 	set GMap[T, struct{}]
 }
 

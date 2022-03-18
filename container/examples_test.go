@@ -33,8 +33,6 @@ func TestFunctionExamples(t *testing.T) {
 	if _, ok := os.LookupEnv("RUN_EXAMPLES"); !ok {
 		t.Skip("skipping: RUN_EXAMPLES not set")
 	}
-	// Heap
-	ExampleNewHeap()
 	// Map
 	ExampleContains()
 	ExampleKeys()
@@ -58,15 +56,6 @@ func TestFunctionExamples(t *testing.T) {
 	ExampleMap()
 	// Sort
 	ExampleSort()
-}
-
-func ExampleNewHeap() {
-	heap := container.NewHeap(genfuncs.INumericOrder, 3, 1, 4, 2)
-	for heap.Len() > 0 {
-		fmt.Print(heap.Remove())
-	}
-	fmt.Println()
-	// 1234
 }
 
 func ExampleContains() {
