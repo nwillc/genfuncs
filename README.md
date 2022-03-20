@@ -8,7 +8,7 @@
 # Genfuncs
 
 Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with slices, maps and ssorting. Many of the functions are based on Kotlin's Sequence. 
+in particular when working with slices, maps and sorting. Many of the functions are based on Kotlin's Sequence. 
 This package, though very usable, is primarily a proof-of-concept since it is likely Go will provide similar before long.
 
 Examples are found in `examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
@@ -135,8 +135,9 @@ import (
 )
 
 func main() {
-	fmt.Println(genfuncs.Max(1, 2))         // 2
-	fmt.Println(genfuncs.Max("dog", "cat")) // dog
+	fmt.Println(genfuncs.Max(1, 2)) // 2
+	words := []string{"dog", "cat", "gorilla"}
+	fmt.Println(genfuncs.Max(words...)) // gorilla
 }
 ```
 
@@ -163,8 +164,9 @@ import (
 )
 
 func main() {
-	fmt.Println(genfuncs.Min(1, 2))         // 1
-	fmt.Println(genfuncs.Min("dog", "cat")) // cat
+	fmt.Println(genfuncs.Min(1, 2)) // 1
+	words := []string{"dog", "cat", "gorilla"}
+	fmt.Println(genfuncs.Min(words...)) // cat
 }
 ```
 

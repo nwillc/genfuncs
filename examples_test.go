@@ -39,13 +39,15 @@ func TestFunctionExamples(t *testing.T) {
 }
 
 func ExampleMin() {
-	fmt.Println(genfuncs.Min(1, 2))         // 1
-	fmt.Println(genfuncs.Min("dog", "cat")) // cat
+	fmt.Println(genfuncs.Min(1, 2)) // 1
+	words := []string{"dog", "cat", "gorilla"}
+	fmt.Println(genfuncs.Min(words...)) // cat
 }
 
 func ExampleMax() {
-	fmt.Println(genfuncs.Max(1, 2))         // 2
-	fmt.Println(genfuncs.Max("dog", "cat")) // dog
+	fmt.Println(genfuncs.Max(1, 2)) // 2
+	words := []string{"dog", "cat", "gorilla"}
+	fmt.Println(genfuncs.Max(words...)) // gorilla
 }
 
 func ExampleSLexicalOrder() {
