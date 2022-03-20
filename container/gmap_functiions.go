@@ -16,11 +16,9 @@
 
 package container
 
-func FlatMerge[K comparable, V any](m GMap[K, GSlice[V]], mv ...GMap[K, GSlice[V]]) GMap[K, GSlice[V]] {
+// MapMerge merges maps together into a new map. The last value of a key iss the one to be used.
+func MapMerge[K comparable, V any](mv ...GMap[K, GSlice[V]]) GMap[K, GSlice[V]] {
 	result := make(GMap[K, GSlice[V]])
-	for k, v := range m {
-		result[k] = v
-	}
 	for _, m := range mv {
 		for k, v := range m {
 			v1 := result[k]

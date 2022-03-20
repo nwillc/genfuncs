@@ -30,7 +30,7 @@ func TestFlatMerge(t *testing.T) {
 	m2["a"] = container.GSlice[string]{"2"}
 	m2["b"] = container.GSlice[string]{"1"}
 
-	m3 := container.FlatMerge(m1, m2)
+	m3 := container.MapMerge(m1, m2)
 	assert.Equal(t, 2, len(m3))
 	assert.Equal(t, 2, len(m3["a"]))
 	assert.Equal(t, 1, len(m3["b"]))
