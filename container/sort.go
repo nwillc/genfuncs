@@ -176,14 +176,14 @@ func (s GSlice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool])
 }
 
 func (s GSlice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T, T, bool]) {
-	for b-a > 12 { // Use ShellSort for slices <= 12 elements
+	for b-a > 12 {
 		if maxDepth == 0 {
 			s.heapSort(a, b, lessThan)
 			return
 		}
 		maxDepth--
 		mlo, mhi := s.doPivot(a, b, lessThan)
-		// Avoiding recursion on the larger subproblem guarantees
+		// Avoiding recursion on the larger sub problem guarantees
 		// a stack depth of at most lg(b-a).
 		if mlo-a < b-mhi {
 			s.quickSort(a, mlo, maxDepth, lessThan)
@@ -194,7 +194,7 @@ func (s GSlice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T,
 		}
 	}
 	if b-a > 1 {
-		// Do ShellSort pass with gap 6
+		// Do insertion sort pass with gap 6
 		// It could be written in this simplified form cause b-a <= 12
 		for i := a + 6; i < b; i++ {
 			if lessThan(s[i], s[i-6]) {
