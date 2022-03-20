@@ -8,10 +8,10 @@
 # Genfuncs
 
 Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with slices. Many of the functions are based on Kotlin's Sequence. This package, though
-usable, is primarily a proof-of-concept since it is likely Go will provide similar at some point soon.
+in particular when working with slices, maps and ssorting. Many of the functions are based on Kotlin's Sequence. 
+This package, though very usable, is primarily a proof-of-concept since it is likely Go will provide similar before long.
 
-Examples are found in examples_test.go files or projects like [gordle](https://github.com/nwillc/gordle).
+Examples are found in `examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
 
 The code is under the [ISC License](https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
 
@@ -392,12 +392,10 @@ import "github.com/nwillc/genfuncs/container"
   - [func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]](<#func-gslicet-sortby>)
   - [func (s GSlice[T]) Swap(i, j int)](<#func-gslicet-swap>)
   - [func (s GSlice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool]) (midlo, midhi int)](<#func-gslicet-dopivot>)
-  - [func (s GSlice[T]) heapSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-heapsort>)
   - [func (s GSlice[T]) inBounds(i int)](<#func-gslicet-inbounds>)
   - [func (s GSlice[T]) insertionSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-insertionsort>)
   - [func (s GSlice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-medianofthree>)
   - [func (s GSlice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-quicksort>)
-  - [func (s GSlice[T]) siftDown(lo, hi, first int, lessThan genfuncs.BiFunction[T, T, bool])](<#func-gslicet-siftdown>)
 - [type Heap](<#type-heap>)
   - [func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T]](<#func-newheap>)
   - [func (h *Heap[T]) Add(v T)](<#func-heapt-add>)
@@ -476,7 +474,7 @@ func main() {
 func left(i int) int
 ```
 
-## func [maxDepth](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L210>)
+## func [maxDepth](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L165>)
 
 ```go
 func maxDepth(n int) int
@@ -807,7 +805,7 @@ func main() {
 func MapMerge[K comparable, V any](mv ...GMap[K, GSlice[V]]) GMap[K, GSlice[V]]
 ```
 
-MapMerge merges maps together into a new map\. The last value of a key iss the one to be used\.
+MapMerge merges maps together into a new map\. The last value of a key is the one to be used\.
 
 ### func \(GMap\[K\, V\]\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L23>)
 
@@ -1034,16 +1032,10 @@ func (s GSlice[T]) Swap(i, j int)
 
 Swap two values in the slice\.
 
-### func \(GSlice\[T\]\) [doPivot](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L91>)
+### func \(GSlice\[T\]\) [doPivot](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L54>)
 
 ```go
 func (s GSlice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool]) (midlo, midhi int)
-```
-
-### func \(GSlice\[T\]\) [heapSort](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L57>)
-
-```go
-func (s GSlice[T]) heapSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool])
 ```
 
 ### func \(GSlice\[T\]\) [inBounds](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L153>)
@@ -1060,7 +1052,7 @@ inBounds panics if given index out of GSlice's bounds\.
 func (s GSlice[T]) insertionSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool])
 ```
 
-### func \(GSlice\[T\]\) [medianOfThree](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L75>)
+### func \(GSlice\[T\]\) [medianOfThree](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L38>)
 
 ```go
 func (s GSlice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T, T, bool])
@@ -1068,19 +1060,11 @@ func (s GSlice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T,
 
 medianOfThree moves the median of the three values data\[m0\]\, data\[m1\]\, data\[m2\] into data\[m1\]\.
 
-### func \(GSlice\[T\]\) [quickSort](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L178>)
+### func \(GSlice\[T\]\) [quickSort](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L137>)
 
 ```go
 func (s GSlice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T, T, bool])
 ```
-
-### func \(GSlice\[T\]\) [siftDown](<https://github.com/nwillc/genfuncs/blob/master/container/sort.go#L39>)
-
-```go
-func (s GSlice[T]) siftDown(lo, hi, first int, lessThan genfuncs.BiFunction[T, T, bool])
-```
-
-siftDown implements the heap property on data\[lo:hi\]\. first is an offset into the array where the root of the heap lies\.
 
 ## type [Heap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L24-L29>)
 
