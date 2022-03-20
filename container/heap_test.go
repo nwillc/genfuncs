@@ -69,6 +69,14 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			want: []int{1, 2, 3, 4},
 		},
 		{
+			name: "min 3 4 1 2 1",
+			args: args{
+				slice:    []int{3, 4, 1, 2, 1},
+				lessThan: genfuncs.INumericOrder,
+			},
+			want: []int{1, 1, 2, 3, 4},
+		},
+		{
 			name: "max 1 2 3",
 			args: args{
 				slice:    []int{1, 2, 3},
@@ -77,9 +85,9 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			want: []int{3, 2, 1},
 		},
 		{
-			name: "max 3 2 1",
+			name: "max 3 1 2",
 			args: args{
-				slice:    []int{3, 2, 1},
+				slice:    []int{3, 1, 2},
 				lessThan: genfuncs.IReverseNumericOrder,
 			},
 			want: []int{3, 2, 1},

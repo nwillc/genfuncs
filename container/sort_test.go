@@ -18,7 +18,9 @@ package container_test
 
 import (
 	"github.com/nwillc/genfuncs/container"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
@@ -104,5 +106,29 @@ func TestSort(t *testing.T) {
 				assert.Equal(t, tt.want[i], dst[i])
 			}
 		})
+	}
+}
+
+func TestLargeSort(t *testing.T) {
+	random := rand.New(rand.NewSource(time.Now().Unix()))
+	count := 2000
+	passes := 10
+	numbers := make(container.GSlice[int], count)
+	for passes > 0 {
+		passes--
+		for i := 0; i < count; i++ {
+			numbers[i] = random.Int()
+		}
+		numbers.Sort(genfuncs.INumericOrder)
+		for i := 0; i < count-1; i++ {
+			assert.LessOrEqual(t, numbers[i], numbers[i+1])
+		}
+		for i := 0; i < count; i++ {
+			numbers[i] = random.Int()
+		}
+		numbers.Sort(genfuncs.IReverseNumericOrder)
+		for i := 0; i < count-1; i++ {
+			assert.GreaterOrEqual(t, numbers[i], numbers[i+1])
+		}
 	}
 }
