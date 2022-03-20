@@ -109,26 +109,69 @@ func TestSort(t *testing.T) {
 	}
 }
 
-func TestLargeSort(t *testing.T) {
+func TestRandomSorts(t *testing.T) {
 	random := rand.New(rand.NewSource(time.Now().Unix()))
-	count := 2000
-	passes := 10
-	numbers := make(container.GSlice[int], count)
-	for passes > 0 {
-		passes--
-		for i := 0; i < count; i++ {
-			numbers[i] = random.Int()
-		}
-		numbers.Sort(genfuncs.INumericOrder)
-		for i := 0; i < count-1; i++ {
-			assert.LessOrEqual(t, numbers[i], numbers[i+1])
-		}
-		for i := 0; i < count; i++ {
-			numbers[i] = random.Int()
-		}
-		numbers.Sort(genfuncs.IReverseNumericOrder)
-		for i := 0; i < count-1; i++ {
-			assert.GreaterOrEqual(t, numbers[i], numbers[i+1])
-		}
+	passes := 20
+
+	type args struct {
+		count int
+	}
+
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "Tiny",
+			args: args{
+				count: 2,
+			},
+		},
+		{
+			name: "Small",
+			args: args{
+				count: 5,
+			},
+		},
+		{
+			name: "Medium",
+			args: args{
+				count: 15,
+			},
+		},
+		{
+			name: "Large",
+			args: args{
+				count: 70,
+			},
+		},
+		{
+			name: "Larger",
+			args: args{
+				count: 3000,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			numbers := make(container.GSlice[int], tt.args.count)
+			for pass := passes; pass >= 0; pass-- {
+				for i := 0; i < tt.args.count; i++ {
+					numbers[i] = random.Int()
+				}
+				numbers.Sort(genfuncs.INumericOrder)
+				for i := 0; i < tt.args.count-1; i++ {
+					assert.LessOrEqual(t, numbers[i], numbers[i+1])
+				}
+				for i := 0; i < tt.args.count; i++ {
+					numbers[i] = random.Int()
+				}
+				numbers.Sort(genfuncs.IReverseNumericOrder)
+				for i := 0; i < tt.args.count-1; i++ {
+					assert.GreaterOrEqual(t, numbers[i], numbers[i+1])
+				}
+			}
+		})
 	}
 }
