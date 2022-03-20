@@ -195,7 +195,7 @@ Reverse reverses a LessThan to facilitate reverse sort ordering\.
 func TransformArgs[T1, T2, R any](function Function[T1, T2], biFunction BiFunction[T2, T2, R]) BiFunction[T1, T1, R]
 ```
 
-TransformArgs uses the function to the arguments to be passed to the BiFunction\.
+TransformArgs uses the function to transform the arguments to be passed to the BiFunction\.
 
 <details><summary>Example</summary>
 <p>

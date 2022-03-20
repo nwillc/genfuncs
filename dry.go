@@ -111,7 +111,7 @@ func StringerToString[T fmt.Stringer]() ToString[T] {
 	return func(t T) string { return t.String() }
 }
 
-// TransformArgs uses the function to the arguments to be passed to the BiFunction.
+// TransformArgs uses the function to transform the arguments to be passed to the BiFunction.
 func TransformArgs[T1, T2, R any](function Function[T1, T2], biFunction BiFunction[T2, T2, R]) BiFunction[T1, T1, R] {
 	return func(a, b T1) R {
 		return biFunction(function(a), function(b))
