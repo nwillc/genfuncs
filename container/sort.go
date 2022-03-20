@@ -127,10 +127,6 @@ func (s GSlice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool])
 			if a >= b {
 				break
 			}
-			// data[a] == pivot; data[b-1] < pivot
-			s.Swap(a, b-1)
-			a++
-			b--
 		}
 	}
 	// Swap pivot into middle
