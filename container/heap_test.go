@@ -17,11 +17,12 @@
 package container_test
 
 import (
-	"github.com/nwillc/genfuncs/container"
-	"testing"
-
 	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container"
 	"github.com/stretchr/testify/assert"
+	"math/rand"
+	"testing"
+	"time"
 )
 
 var (
@@ -106,6 +107,78 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRandomHeaps(t *testing.T) {
+	random := rand.New(rand.NewSource(time.Now().Unix()))
+	passes := 20
+
+	type args struct {
+		count int
+	}
+
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "Tiny",
+			args: args{
+				count: 2,
+			},
+		},
+		{
+			name: "Small",
+			args: args{
+				count: 5,
+			},
+		},
+		{
+			name: "Medium",
+			args: args{
+				count: 15,
+			},
+		},
+		{
+			name: "Large",
+			args: args{
+				count: 70,
+			},
+		},
+		{
+			name: "Larger",
+			args: args{
+				count: 3000,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for pass := passes; pass >= 0; pass-- {
+				heap := container.NewHeap[int](genfuncs.INumericOrder)
+				for i := 0; i < tt.args.count; i++ {
+					heap.Add(random.Int())
+				}
+				start := heap.Peek()
+				for i := 0; i < tt.args.count; i++ {
+					next := heap.Remove()
+					assert.LessOrEqual(t, start, next)
+					start = next
+				}
+				heap = container.NewHeap[int](genfuncs.IReverseNumericOrder)
+				for i := 0; i < tt.args.count; i++ {
+					heap.Add(random.Int())
+				}
+				start = heap.Peek()
+				for i := 0; i < tt.args.count; i++ {
+					next := heap.Remove()
+					assert.GreaterOrEqual(t, start, next)
+					start = next
+				}
+			}
+		})
+	}
+
 }
 
 func TestHeapInserting(t *testing.T) {
