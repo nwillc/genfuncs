@@ -16,7 +16,7 @@
 
 package container
 
-// MapMerge merges maps together into a new map. The last value of a key iss the one to be used.
+// MapMerge merges maps together into a new map. The last value of a key is the one to be used.
 func MapMerge[K comparable, V any](mv ...GMap[K, GSlice[V]]) GMap[K, GSlice[V]] {
 	result := make(GMap[K, GSlice[V]])
 	for _, m := range mv {
