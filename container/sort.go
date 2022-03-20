@@ -34,43 +34,6 @@ func (s GSlice[T]) insertionSort(a, b int, lessThan genfuncs.BiFunction[T, T, bo
 	}
 }
 
-// siftDown implements the heap property on data[lo:hi].
-// first is an offset into the array where the root of the heap lies.
-func (s GSlice[T]) siftDown(lo, hi, first int, lessThan genfuncs.BiFunction[T, T, bool]) {
-	root := lo
-	for {
-		child := 2*root + 1
-		if child >= hi {
-			break
-		}
-		if child+1 < hi && lessThan(s[first+child], s[first+child+1]) {
-			child++
-		}
-		if !lessThan(s[first+root], s[first+child]) {
-			return
-		}
-		s.Swap(first+root, first+child)
-		root = child
-	}
-}
-
-func (s GSlice[T]) heapSort(a, b int, lessThan genfuncs.BiFunction[T, T, bool]) {
-	first := a
-	lo := 0
-	hi := b - a
-
-	// Build heap with greatest element at top.
-	for i := (hi - 1) / 2; i >= 0; i-- {
-		s.siftDown(i, hi, first, lessThan)
-	}
-
-	// Pop elements, largest first, into end of data.
-	for i := hi - 1; i >= 0; i-- {
-		s.Swap(first, first+i)
-		s.siftDown(lo, i, first, lessThan)
-	}
-}
-
 // medianOfThree moves the median of the three values data[m0], data[m1], data[m2] into data[m1].
 func (s GSlice[T]) medianOfThree(m1, m0, m2 int, lessThan genfuncs.BiFunction[T, T, bool]) {
 	// sort 3 elements
@@ -177,10 +140,6 @@ func (s GSlice[T]) doPivot(lo, hi int, lessThan genfuncs.BiFunction[T, T, bool])
 
 func (s GSlice[T]) quickSort(a, b, maxDepth int, lessThan genfuncs.BiFunction[T, T, bool]) {
 	for b-a > 12 {
-		if maxDepth == 0 {
-			s.heapSort(a, b, lessThan)
-			return
-		}
 		maxDepth--
 		mlo, mhi := s.doPivot(a, b, lessThan)
 		// Avoiding recursion on the larger sub problem guarantees

@@ -124,51 +124,52 @@ func TestRandomSorts(t *testing.T) {
 		{
 			name: "Tiny",
 			args: args{
-				count: 2,
+				count: 1,
 			},
 		},
 		{
 			name: "Small",
 			args: args{
-				count: 5,
+				count: 8,
 			},
 		},
 		{
 			name: "Medium",
 			args: args{
-				count: 15,
+				count: 16,
 			},
 		},
 		{
 			name: "Large",
 			args: args{
-				count: 70,
+				count: 64,
 			},
 		},
 		{
 			name: "Larger",
 			args: args{
-				count: 3000,
+				count: 4096,
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			numbers := make(container.GSlice[int], tt.args.count)
 			for pass := passes; pass >= 0; pass-- {
+				count := tt.args.count + random.Intn(tt.args.count)
+				numbers := make(container.GSlice[int], count)
 				for i := 0; i < tt.args.count; i++ {
 					numbers[i] = random.Int()
 				}
 				numbers.Sort(genfuncs.INumericOrder)
-				for i := 0; i < tt.args.count-1; i++ {
+				for i := 0; i < count-1; i++ {
 					assert.LessOrEqual(t, numbers[i], numbers[i+1])
 				}
-				for i := 0; i < tt.args.count; i++ {
+				for i := 0; i < count; i++ {
 					numbers[i] = random.Int()
 				}
 				numbers.Sort(genfuncs.IReverseNumericOrder)
-				for i := 0; i < tt.args.count-1; i++ {
+				for i := 0; i < count-1; i++ {
 					assert.GreaterOrEqual(t, numbers[i], numbers[i+1])
 				}
 			}
