@@ -97,6 +97,14 @@ func TestSort(t *testing.T) {
 			},
 			want: alphabet,
 		},
+		{
+			name: "Test duplicates",
+			args: args{
+				slice:      []string{"d", "z", "d", "a", "d", "a", "d", "a", "d", "a", "a"},
+				comparator: genfuncs.SLexicalOrder,
+			},
+			want: []string{"a", "a", "a", "a", "a", "d", "d", "d", "d", "d", "z"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
