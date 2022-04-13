@@ -18,15 +18,19 @@ package container_test
 
 import (
 	"fmt"
+	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"testing"
 	"time"
-
-	"github.com/nwillc/genfuncs"
-	"github.com/stretchr/testify/assert"
 )
 
-var _ fmt.Stringer = (*PersonName)(nil)
+var (
+	_        fmt.Stringer = (*PersonName)(nil)
+	letters               = []string{"t", "e", "s", "t"}
+	alphabet              = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "t", "u", "v", "w", "x", "y", "z"}
+)
 
 type PersonName struct {
 	First string
@@ -381,50 +385,155 @@ func TestJoinToString(t *testing.T) {
 }
 
 func TestSortBy(t *testing.T) {
-	timeComparator := genfuncs.TransformArgs(
-		func(t time.Time) int64 { return t.Unix() },
-		genfuncs.I64NumericOrder,
-	)
 	type args struct {
-		slice      container.GSlice[time.Time]
-		comparator genfuncs.BiFunction[time.Time, time.Time, bool]
+		slice      container.GSlice[string]
+		comparator genfuncs.BiFunction[string, string, bool]
 	}
-	now := time.Now()
 	tests := []struct {
 		name string
 		args args
-		want []time.Time
+		want []string
 	}{
 		{
 			name: "Empty",
 			args: args{
-				slice:      []time.Time{},
-				comparator: timeComparator,
+				slice:      []string{},
+				comparator: genfuncs.SLexicalOrder,
 			},
-			want: []time.Time{},
+			want: []string{},
+		},
+		{
+			name: "Single",
+			args: args{
+				slice:      []string{"a"},
+				comparator: genfuncs.SLexicalOrder,
+			},
+			want: []string{"a"},
+		},
+		{
+			name: "Double",
+			args: args{
+				slice:      []string{"a", "b"},
+				comparator: genfuncs.SLexicalOrder,
+			},
+			want: []string{"a", "b"},
+		},
+		{
+			name: "Double Reverse",
+			args: args{
+				slice:      []string{"a", "b"},
+				comparator: genfuncs.SReverseLexicalOrder,
+			},
+			want: []string{"b", "a"},
 		},
 		{
 			name: "Min Max",
 			args: args{
-				slice:      []time.Time{now.Add(time.Second), now, now.Add(-time.Second)},
-				comparator: timeComparator,
+				slice:      letters,
+				comparator: genfuncs.SLexicalOrder,
 			},
-			want: []time.Time{now.Add(-time.Second), now, now.Add(time.Second)},
+			want: []string{"e", "s", "t", "t"},
 		},
 		{
 			name: "Max Min",
 			args: args{
-				slice:      []time.Time{now.Add(time.Second), now.Add(-time.Second), now},
-				comparator: genfuncs.Reverse(timeComparator),
+				slice:      letters,
+				comparator: genfuncs.SReverseLexicalOrder,
 			},
-			want: []time.Time{now.Add(time.Second), now, now.Add(-time.Second)},
+			want: []string{"t", "t", "s", "e"},
+		},
+		{
+			name: "More than 12",
+			args: args{
+				slice:      alphabet,
+				comparator: genfuncs.SLexicalOrder,
+			},
+			want: alphabet,
+		},
+		{
+			name: "Test duplicates",
+			args: args{
+				slice:      []string{"d", "z", "d", "a", "d", "a", "d", "a", "d", "a", "a"},
+				comparator: genfuncs.SLexicalOrder,
+			},
+			want: []string{"a", "a", "a", "a", "a", "d", "d", "d", "d", "d", "z"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			sorted := tt.args.slice.SortBy(tt.args.comparator)
-			assert.Equal(t, len(tt.want), len(sorted))
-			assert.True(t, sorted.Compare(tt.want, genfuncs.EqualComparable[time.Time]))
+			dst := tt.args.slice.SortBy(tt.args.comparator)
+			assert.Equal(t, len(tt.want), len(dst))
+			for i := 0; i < len(tt.want); i++ {
+				assert.Equal(t, tt.want[i], dst[i], "failed position %d", i)
+			}
+		})
+	}
+}
+
+func TestRandomSorts(t *testing.T) {
+	random := rand.New(rand.NewSource(time.Now().Unix()))
+	passes := 20
+
+	type args struct {
+		count int
+	}
+
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "Tiny",
+			args: args{
+				count: 1,
+			},
+		},
+		{
+			name: "Small",
+			args: args{
+				count: 8,
+			},
+		},
+		{
+			name: "Medium",
+			args: args{
+				count: 16,
+			},
+		},
+		{
+			name: "Large",
+			args: args{
+				count: 64,
+			},
+		},
+		{
+			name: "Larger",
+			args: args{
+				count: 4096,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for pass := passes; pass >= 0; pass-- {
+				count := tt.args.count + random.Intn(tt.args.count)
+				numbers := make(container.GSlice[int], count)
+				for i := 0; i < tt.args.count; i++ {
+					numbers[i] = random.Int()
+				}
+				numbers = numbers.SortBy(genfuncs.INumericOrder)
+				for i := 0; i < count-1; i++ {
+					assert.LessOrEqual(t, numbers[i], numbers[i+1])
+				}
+				for i := 0; i < count; i++ {
+					numbers[i] = random.Int()
+				}
+				numbers = numbers.SortBy(genfuncs.IReverseNumericOrder)
+				for i := 0; i < count-1; i++ {
+					assert.GreaterOrEqual(t, numbers[i], numbers[i+1])
+				}
+			}
 		})
 	}
 }

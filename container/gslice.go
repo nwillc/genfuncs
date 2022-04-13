@@ -18,6 +18,7 @@ package container
 
 import (
 	"github.com/nwillc/genfuncs"
+	"golang.org/x/exp/slices"
 	"math/rand"
 	"strings"
 	"time"
@@ -140,7 +141,7 @@ func (s GSlice[T]) Random() T {
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T] {
 	dst := make([]T, len(s))
 	copy(dst, s)
-	GSlice[T](dst).Sort(lessThan)
+	slices.SortStableFunc(dst, lessThan)
 	return dst
 }
 

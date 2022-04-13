@@ -54,8 +54,6 @@ func TestFunctionExamples(t *testing.T) {
 	ExampleFold()
 	ExampleGroupBy()
 	ExampleMap()
-	// Sort
-	ExampleSort()
 }
 
 func ExampleContains() {
@@ -176,13 +174,4 @@ func ExampleMap() {
 	numbers := []int{69, 88, 65, 77, 80, 76, 69}
 	toString := func(i int) string { return string(rune(i)) }
 	fmt.Println(container.Map(numbers, toString)) // [E X A M P L E]
-}
-
-func ExampleSort() {
-	var letters container.GSlice[string] = strings.Split("example", "")
-
-	letters.Sort(genfuncs.SLexicalOrder)
-	fmt.Println(letters) // [a e e l m p x]
-	letters.Sort(genfuncs.SReverseLexicalOrder)
-	fmt.Println(letters) // [x p m l e e a]
 }
