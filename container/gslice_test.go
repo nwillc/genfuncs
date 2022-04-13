@@ -200,7 +200,7 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.args.slice.Filter(tt.args.predicate)
-			assert.True(t, result.Compare(tt.want, genfuncs.EqualComparable[int]))
+			assert.Equal(t, genfuncs.ComparisonEquals, result.Compare(tt.want, genfuncs.Comparator[int]))
 		})
 	}
 }
@@ -556,16 +556,16 @@ func TestCompare(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		want     bool
+		want     int
 		wanPanic bool
 	}{
 		{
-			name: "Mismatched length",
+			name: "Mismatched length greater",
 			args: args{
 				a: []string{"a"},
 				b: []string{},
 			},
-			want: false,
+			want: genfuncs.ComparisonGreater,
 		},
 		{
 			name: "Matched",
@@ -573,20 +573,20 @@ func TestCompare(t *testing.T) {
 				a: []string{"a", "b"},
 				b: []string{"a", "b"},
 			},
-			want: true,
+			want: genfuncs.ComparisonEquals,
 		},
 		{
-			name: "Mismatched",
+			name: "Mismatched less",
 			args: args{
 				a: []string{"a", "b"},
 				b: []string{"a", "c"},
 			},
-			want: false,
+			want: genfuncs.ComparisonLess,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			test.args.a.Compare(test.args.b, genfuncs.EqualComparable[string])
+			assert.Equal(t, test.want, test.args.a.Compare(test.args.b, genfuncs.Comparator[string]))
 		})
 	}
 }

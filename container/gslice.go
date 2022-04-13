@@ -53,16 +53,8 @@ func (s GSlice[T]) Any(predicate genfuncs.Function[T, bool]) bool {
 
 // Compare one GSlice to another, applying a comparison to each pair of corresponding entries. Compare returns true
 // if all the pair's comparison return true. While the comparison might test equality it could have any behavior.
-func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, bool]) bool {
-	if len(s) != len(s2) {
-		return false
-	}
-	for i := 0; i < len(s); i++ {
-		if !comparison(s[i], s2[i]) {
-			return false
-		}
-	}
-	return true
+func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) int {
+	return slices.CompareFunc(s, s2, comparison)
 }
 
 // Filter returns a slice containing only elements matching the given predicate.

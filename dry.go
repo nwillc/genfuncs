@@ -23,7 +23,9 @@ import (
 
 var (
 	// Orderings
-
+	ComparisonLess         = -1
+	ComparisonEquals       = 0
+	ComparisonGreater      = 1
 	F32NumericOrder        = LessThanOrdered[float32]
 	F32ReverseNumericOrder = Reverse(F32NumericOrder)
 	INumericOrder          = LessThanOrdered[int]
@@ -34,13 +36,11 @@ var (
 	SReverseLexicalOrder   = Reverse(SLexicalOrder)
 
 	// Predicates
-
 	IsBlank    = IsEqualComparable("")
 	IsNotBlank = Not(IsBlank)
-
-	F32IsZero = IsEqualComparable(float32(0.0))
-	F64IsZero = IsEqualComparable(0.0)
-	IIsZero   = IsEqualComparable(0)
+	F32IsZero  = IsEqualComparable(float32(0.0))
+	F64IsZero  = IsEqualComparable(0.0)
+	IIsZero    = IsEqualComparable(0)
 )
 
 // EqualComparable tests equality of two given comparable values.
@@ -126,4 +126,15 @@ func Curried[A, B, R any](biFunction BiFunction[A, B, R], a A) Function[B, R] {
 // Not takes a Function returning a bool and returns a Function that inverts the result.
 func Not[T any](function Function[T, bool]) Function[T, bool] {
 	return func(a T) bool { return !function(a) }
+}
+
+func Comparator[T constraints.Ordered](a, b T) int {
+	switch {
+	case a == b:
+		return ComparisonEquals
+	case a < b:
+		return ComparisonLess
+	default:
+		return ComparisonGreater
+	}
 }
