@@ -19,6 +19,7 @@ package genfuncs_test
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/exp/constraints"
 	"strconv"
 	"testing"
 	"time"
@@ -433,4 +434,47 @@ func TestTransformArgs(t *testing.T) {
 	strAdder := genfuncs.TransformArgs(atoi, adder)
 
 	assert.Equal(t, 10, strAdder("5", "5"))
+}
+
+func TestComparator(t *testing.T) {
+	type args[T constraints.Ordered] struct {
+		a T
+		b T
+	}
+	type test[T constraints.Ordered] struct {
+		name string
+		args args[T]
+		want int
+	}
+	tests := []test[int]{
+		{
+			name: "Match",
+			args: args[int]{
+				a: 1,
+				b: 1,
+			},
+			want: genfuncs.ComparisonEquals,
+		},
+		{
+			name: "Less",
+			args: args[int]{
+				a: 0,
+				b: 1,
+			},
+			want: genfuncs.ComparisonLess,
+		},
+		{
+			name: "Greater",
+			args: args[int]{
+				a: 2,
+				b: 1,
+			},
+			want: genfuncs.ComparisonGreater,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, genfuncs.Comparator(tt.args.a, tt.args.b), "Comparator(%v, %v)", tt.args.a, tt.args.b)
+		})
+	}
 }
