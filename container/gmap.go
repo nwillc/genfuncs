@@ -16,6 +16,8 @@
 
 package container
 
+import "golang.org/x/exp/maps"
+
 // GMap is a generic type corresponding to a standard Go map.
 type GMap[K comparable, V any] map[K]V
 
@@ -27,22 +29,10 @@ func (m GMap[K, V]) Contains(key K) bool {
 
 // Keys return a GSlice containing the keys of the GMap.
 func (m GMap[K, V]) Keys() GSlice[K] {
-	keys := make(GSlice[K], len(m))
-	i := 0
-	for k, _ := range m {
-		keys[i] = k
-		i++
-	}
-	return keys
+	return maps.Keys(m)
 }
 
 // Values returns a GSlice of all the values in the GMap.
 func (m GMap[K, V]) Values() GSlice[V] {
-	values := make(GSlice[V], len(m))
-	i := 0
-	for _, v := range m {
-		values[i] = v
-		i++
-	}
-	return values
+	return maps.Values(m)
 }
