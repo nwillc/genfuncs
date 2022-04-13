@@ -950,7 +950,7 @@ Any returns true if any element of the slice matches the predicate\.
 func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) int
 ```
 
-Compare one GSlice to another\, applying a comparison to each pair of corresponding entries\. Compare returns true if all the pair's comparison return true\. While the comparison might test equality it could have any behavior\.
+Compare one GSlice to another\, applying a comparison to each pair of corresponding entries\. Compare returns 0 if all the pair's match\, \-1 if this GSlice is less\, or 1 if it is greater\.
 
 ### func \(GSlice\[T\]\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L61>)
 
