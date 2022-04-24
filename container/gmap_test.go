@@ -17,7 +17,6 @@
 package container_test
 
 import (
-	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 	"github.com/stretchr/testify/assert"
@@ -120,7 +119,47 @@ func TestValues(t *testing.T) {
 }
 
 func TestGMap_Filter(t *testing.T) {
-	m := container.GMap[string, string]{"a": "a", "b": "b", "c": "c"}
+	m := container.GMap[string, string]{"a": "A", "b": "B", "c": "C"}
+	type args struct {
+		greaterThan string
+	}
+	tests := []struct {
+		name string
+		args args
+		want container.GSlice[string]
+	}{
+		{
+			name: "none",
+			args: args{
+				greaterThan: "Z",
+			},
+			want: container.GSlice[string]{},
+		},
+		{
+			name: "greater than a",
+			args: args{
+				greaterThan: "A",
+			},
+			want: container.GSlice[string]{"B", "C"},
+		},
+		{
+			name: "greater than b",
+			args: args{
+				greaterThan: "B",
+			},
+			want: container.GSlice[string]{"C"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			filtered := m.Filter(genfuncs.IsGreaterOrdered(tt.args.greaterThan)).Values().SortBy(genfuncs.LessOrdered[string])
+			assert.True(t, filtered.Compare(tt.want, genfuncs.Order[string]) == 0)
+		})
+	}
+}
+
+func TestGMap_FilterKeys(t *testing.T) {
+	m := container.GMap[string, string]{"a": "A", "b": "B", "c": "C"}
 	type args struct {
 		greaterThan string
 	}
@@ -141,21 +180,122 @@ func TestGMap_Filter(t *testing.T) {
 			args: args{
 				greaterThan: "a",
 			},
-			want: container.GSlice[string]{"b", "c"},
+			want: container.GSlice[string]{"B", "C"},
 		},
 		{
 			name: "greater than b",
 			args: args{
 				greaterThan: "b",
 			},
-			want: container.GSlice[string]{"c"},
+			want: container.GSlice[string]{"C"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			filtered := m.Filter(genfuncs.IsGreaterOrdered(tt.args.greaterThan)).Values().SortBy(genfuncs.LessOrdered[string])
-			fmt.Println(filtered)
+			filtered := m.FilterKeys(genfuncs.IsGreaterOrdered(tt.args.greaterThan)).Values().SortBy(genfuncs.LessOrdered[string])
 			assert.True(t, filtered.Compare(tt.want, genfuncs.Order[string]) == 0)
+		})
+	}
+}
+
+func TestGMap_All(t *testing.T) {
+	m := container.GMap[string, string]{"a": "a", "b": "b", "c": "c"}
+	type args struct {
+		predicate genfuncs.Function[string, bool]
+		m         container.GMap[string, string]
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "empty",
+			args: args{
+				predicate: genfuncs.IsNotBlank,
+				m:         make(container.GMap[string, string]),
+			},
+			want: true,
+		},
+		{
+			name: "all",
+			args: args{
+				predicate: genfuncs.IsNotBlank,
+				m:         m,
+			},
+			want: true,
+		},
+		{
+			name: "some",
+			args: args{
+				predicate: genfuncs.IsEqualOrdered("a"),
+				m:         m,
+			},
+			want: false,
+		},
+		{
+			name: "none",
+			args: args{
+				predicate: genfuncs.IsEqualOrdered("z"),
+				m:         m,
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.args.m.All(tt.args.predicate))
+		})
+	}
+}
+
+func TestGMap_Any(t *testing.T) {
+	m := container.GMap[string, string]{"a": "a", "b": "b", "c": "c"}
+	type args struct {
+		predicate genfuncs.Function[string, bool]
+		m         container.GMap[string, string]
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "empty",
+			args: args{
+				predicate: genfuncs.IsNotBlank,
+				m:         make(container.GMap[string, string]),
+			},
+			want: false,
+		},
+		{
+			name: "all",
+			args: args{
+				predicate: genfuncs.IsNotBlank,
+				m:         m,
+			},
+			want: true,
+		},
+		{
+			name: "some",
+			args: args{
+				predicate: genfuncs.IsEqualOrdered("a"),
+				m:         m,
+			},
+			want: true,
+		},
+		{
+			name: "none",
+			args: args{
+				predicate: genfuncs.IsEqualOrdered("z"),
+				m:         m,
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.args.m.Any(tt.args.predicate))
 		})
 	}
 }
