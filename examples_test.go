@@ -32,8 +32,8 @@ func TestFunctionExamples(t *testing.T) {
 	// Functions
 	ExampleMax()
 	ExampleMin()
-	ExampleSLexicalOrder()
-	ExampleSReverseLexicalOrder()
+	// ExampleSLexicalOrder()
+	// ExampleSReverseLexicalOrder()
 	ExampleStringerToString()
 	ExampleTransformArgs()
 }
@@ -50,16 +50,16 @@ func ExampleMax() {
 	fmt.Println(genfuncs.Max(words...)) // gorilla
 }
 
-func ExampleSLexicalOrder() {
-	fmt.Println(genfuncs.SLexicalOrder("a", "b")) // true
-	fmt.Println(genfuncs.SLexicalOrder("a", "a")) // false
-	fmt.Println(genfuncs.SLexicalOrder("b", "a")) // false
-}
-
-func ExampleSReverseLexicalOrder() {
-	fmt.Println(genfuncs.SLexicalOrder("a", "b"))        // true
-	fmt.Println(genfuncs.SReverseLexicalOrder("a", "b")) // false
-}
+// func ExampleSLexicalOrder() {
+// 	fmt.Println(genfuncs.LessOrdered("a", "b")) // true
+// 	fmt.Println(genfuncs.LessOrdered("a", "a")) // false
+// 	fmt.Println(genfuncs.LessOrdered("b", "a")) // false
+// }
+//
+// func ExampleSReverseLexicalOrder() {
+// 	fmt.Println(genfuncs.SLexicalOrdered("a", "b"))        // true
+// 	fmt.Println(genfuncs.SReverseLexicalOrdered("a", "b")) // false
+// }
 
 func ExampleStringerToString() {
 	var epoch time.Time
@@ -70,7 +70,7 @@ func ExampleStringerToString() {
 
 func ExampleTransformArgs() {
 	var unixTime = func(t time.Time) int64 { return t.Unix() }
-	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.I64NumericOrder)
+	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.LessOrdered[int64])
 	now := time.Now()
 	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
 }

@@ -17,6 +17,8 @@
 package container_test
 
 import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 	"github.com/stretchr/testify/assert"
 	"strconv"
@@ -113,6 +115,47 @@ func TestValues(t *testing.T) {
 				_, ok := tt.args.m[k]
 				assert.True(t, ok)
 			}
+		})
+	}
+}
+
+func TestGMap_Filter(t *testing.T) {
+	m := container.GMap[string, string]{"a": "a", "b": "b", "c": "c"}
+	type args struct {
+		greaterThan string
+	}
+	tests := []struct {
+		name string
+		args args
+		want container.GSlice[string]
+	}{
+		{
+			name: "none",
+			args: args{
+				greaterThan: "z",
+			},
+			want: container.GSlice[string]{},
+		},
+		{
+			name: "greater than a",
+			args: args{
+				greaterThan: "a",
+			},
+			want: container.GSlice[string]{"b", "c"},
+		},
+		{
+			name: "greater than b",
+			args: args{
+				greaterThan: "b",
+			},
+			want: container.GSlice[string]{"c"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			filtered := m.Filter(genfuncs.IsGreaterOrdered(tt.args.greaterThan)).Values().SortBy(genfuncs.LessOrdered[string])
+			fmt.Println(filtered)
+			assert.True(t, filtered.Compare(tt.want, genfuncs.Order[string]) == 0)
 		})
 	}
 }

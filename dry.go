@@ -23,54 +23,46 @@ import (
 
 var (
 	// Orderings
-	ComparisonLess         = -1
-	ComparisonEquals       = 0
-	ComparisonGreater      = 1
-	F32NumericOrder        = LessThanOrdered[float32]
-	F32ReverseNumericOrder = Reverse(F32NumericOrder)
-	INumericOrder          = LessThanOrdered[int]
-	IReverseNumericOrder   = Reverse(INumericOrder)
-	I64NumericOrder        = LessThanOrdered[int64]
-	I64ReverseNumericOrder = Reverse(I64NumericOrder)
-	SLexicalOrder          = LessThanOrdered[string]
-	SReverseLexicalOrder   = Reverse(SLexicalOrder)
+	OrderedLess    = -1
+	OrderedEqual   = 0
+	OrderedGreater = 1
 
 	// Predicates
-	IsBlank    = IsEqualComparable("")
+	IsBlank    = IsEqualOrdered("")
 	IsNotBlank = Not(IsBlank)
-	F32IsZero  = IsEqualComparable(float32(0.0))
-	F64IsZero  = IsEqualComparable(0.0)
-	IIsZero    = IsEqualComparable(0)
+	F32IsZero  = IsEqualOrdered(float32(0.0))
+	F64IsZero  = IsEqualOrdered(0.0)
+	IIsZero    = IsEqualOrdered(0)
 )
 
-// EqualComparable tests equality of two given comparable values.
-func EqualComparable[C comparable](a, b C) bool {
-	return a == b
+// EqualOrder tests if constraints.Ordered a equal to b.
+func EqualOrder[O constraints.Ordered](a, b O) bool {
+	return Order(a, b) == OrderedEqual
 }
 
-// IsEqualComparable creates a Predicate that tests equality with a given comparable value.
-func IsEqualComparable[C comparable](a C) Function[C, bool] {
-	return Curried(EqualComparable[C], a)
+// IsEqualOrdered return a EqualOrder for a.
+func IsEqualOrdered[O constraints.Ordered](a O) Function[O, bool] {
+	return Curried[O, bool](EqualOrder[O], a)
 }
 
-// GreaterThanOrdered tests if constraints.Ordered a is greater than b.
-func GreaterThanOrdered[O constraints.Ordered](a, b O) bool {
-	return a > b
+// GreaterOrdered tests if constraints.Ordered a is greater than b.
+func GreaterOrdered[O constraints.Ordered](a, b O) bool {
+	return Order(a, b) == OrderedGreater
 }
 
-// IsGreaterThanOrdered return a GreaterThanOrdered for a.
-func IsGreaterThanOrdered[O constraints.Ordered](a O) Function[O, bool] {
-	return Curried(GreaterThanOrdered[O], a)
+// IsGreaterOrdered returns a function that returns true if its argument is greater than a.
+func IsGreaterOrdered[O constraints.Ordered](a O) Function[O, bool] {
+	return Curried[O, bool](GreaterOrdered[O], a)
 }
 
-// LessThanOrdered tests if constraints.Ordered a is less than b.
-func LessThanOrdered[O constraints.Ordered](a, b O) bool {
-	return a < b
+// LessOrdered tests if constraints.Ordered a is less than b.
+func LessOrdered[O constraints.Ordered](a, b O) bool {
+	return Order(a, b) == OrderedLess
 }
 
-// IsLessThanOrdered returns a LessThanOrdered for a.
-func IsLessThanOrdered[O constraints.Ordered](a O) Function[O, bool] {
-	return Curried(LessThanOrdered[O], a)
+// IsLessOrdered returns a function that returns true if its argument is less than a.
+func IsLessOrdered[O constraints.Ordered](a O) Function[O, bool] {
+	return Curried[O, bool](LessOrdered[O], a)
 }
 
 // Max returns max value one or more constraints.Ordered values,
@@ -101,11 +93,6 @@ func Min[T constraints.Ordered](v ...T) T {
 	return min
 }
 
-// Reverse reverses a LessThan to facilitate reverse sort ordering.
-func Reverse[T any](lessThan BiFunction[T, T, bool]) BiFunction[T, T, bool] {
-	return func(a, b T) bool { return lessThan(b, a) }
-}
-
 // StringerToString creates a ToString for any type that implements fmt.Stringer.
 func StringerToString[T fmt.Stringer]() ToString[T] {
 	return func(t T) string { return t.String() }
@@ -119,8 +106,8 @@ func TransformArgs[T1, T2, R any](function Function[T1, T2], biFunction BiFuncti
 }
 
 // Curried takes a BiFunction and one argument, and Curries the function to return a single argument Function.
-func Curried[A, B, R any](biFunction BiFunction[A, B, R], a A) Function[B, R] {
-	return func(b B) R { return biFunction(a, b) }
+func Curried[A, R any](biFunction BiFunction[A, A, R], a A) Function[A, R] {
+	return func(b A) R { return biFunction(b, a) }
 }
 
 // Not takes a Function returning a bool and returns a Function that inverts the result.
@@ -128,13 +115,14 @@ func Not[T any](function Function[T, bool]) Function[T, bool] {
 	return func(a T) bool { return !function(a) }
 }
 
-func Comparator[T constraints.Ordered](a, b T) int {
+// Order old school -1/0/1 order of constraints.Ordered.
+func Order[T constraints.Ordered](a, b T) int {
 	switch {
-	case a == b:
-		return ComparisonEquals
 	case a < b:
-		return ComparisonLess
+		return OrderedLess
+	case a > b:
+		return OrderedGreater
 	default:
-		return ComparisonGreater
+		return OrderedEqual
 	}
 }

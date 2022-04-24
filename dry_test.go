@@ -54,42 +54,7 @@ func TestEqualComparable(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.EqualComparable(tt.args.a, tt.args.b)
-			assert.Equal(t, v, tt.want, v)
-		})
-	}
-}
-
-func TestIsEqualComparable(t *testing.T) {
-	type args struct {
-		a genfuncs.Function[string, bool]
-		b string
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "Equal",
-			args: args{
-				a: genfuncs.IsEqualComparable("a"),
-				b: "a",
-			},
-			want: true,
-		},
-		{
-			name: "Not Equal",
-			args: args{
-				a: genfuncs.IsEqualComparable("a"),
-				b: "b",
-			},
-			want: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			v := tt.args.a(tt.args.b)
+			v := genfuncs.EqualOrder(tt.args.a, tt.args.b)
 			assert.Equal(t, v, tt.want, v)
 		})
 	}
@@ -132,7 +97,7 @@ func TestGreaterThanOrdered(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.GreaterThanOrdered(tt.args.a, tt.args.b)
+			v := genfuncs.GreaterOrdered(tt.args.a, tt.args.b)
 			assert.Equal(t, v, tt.want, v)
 		})
 	}
@@ -149,28 +114,28 @@ func TestIsGreaterThanOrdered(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Greater",
+			name: "One greater that two",
 			args: args{
-				a: genfuncs.IsGreaterThanOrdered(2),
+				a: genfuncs.IsGreaterOrdered(2),
+				b: 1,
+			},
+			want: false,
+		},
+		{
+			name: "one equal to one",
+			args: args{
+				a: genfuncs.IsGreaterOrdered(1),
+				b: 1,
+			},
+			want: false,
+		},
+		{
+			name: "one greater than 0",
+			args: args{
+				a: genfuncs.IsGreaterOrdered(0),
 				b: 1,
 			},
 			want: true,
-		},
-		{
-			name: "Equal",
-			args: args{
-				a: genfuncs.IsGreaterThanOrdered(1),
-				b: 1,
-			},
-			want: false,
-		},
-		{
-			name: "Less",
-			args: args{
-				a: genfuncs.IsGreaterThanOrdered(0),
-				b: 1,
-			},
-			want: false,
 		},
 	}
 	for _, tt := range tests {
@@ -218,7 +183,7 @@ func TestLessThanOrdered(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.LessThanOrdered(tt.args.a, tt.args.b)
+			v := genfuncs.LessOrdered(tt.args.a, tt.args.b)
 			assert.Equal(t, v, tt.want, v)
 		})
 	}
@@ -235,28 +200,28 @@ func TestIsLessThanOrdered(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Greater",
+			name: "one than two",
 			args: args{
-				a: genfuncs.IsLessThanOrdered(2),
+				a: genfuncs.IsLessOrdered(2),
 				b: 1,
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "Equal",
 			args: args{
-				a: genfuncs.IsLessThanOrdered(1),
+				a: genfuncs.IsLessOrdered(1),
 				b: 1,
 			},
 			want: false,
 		},
 		{
-			name: "Less",
+			name: "one less than zero",
 			args: args{
-				a: genfuncs.IsLessThanOrdered(0),
+				a: genfuncs.IsLessOrdered(0),
 				b: 1,
 			},
-			want: true,
+			want: false,
 		},
 	}
 	for _, tt := range tests {
@@ -370,7 +335,7 @@ func TestMin(t *testing.T) {
 }
 
 func TestReverse(t *testing.T) {
-	reversed := genfuncs.Reverse(genfuncs.LessThanOrdered[int])
+	reversed := genfuncs.GreaterOrdered[int]
 	type args struct {
 		a int
 		b int
@@ -404,7 +369,7 @@ func TestReverse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.LessThanOrdered(tt.args.a, tt.args.b)
+			v := genfuncs.LessOrdered(tt.args.a, tt.args.b)
 			assert.Equal(t, tt.args.a < tt.args.b, v)
 			r := reversed(tt.args.a, tt.args.b)
 			assert.Equal(t, tt.args.b < tt.args.a, r)
@@ -453,7 +418,7 @@ func TestComparator(t *testing.T) {
 				a: 1,
 				b: 1,
 			},
-			want: genfuncs.ComparisonEquals,
+			want: genfuncs.OrderedEqual,
 		},
 		{
 			name: "Less",
@@ -461,7 +426,7 @@ func TestComparator(t *testing.T) {
 				a: 0,
 				b: 1,
 			},
-			want: genfuncs.ComparisonLess,
+			want: genfuncs.OrderedLess,
 		},
 		{
 			name: "Greater",
@@ -469,12 +434,12 @@ func TestComparator(t *testing.T) {
 				a: 2,
 				b: 1,
 			},
-			want: genfuncs.ComparisonGreater,
+			want: genfuncs.OrderedGreater,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, genfuncs.Comparator(tt.args.a, tt.args.b), "Comparator(%v, %v)", tt.args.a, tt.args.b)
+			assert.Equalf(t, tt.want, genfuncs.Order(tt.args.a, tt.args.b), "Order(%v, %v)", tt.args.a, tt.args.b)
 		})
 	}
 }

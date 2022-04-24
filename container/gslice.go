@@ -129,7 +129,7 @@ func (s GSlice[T]) Random() T {
 	return s[random.Intn(len(s))]
 }
 
-// SortBy copies a slice, sorts the copy applying the Comparator and returns it.
+// SortBy copies a slice, sorts the copy applying the Order and returns it.
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T] {
 	dst := make([]T, len(s))
 	copy(dst, s)

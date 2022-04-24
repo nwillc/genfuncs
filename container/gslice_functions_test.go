@@ -86,7 +86,7 @@ func TestAssociate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fNameMap := container.Associate(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, len(fNameMap))
-			for k, _ := range fNameMap {
+			for k := range fNameMap {
 				_, ok := fNameMap[k]
 				assert.True(t, ok)
 			}
@@ -215,7 +215,7 @@ func TestFlatMap(t *testing.T) {
 			got := container.FlatMap(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, got.Any(genfuncs.IsEqualComparable(s)))
+				assert.True(t, got.Any(genfuncs.IsEqualOrdered(s)))
 			}
 		})
 	}
@@ -257,7 +257,7 @@ func TestGroupBy(t *testing.T) {
 			assert.Equal(t, len(tt.want), len(resultsMap))
 			for k, v := range tt.want {
 				assert.True(t, v.All(func(i int) bool {
-					return container.GSlice[int](resultsMap[k]).Any(genfuncs.IsEqualComparable(i))
+					return container.GSlice[int](resultsMap[k]).Any(genfuncs.IsEqualOrdered(i))
 				}))
 			}
 		})
@@ -297,7 +297,7 @@ func TestMap(t *testing.T) {
 			got := container.Map(tt.args.slice, tt.args.transform)
 			assert.Equal(t, len(tt.want), len(got))
 			for _, s := range tt.want {
-				assert.True(t, got.Any(genfuncs.IsEqualComparable(s)))
+				assert.True(t, got.Any(genfuncs.IsEqualOrdered(s)))
 			}
 		})
 	}

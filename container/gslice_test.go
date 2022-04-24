@@ -164,7 +164,7 @@ func TestContains(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.args.slice.Any(genfuncs.IsEqualComparable(tt.args.element))
+			got := tt.args.slice.Any(genfuncs.IsEqualOrdered(tt.args.element))
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -200,7 +200,7 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.args.slice.Filter(tt.args.predicate)
-			assert.Equal(t, genfuncs.ComparisonEquals, result.Compare(tt.want, genfuncs.Comparator[int]))
+			assert.Equal(t, genfuncs.OrderedEqual, result.Compare(tt.want, genfuncs.Order[int]))
 		})
 	}
 }
@@ -398,7 +398,7 @@ func TestSortBy(t *testing.T) {
 			name: "Empty",
 			args: args{
 				slice:      []string{},
-				comparator: genfuncs.SLexicalOrder,
+				comparator: genfuncs.LessOrdered[string],
 			},
 			want: []string{},
 		},
@@ -406,7 +406,7 @@ func TestSortBy(t *testing.T) {
 			name: "Single",
 			args: args{
 				slice:      []string{"a"},
-				comparator: genfuncs.SLexicalOrder,
+				comparator: genfuncs.LessOrdered[string],
 			},
 			want: []string{"a"},
 		},
@@ -414,7 +414,7 @@ func TestSortBy(t *testing.T) {
 			name: "Double",
 			args: args{
 				slice:      []string{"a", "b"},
-				comparator: genfuncs.SLexicalOrder,
+				comparator: genfuncs.LessOrdered[string],
 			},
 			want: []string{"a", "b"},
 		},
@@ -422,7 +422,7 @@ func TestSortBy(t *testing.T) {
 			name: "Double Reverse",
 			args: args{
 				slice:      []string{"a", "b"},
-				comparator: genfuncs.SReverseLexicalOrder,
+				comparator: genfuncs.GreaterOrdered[string],
 			},
 			want: []string{"b", "a"},
 		},
@@ -430,7 +430,7 @@ func TestSortBy(t *testing.T) {
 			name: "Min Max",
 			args: args{
 				slice:      letters,
-				comparator: genfuncs.SLexicalOrder,
+				comparator: genfuncs.LessOrdered[string],
 			},
 			want: []string{"e", "s", "t", "t"},
 		},
@@ -438,7 +438,7 @@ func TestSortBy(t *testing.T) {
 			name: "Max Min",
 			args: args{
 				slice:      letters,
-				comparator: genfuncs.SReverseLexicalOrder,
+				comparator: genfuncs.GreaterOrdered[string],
 			},
 			want: []string{"t", "t", "s", "e"},
 		},
@@ -446,7 +446,7 @@ func TestSortBy(t *testing.T) {
 			name: "More than 12",
 			args: args{
 				slice:      alphabet,
-				comparator: genfuncs.SLexicalOrder,
+				comparator: genfuncs.LessOrdered[string],
 			},
 			want: alphabet,
 		},
@@ -454,7 +454,7 @@ func TestSortBy(t *testing.T) {
 			name: "Test duplicates",
 			args: args{
 				slice:      []string{"d", "z", "d", "a", "d", "a", "d", "a", "d", "a", "a"},
-				comparator: genfuncs.SLexicalOrder,
+				comparator: genfuncs.LessOrdered[string],
 			},
 			want: []string{"a", "a", "a", "a", "a", "d", "d", "d", "d", "d", "z"},
 		},
@@ -522,14 +522,14 @@ func TestRandomSorts(t *testing.T) {
 				for i := 0; i < tt.args.count; i++ {
 					numbers[i] = random.Int()
 				}
-				numbers = numbers.SortBy(genfuncs.INumericOrder)
+				numbers = numbers.SortBy(genfuncs.LessOrdered[int])
 				for i := 0; i < count-1; i++ {
 					assert.LessOrEqual(t, numbers[i], numbers[i+1])
 				}
 				for i := 0; i < count; i++ {
 					numbers[i] = random.Int()
 				}
-				numbers = numbers.SortBy(genfuncs.IReverseNumericOrder)
+				numbers = numbers.SortBy(genfuncs.GreaterOrdered[int])
 				for i := 0; i < count-1; i++ {
 					assert.GreaterOrEqual(t, numbers[i], numbers[i+1])
 				}
@@ -543,7 +543,7 @@ func TestRandom(t *testing.T) {
 
 	for c := 0; c < 2*len(s); c++ {
 		i := s.Random()
-		p := genfuncs.IsEqualComparable(i)
+		p := genfuncs.IsEqualOrdered(i)
 		assert.True(t, s.Any(p))
 	}
 }
@@ -565,7 +565,7 @@ func TestCompare(t *testing.T) {
 				a: []string{"a"},
 				b: []string{},
 			},
-			want: genfuncs.ComparisonGreater,
+			want: genfuncs.OrderedGreater,
 		},
 		{
 			name: "Matched",
@@ -573,7 +573,7 @@ func TestCompare(t *testing.T) {
 				a: []string{"a", "b"},
 				b: []string{"a", "b"},
 			},
-			want: genfuncs.ComparisonEquals,
+			want: genfuncs.OrderedEqual,
 		},
 		{
 			name: "Mismatched less",
@@ -581,12 +581,12 @@ func TestCompare(t *testing.T) {
 				a: []string{"a", "b"},
 				b: []string{"a", "c"},
 			},
-			want: genfuncs.ComparisonLess,
+			want: genfuncs.OrderedLess,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.want, test.args.a.Compare(test.args.b, genfuncs.Comparator[string]))
+			assert.Equal(t, test.want, test.args.a.Compare(test.args.b, genfuncs.Order[string]))
 		})
 	}
 }
