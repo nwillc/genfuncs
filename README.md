@@ -8,9 +8,9 @@
 # Genfuncs
 
 Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with slices, maps and sorting. Many of the functions are based on Kotlin's Sequence. 
-This package, though very usable, is primarily a proof-of-concept since it is likely Go will provide similar before long.
-In fact, golang.org/x/exp/slices and golang.org/x/exp/maps are slowly appearing and I incorporate them here.
+in particular when working with slices, maps and sorting. Many of the functions are based on Kotlin's Sequence and Map. 
+This package, while usable, is primarily a proof-of-concept since it is likely Go will provide similar before long.
+In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
 
 Examples are found in `examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
 
@@ -39,20 +39,19 @@ import "github.com/nwillc/genfuncs"
 ## Index
 
 - [Variables](<#variables>)
-- [func Comparator[T constraints.Ordered](a, b T) int](<#func-comparator>)
-- [func EqualComparable[C comparable](a, b C) bool](<#func-equalcomparable>)
-- [func GreaterThanOrdered[O constraints.Ordered](a, b O) bool](<#func-greaterthanordered>)
-- [func LessThanOrdered[O constraints.Ordered](a, b O) bool](<#func-lessthanordered>)
+- [func EqualOrder[O constraints.Ordered](a, b O) bool](<#func-equalorder>)
+- [func GreaterOrdered[O constraints.Ordered](a, b O) bool](<#func-greaterordered>)
+- [func LessOrdered[O constraints.Ordered](a, b O) bool](<#func-lessordered>)
 - [func Max[T constraints.Ordered](v ...T) T](<#func-max>)
 - [func Min[T constraints.Ordered](v ...T) T](<#func-min>)
+- [func Order[T constraints.Ordered](a, b T) int](<#func-order>)
 - [type BiFunction](<#type-bifunction>)
-  - [func Reverse[T any](lessThan BiFunction[T, T, bool]) BiFunction[T, T, bool]](<#func-reverse>)
   - [func TransformArgs[T1, T2, R any](function Function[T1, T2], biFunction BiFunction[T2, T2, R]) BiFunction[T1, T1, R]](<#func-transformargs>)
 - [type Function](<#type-function>)
-  - [func Curried[A, B, R any](biFunction BiFunction[A, B, R], a A) Function[B, R]](<#func-curried>)
-  - [func IsEqualComparable[C comparable](a C) Function[C, bool]](<#func-isequalcomparable>)
-  - [func IsGreaterThanOrdered[O constraints.Ordered](a O) Function[O, bool]](<#func-isgreaterthanordered>)
-  - [func IsLessThanOrdered[O constraints.Ordered](a O) Function[O, bool]](<#func-islessthanordered>)
+  - [func Curried[A, R any](biFunction BiFunction[A, A, R], a A) Function[A, R]](<#func-curried>)
+  - [func IsEqualOrdered[O constraints.Ordered](a O) Function[O, bool]](<#func-isequalordered>)
+  - [func IsGreaterOrdered[O constraints.Ordered](a O) Function[O, bool]](<#func-isgreaterordered>)
+  - [func IsLessOrdered[O constraints.Ordered](a O) Function[O, bool]](<#func-islessordered>)
   - [func Not[T any](function Function[T, bool]) Function[T, bool]](<#func-not>)
 - [type MapKeyFor](<#type-mapkeyfor>)
 - [type MapKeyValueFor](<#type-mapkeyvaluefor>)
@@ -66,24 +65,16 @@ import "github.com/nwillc/genfuncs"
 ```go
 var (
     // Orderings
-    ComparisonLess         = -1
-    ComparisonEquals       = 0
-    ComparisonGreater      = 1
-    F32NumericOrder        = LessThanOrdered[float32]
-    F32ReverseNumericOrder = Reverse(F32NumericOrder)
-    INumericOrder          = LessThanOrdered[int]
-    IReverseNumericOrder   = Reverse(INumericOrder)
-    I64NumericOrder        = LessThanOrdered[int64]
-    I64ReverseNumericOrder = Reverse(I64NumericOrder)
-    SLexicalOrder          = LessThanOrdered[string]
-    SReverseLexicalOrder   = Reverse(SLexicalOrder)
+    OrderedLess    = -1
+    OrderedEqual   = 0
+    OrderedGreater = 1
 
     // Predicates
-    IsBlank    = IsEqualComparable("")
+    IsBlank    = IsEqualOrdered("")
     IsNotBlank = Not(IsBlank)
-    F32IsZero  = IsEqualComparable(float32(0.0))
-    F64IsZero  = IsEqualComparable(0.0)
-    IIsZero    = IsEqualComparable(0)
+    F32IsZero  = IsEqualOrdered(float32(0.0))
+    F64IsZero  = IsEqualOrdered(0.0)
+    IIsZero    = IsEqualOrdered(0)
 )
 ```
 
@@ -97,37 +88,31 @@ NoSuchElement error is used by panics when attempts are made to access out of bo
 var NoSuchElement = fmt.Errorf("no such element")
 ```
 
-## func [Comparator](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L131>)
+## func [EqualOrder](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L39>)
 
 ```go
-func Comparator[T constraints.Ordered](a, b T) int
+func EqualOrder[O constraints.Ordered](a, b O) bool
 ```
 
-## func [EqualComparable](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L47>)
+EqualOrder tests if constraints\.Ordered a equal to b\.
+
+## func [GreaterOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L49>)
 
 ```go
-func EqualComparable[C comparable](a, b C) bool
+func GreaterOrdered[O constraints.Ordered](a, b O) bool
 ```
 
-EqualComparable tests equality of two given comparable values\.
+GreaterOrdered tests if constraints\.Ordered a is greater than b\.
 
-## func [GreaterThanOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L57>)
+## func [LessOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L59>)
 
 ```go
-func GreaterThanOrdered[O constraints.Ordered](a, b O) bool
+func LessOrdered[O constraints.Ordered](a, b O) bool
 ```
 
-GreaterThanOrdered tests if constraints\.Ordered a is greater than b\.
+LessOrdered tests if constraints\.Ordered a is less than b\.
 
-## func [LessThanOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L67>)
-
-```go
-func LessThanOrdered[O constraints.Ordered](a, b O) bool
-```
-
-LessThanOrdered tests if constraints\.Ordered a is less than b\.
-
-## func [Max](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L77>)
+## func [Max](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L69>)
 
 ```go
 func Max[T constraints.Ordered](v ...T) T
@@ -156,7 +141,7 @@ func main() {
 </p>
 </details>
 
-## func [Min](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L91>)
+## func [Min](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L83>)
 
 ```go
 func Min[T constraints.Ordered](v ...T) T
@@ -185,6 +170,14 @@ func main() {
 </p>
 </details>
 
+## func [Order](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L119>)
+
+```go
+func Order[T constraints.Ordered](a, b T) int
+```
+
+Order old school \-1/0/1 order of constraints\.Ordered\.
+
 ## type [BiFunction](<https://github.com/nwillc/genfuncs/blob/master/functions.go#L20>)
 
 BiFunction accepts two arguments and produces a result\.
@@ -193,15 +186,7 @@ BiFunction accepts two arguments and produces a result\.
 type BiFunction[T, U, R any] func(T, U) R
 ```
 
-### func [Reverse](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L105>)
-
-```go
-func Reverse[T any](lessThan BiFunction[T, T, bool]) BiFunction[T, T, bool]
-```
-
-Reverse reverses a LessThan to facilitate reverse sort ordering\.
-
-### func [TransformArgs](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L115>)
+### func [TransformArgs](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L102>)
 
 ```go
 func TransformArgs[T1, T2, R any](function Function[T1, T2], biFunction BiFunction[T2, T2, R]) BiFunction[T1, T1, R]
@@ -223,7 +208,7 @@ import (
 
 func main() {
 	var unixTime = func(t time.Time) int64 { return t.Unix() }
-	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.I64NumericOrder)
+	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.LessOrdered[int64])
 	now := time.Now()
 	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
 }
@@ -240,39 +225,39 @@ Function is a single argument function\.
 type Function[T, R any] func(T) R
 ```
 
-### func [Curried](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L122>)
+### func [Curried](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L109>)
 
 ```go
-func Curried[A, B, R any](biFunction BiFunction[A, B, R], a A) Function[B, R]
+func Curried[A, R any](biFunction BiFunction[A, A, R], a A) Function[A, R]
 ```
 
 Curried takes a BiFunction and one argument\, and Curries the function to return a single argument Function\.
 
-### func [IsEqualComparable](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L52>)
+### func [IsEqualOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L44>)
 
 ```go
-func IsEqualComparable[C comparable](a C) Function[C, bool]
+func IsEqualOrdered[O constraints.Ordered](a O) Function[O, bool]
 ```
 
-IsEqualComparable creates a Predicate that tests equality with a given comparable value\.
+IsEqualOrdered return a EqualOrder for a\.
 
-### func [IsGreaterThanOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L62>)
+### func [IsGreaterOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L54>)
 
 ```go
-func IsGreaterThanOrdered[O constraints.Ordered](a O) Function[O, bool]
+func IsGreaterOrdered[O constraints.Ordered](a O) Function[O, bool]
 ```
 
-IsGreaterThanOrdered return a GreaterThanOrdered for a\.
+IsGreaterOrdered returns a function that returns true if its argument is greater than a\.
 
-### func [IsLessThanOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L72>)
+### func [IsLessOrdered](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L64>)
 
 ```go
-func IsLessThanOrdered[O constraints.Ordered](a O) Function[O, bool]
+func IsLessOrdered[O constraints.Ordered](a O) Function[O, bool]
 ```
 
-IsLessThanOrdered returns a LessThanOrdered for a\.
+IsLessOrdered returns a function that returns true if its argument is less than a\.
 
-### func [Not](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L127>)
+### func [Not](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L114>)
 
 ```go
 func Not[T any](function Function[T, bool]) Function[T, bool]
@@ -312,7 +297,7 @@ ToString is used to create string representations\, it accepts any type and retu
 type ToString[T any] func(T) string
 ```
 
-### func [StringerToString](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L110>)
+### func [StringerToString](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L97>)
 
 ```go
 func StringerToString[T fmt.Stringer]() ToString[T]
@@ -384,7 +369,11 @@ import "github.com/nwillc/genfuncs/container"
   - [func AssociateWith[T comparable, V any](slice GSlice[T], valueFor genfuncs.MapValueFor[T, V]) GMap[T, V]](<#func-associatewith>)
   - [func GroupBy[T any, K comparable](slice GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) GMap[K, GSlice[T]]](<#func-groupby>)
   - [func MapMerge[K comparable, V any](mv ...GMap[K, GSlice[V]]) GMap[K, GSlice[V]]](<#func-mapmerge>)
+  - [func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-all>)
+  - [func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-any>)
   - [func (m GMap[K, V]) Contains(key K) bool](<#func-gmapk-v-contains>)
+  - [func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) GMap[K, V]](<#func-gmapk-v-filter>)
+  - [func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) GMap[K, V]](<#func-gmapk-v-filterkeys>)
   - [func (m GMap[K, V]) Keys() GSlice[K]](<#func-gmapk-v-keys>)
   - [func (m GMap[K, V]) Values() GSlice[V]](<#func-gmapk-v-values>)
 - [type GSlice](<#type-gslice>)
@@ -686,7 +675,7 @@ func (d *Deque[T]) resize()
 
 resize the Deque to fit exactly twice its current contents\.  This is used to grow the queue when it is full\, and also to shrink it when it is only a quarter full\.
 
-## type [GMap](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L22>)
+## type [GMap](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L25>)
 
 GMap is a generic type corresponding to a standard Go map\.
 
@@ -807,7 +796,23 @@ func MapMerge[K comparable, V any](mv ...GMap[K, GSlice[V]]) GMap[K, GSlice[V]]
 
 MapMerge merges maps together into a new map\. The last value of a key is the one to be used\.
 
-### func \(GMap\[K\, V\]\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L25>)
+### func \(GMap\[K\, V\]\) [All](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L28>)
+
+```go
+func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool
+```
+
+All returns true if all values in GMap satisfy the predicate\.
+
+### func \(GMap\[K\, V\]\) [Any](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L38>)
+
+```go
+func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool
+```
+
+Any returns true if any values in GMap satisfy the predicate\.
+
+### func \(GMap\[K\, V\]\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L48>)
 
 ```go
 func (m GMap[K, V]) Contains(key K) bool
@@ -815,7 +820,23 @@ func (m GMap[K, V]) Contains(key K) bool
 
 Contains returns true if the GMap contains the given key\.
 
-### func \(GMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L31>)
+### func \(GMap\[K\, V\]\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L54>)
+
+```go
+func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) GMap[K, V]
+```
+
+Filter a GMap by a predicate\, returning a new GMap that contains only values that satisfy the predicate\.
+
+### func \(GMap\[K\, V\]\) [FilterKeys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L66>)
+
+```go
+func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) GMap[K, V]
+```
+
+FilterKeys returns a new GMap that contains only values whose key satisfy the predicate\.
+
+### func \(GMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L78>)
 
 ```go
 func (m GMap[K, V]) Keys() GSlice[K]
@@ -823,7 +844,7 @@ func (m GMap[K, V]) Keys() GSlice[K]
 
 Keys return a GSlice containing the keys of the GMap\.
 
-### func \(GMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L36>)
+### func \(GMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L83>)
 
 ```go
 func (m GMap[K, V]) Values() GSlice[V]
@@ -892,7 +913,7 @@ var words container.GSlice[string] = []string{"hello", "world"}
 
 func main() {
 	slicer := func(s string) container.GSlice[string] { return strings.Split(s, "") }
-	fmt.Println(container.FlatMap(words.SortBy(genfuncs.SLexicalOrder), slicer)) // [h e l l o w o r l d]
+	fmt.Println(container.FlatMap(words.SortBy(genfuncs.LessOrdered[string]), slicer)) // [h e l l o w o r l d]
 }
 ```
 
@@ -1014,7 +1035,7 @@ Random returns a random element of the GSlice\.
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]
 ```
 
-SortBy copies a slice\, sorts the copy applying the Comparator and returns it\.
+SortBy copies a slice\, sorts the copy applying the Order and returns it\.
 
 ### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L141>)
 
@@ -1066,7 +1087,7 @@ import (
 )
 
 func main() {
-	heap := container.NewHeap(genfuncs.INumericOrder, 3, 1, 4, 2)
+	heap := container.NewHeap[int](genfuncs.LessOrdered[int], 3, 1, 4, 2)
 	for heap.Len() > 0 {
 		fmt.Print(heap.Remove())
 	}
@@ -1256,7 +1277,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.8.4"
+const Version = "v0.9.0"
 ```
 
 
