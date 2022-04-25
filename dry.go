@@ -98,21 +98,21 @@ func StringerToString[T fmt.Stringer]() ToString[T] {
 	return func(t T) string { return t.String() }
 }
 
-// TransformArgs uses the function to transform the arguments to be passed to the BiFunction.
-func TransformArgs[T1, T2, R any](function Function[T1, T2], biFunction BiFunction[T2, T2, R]) BiFunction[T1, T1, R] {
+// TransformArgs uses the function to transform the arguments to be passed to the operation.
+func TransformArgs[T1, T2, R any](transform Function[T1, T2], operation BiFunction[T2, T2, R]) BiFunction[T1, T1, R] {
 	return func(a, b T1) R {
-		return biFunction(function(a), function(b))
+		return operation(transform(a), transform(b))
 	}
 }
 
 // Curried takes a BiFunction and one argument, and Curries the function to return a single argument Function.
-func Curried[A, R any](biFunction BiFunction[A, A, R], a A) Function[A, R] {
-	return func(b A) R { return biFunction(b, a) }
+func Curried[A, R any](operation BiFunction[A, A, R], a A) Function[A, R] {
+	return func(b A) R { return operation(b, a) }
 }
 
-// Not takes a Function returning a bool and returns a Function that inverts the result.
-func Not[T any](function Function[T, bool]) Function[T, bool] {
-	return func(a T) bool { return !function(a) }
+// Not takes a predicate returning and inverts the result.
+func Not[T any](predicate Function[T, bool]) Function[T, bool] {
+	return func(a T) bool { return !predicate(a) }
 }
 
 // Order old school -1/0/1 order of constraints.Ordered.

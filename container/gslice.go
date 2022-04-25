@@ -60,7 +60,7 @@ func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, in
 // Filter returns a slice containing only elements matching the given predicate.
 func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T] {
 	var results []T
-	s.ForEach(func(t T) {
+	s.ForEach(func(_ int, t T) {
 		if predicate(t) {
 			results = append(results, t)
 		}
@@ -83,7 +83,7 @@ func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
 func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
 	var last T
 	var found = false
-	s.ForEach(func(t T) {
+	s.ForEach(func(_ int, t T) {
 		if predicate(t) {
 			found = true
 			last = t
@@ -94,17 +94,9 @@ func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
 
 // ForEach element of the GSlice invoke given function with the element. Syntactic sugar for a range that intends to
 // traverse all the elements, i.e. no exiting midway through.
-func (s GSlice[T]) ForEach(fn func(t T)) {
-	for _, t := range s {
-		fn(t)
-	}
-}
-
-// ForEachI element of the GSlice invoke given function with the element and its index in the GSlice.
-// Syntactic sugar for a range that intends to traverse all the elements, i.e. no exiting midway through.
-func (s GSlice[T]) ForEachI(fn func(i int, t T)) {
+func (s GSlice[T]) ForEach(action func(i int, t T)) {
 	for i, t := range s {
-		fn(i, t)
+		action(i, t)
 	}
 }
 
@@ -114,7 +106,7 @@ func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string,
 	var sb strings.Builder
 	sb.WriteString(prefix)
 	last := len(s) - 1
-	s.ForEachI(func(i int, t T) {
+	s.ForEach(func(i int, t T) {
 		sb.WriteString(stringer(t))
 		if i != last {
 			sb.WriteString(separator)

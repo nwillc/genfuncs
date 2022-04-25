@@ -615,7 +615,7 @@ func TestSlice_ForEach(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			count := 0
-			tt.s.ForEach(func(i int) {
+			tt.s.ForEach(func(_ int, i int) {
 				count++
 			})
 			assert.Equal(t, tt.want, count)
@@ -647,7 +647,7 @@ func TestSlice_ForEachI(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			count := 0
-			tt.s.ForEachI(func(i, v int) {
+			tt.s.ForEach(func(i, v int) {
 				assert.Equal(t, count, i)
 				count++
 			})

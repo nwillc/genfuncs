@@ -299,3 +299,31 @@ func TestGMap_Any(t *testing.T) {
 		})
 	}
 }
+
+func TestGMap_ForEach(t *testing.T) {
+
+	tests := []struct {
+		name string
+		m    container.GMap[int, int]
+		want int
+	}{
+		{
+			name: "empty",
+			m:    container.GMap[int, int]{},
+			want: 0,
+		},
+		{
+			name: "with values",
+			m:    container.GMap[int, int]{1: 1, 2: 2},
+			want: 6,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sum := 0
+			action := func(k, v int) { sum = sum + k + v }
+			tt.m.ForEach(action)
+			assert.Equal(t, tt.want, sum)
+		})
+	}
+}

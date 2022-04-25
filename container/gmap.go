@@ -74,6 +74,13 @@ func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) GMap[K, V] 
 	return result
 }
 
+// ForEach performs the given action on each entry in the GMap.
+func (m GMap[K, V]) ForEach(action func(k K, v V)) {
+	for k, v := range m {
+		action(k, v)
+	}
+}
+
 // Keys return a GSlice containing the keys of the GMap.
 func (m GMap[K, V]) Keys() GSlice[K] {
 	return maps.Keys(m)
