@@ -462,7 +462,7 @@ func TestSortBy(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			dst := tt.args.slice.SortBy(tt.args.comparator)
-			assert.Equal(t, len(tt.want), len(dst))
+			assert.Equal(t, len(tt.want), dst.Len())
 			for i := 0; i < len(tt.want); i++ {
 				assert.Equal(t, tt.want[i], dst[i], "failed position %d", i)
 			}
@@ -541,7 +541,7 @@ func TestRandomSorts(t *testing.T) {
 func TestRandom(t *testing.T) {
 	var s container.GSlice[int] = []int{1, 2, 3}
 
-	for c := 0; c < 2*len(s); c++ {
+	for c := 0; c < 2*s.Len(); c++ {
 		i := s.Random()
 		p := genfuncs.IsEqualOrdered(i)
 		assert.True(t, s.Any(p))

@@ -18,9 +18,10 @@ package container
 
 const minimumCapacity = 16
 
-// Deque is a doubly ended Queue with default behavior of a Fifo but provides left and right access.
+var _ Queue[int] = (*Deque[int])(nil)
+
+// Deque is a doubly ended implementation of Queue with default behavior of a Fifo but provides left and right access.
 type Deque[T any] struct {
-	Queue[T]
 	slice GSlice[T]
 	head  int
 	tail  int
@@ -120,7 +121,7 @@ func (d *Deque[T]) Values() GSlice[T] {
 
 // Cap returns the capacity of the Deque.
 func (d *Deque[T]) Cap() int {
-	return len(d.slice)
+	return d.slice.Len()
 }
 
 // expand the Deque capacity if needed.

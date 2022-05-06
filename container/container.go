@@ -16,10 +16,11 @@
 
 package container
 
-// Set is a Container that contains no duplicate elements.
-type Set[T comparable] interface {
-	Container[T]
-	// Contains returns true if the Set contains a given element.
-	Contains(t T) bool
-	Remove(T)
+// Container is a minimal container that HasValues and accepts additional elements.
+type Container[T any] interface {
+	HasValues[T]
+	// Add an element to the Container.
+	Add(t T)
+	// AddAll elements to the Container.
+	AddAll(t ...T)
 }

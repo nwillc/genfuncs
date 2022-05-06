@@ -16,14 +16,10 @@
 
 package container
 
-// Bag is a minimal container that accepts elements.
-type Bag[T any] interface {
-	// Add an element to the Bag.
-	Add(t T)
-	// AddAll elements to the Bag.
-	AddAll(t ...T)
-	// Len returns length of the Bag.
+// HasValues is an interface that indicates a struct contains values that can counted and be retrieved.
+type HasValues[T any] interface {
+	// Len returns length of the Container.
 	Len() int
-	// Values returns a copy of the current values in the Bag without modifying the contents.
+	// Values returns a copy of the current values in the Container without modifying the contents.
 	Values() GSlice[T]
 }

@@ -20,9 +20,10 @@ import (
 	"github.com/nwillc/genfuncs"
 )
 
+var _ Queue[int] = (*Heap[int])(nil)
+
 // Heap implements either a min or max ordered heap of any type. Heap implements Queue.
 type Heap[T any] struct {
-	Queue[T]
 	slice    GSlice[T]
 	lessThan genfuncs.BiFunction[T, T, bool]
 	ordered  bool
@@ -36,7 +37,7 @@ func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap
 }
 
 // Len returns current length of the heap.
-func (h *Heap[T]) Len() int { return len(h.slice) }
+func (h *Heap[T]) Len() int { return h.slice.Len() }
 
 // Add a value onto the heap.
 func (h *Heap[T]) Add(v T) {

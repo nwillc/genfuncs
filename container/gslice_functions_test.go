@@ -85,7 +85,7 @@ func TestAssociate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fNameMap := container.Associate(tt.args.slice, tt.args.transform)
-			assert.Equal(t, tt.wantSize, len(fNameMap))
+			assert.Equal(t, tt.wantSize, fNameMap.Len())
 			for k := range fNameMap {
 				_, ok := fNameMap[k]
 				assert.True(t, ok)
@@ -133,7 +133,7 @@ func TestAssociateWith(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			resultMap := container.AssociateWith(tt.args.slice, tt.args.transform)
-			assert.Equal(t, tt.wantSize, len(resultMap))
+			assert.Equal(t, tt.wantSize, resultMap.Len())
 			for _, k := range tt.args.slice {
 				v, ok := resultMap[k]
 				assert.True(t, ok, "did not find key:", k)
@@ -177,7 +177,7 @@ func TestDistinct(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			distinct := container.Distinct(tt.args.slice)
-			assert.Equal(t, len(tt.want), len(distinct))
+			assert.Equal(t, len(tt.want), distinct.Len())
 		})
 	}
 }
@@ -212,8 +212,8 @@ func TestFlatMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := container.FlatMap(tt.args.slice, tt.args.transform)
-			assert.Equal(t, len(tt.want), len(got))
+			got := container.GSliceFlatMap(tt.args.slice, tt.args.transform)
+			assert.Equal(t, len(tt.want), got.Len())
 			for _, s := range tt.want {
 				assert.True(t, got.Any(genfuncs.IsEqualOrdered(s)))
 			}
@@ -254,7 +254,7 @@ func TestGroupBy(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			resultsMap := container.GroupBy(tt.args.slice, tt.args.keySelector)
-			assert.Equal(t, len(tt.want), len(resultsMap))
+			assert.Equal(t, len(tt.want), resultsMap.Len())
 			for k, v := range tt.want {
 				assert.True(t, v.All(func(i int) bool {
 					return container.GSlice[int](resultsMap[k]).Any(genfuncs.IsEqualOrdered(i))
@@ -294,8 +294,8 @@ func TestMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := container.Map(tt.args.slice, tt.args.transform)
-			assert.Equal(t, len(tt.want), len(got))
+			got := container.GSliceMap(tt.args.slice, tt.args.transform)
+			assert.Equal(t, len(tt.want), got.Len())
 			for _, s := range tt.want {
 				assert.True(t, got.Any(genfuncs.IsEqualOrdered(s)))
 			}

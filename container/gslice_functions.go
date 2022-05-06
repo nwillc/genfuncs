@@ -46,9 +46,9 @@ func Distinct[T comparable](slice GSlice[T]) GSlice[T] {
 	return ToSet(slice).Values()
 }
 
-// FlatMap returns a slice of all elements from results of transform being invoked on each element of
+// GSliceFlatMap returns a slice of all elements from results of transform being invoked on each element of
 // original slice, and those resultant slices concatenated.
-func FlatMap[T, R any](slice GSlice[T], transform genfuncs.Function[T, GSlice[R]]) GSlice[R] {
+func GSliceFlatMap[T, R any](slice GSlice[T], transform genfuncs.Function[T, GSlice[R]]) GSlice[R] {
 	var results GSlice[R]
 	slice.ForEach(func(_ int, t T) {
 		results = append(results, transform(t)...)
@@ -78,9 +78,9 @@ func GroupBy[T any, K comparable](slice GSlice[T], keyFor genfuncs.MapKeyFor[T, 
 	return m
 }
 
-// Map returns a slice containing the results of applying the given transform function to each element in the original slice.
-func Map[T, R any](slice GSlice[T], transform genfuncs.Function[T, R]) GSlice[R] {
-	var results = make(GSlice[R], len(slice))
+// GSliceMap returns a slice containing the results of applying the given transform function to each element in the original slice.
+func GSliceMap[T, R any](slice GSlice[T], transform genfuncs.Function[T, R]) GSlice[R] {
+	var results = make(GSlice[R], slice.Len())
 	slice.ForEach(func(i int, t T) {
 		results[i] = transform(t)
 	})

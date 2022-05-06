@@ -25,10 +25,11 @@ import (
 )
 
 var (
-	random = rand.New(rand.NewSource(time.Now().Unix()))
+	_      HasValues[int] = (*GSlice[int])(nil)
+	random                = rand.New(rand.NewSource(time.Now().Unix()))
 )
 
-// GSlice is a generic type corresponding to a standard Go slice.
+// GSlice is a generic type corresponding to a standard Go slice that implements HasValues.
 type GSlice[T any] []T
 
 // All returns true if all elements of slice match the predicate.
@@ -116,14 +117,19 @@ func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string,
 	return sb.String()
 }
 
+// Len is the number of elements in the GSlice.
+func (s GSlice[T]) Len() int {
+	return len(s)
+}
+
 // Random returns a random element of the GSlice.
 func (s GSlice[T]) Random() T {
-	return s[random.Intn(len(s))]
+	return s[random.Intn(s.Len())]
 }
 
 // SortBy copies a slice, sorts the copy applying the Order and returns it.
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T] {
-	dst := make([]T, len(s))
+	dst := make([]T, s.Len())
 	copy(dst, s)
 	slices.SortStableFunc(dst, lessThan)
 	return dst
@@ -134,9 +140,14 @@ func (s GSlice[T]) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
+// Values is the GSlice itself.
+func (s GSlice[T]) Values() GSlice[T] {
+	return s
+}
+
 // inBounds panics if given index out of GSlice's bounds.
 func (s GSlice[T]) inBounds(i int) {
-	if i < 0 || i > len(s)-1 {
+	if i < 0 || i > s.Len()-1 {
 		panic(genfuncs.NoSuchElement)
 	}
 }

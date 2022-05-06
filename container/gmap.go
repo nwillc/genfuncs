@@ -21,7 +21,9 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-// GMap is a generic type corresponding to a standard Go map.
+var _ HasValues[int] = (GMap[int, int])(nil)
+
+// GMap is a generic type corresponding to a standard Go map and implements HasValues.
 type GMap[K comparable, V any] map[K]V
 
 // All returns true if all values in GMap satisfy the predicate.
@@ -84,6 +86,11 @@ func (m GMap[K, V]) ForEach(action func(k K, v V)) {
 // Keys return a GSlice containing the keys of the GMap.
 func (m GMap[K, V]) Keys() GSlice[K] {
 	return maps.Keys(m)
+}
+
+// Len is the number of elements in the GMap.
+func (m GMap[K, V]) Len() int {
+	return len(m)
 }
 
 // Values returns a GSlice of all the values in the GMap.

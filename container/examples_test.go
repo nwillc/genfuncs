@@ -149,7 +149,7 @@ func ExampleDistinct() {
 
 func ExampleFlatMap() {
 	slicer := func(s string) container.GSlice[string] { return strings.Split(s, "") }
-	fmt.Println(container.FlatMap(words.SortBy(genfuncs.LessOrdered[string]), slicer)) // [h e l l o w o r l d]
+	fmt.Println(container.GSliceFlatMap(words.SortBy(genfuncs.LessOrdered[string]), slicer)) // [h e l l o w o r l d]
 }
 
 func ExampleFold() {
@@ -173,5 +173,5 @@ func ExampleGroupBy() {
 func ExampleMap() {
 	numbers := []int{69, 88, 65, 77, 80, 76, 69}
 	toString := func(i int) string { return string(rune(i)) }
-	fmt.Println(container.Map(numbers, toString)) // [E X A M P L E]
+	fmt.Println(container.GSliceMap(numbers, toString)) // [E X A M P L E]
 }

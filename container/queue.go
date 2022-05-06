@@ -16,11 +16,10 @@
 
 package container
 
-// Queue is a container providing some define order when accessing elements. Queue implements Bag.
+// Queue is a container providing some define order when accessing elements. Queue implements Container.
 type Queue[T any] interface {
-	Bag[T]
+	Container[T]
 	// Peek returns the next element without removing it.
 	Peek() T
-	// Remove a given element from the Queue.
 	Remove() T
 }

@@ -17,12 +17,12 @@
 package container
 
 var (
-	mapNilEntry = struct{}{}
+	mapNilEntry          = struct{}{}
+	_           Set[int] = (*MapSet[int])(nil)
 )
 
 // MapSet is a Set implementation based on a map. MapSet implements Set.
 type MapSet[T comparable] struct {
-	Set[T]
 	set GMap[T, struct{}]
 }
 
@@ -53,7 +53,7 @@ func (h *MapSet[T]) Contains(t T) bool {
 
 // Len returns the length of the MapSet.
 func (h *MapSet[T]) Len() int {
-	return len(h.set)
+	return h.set.Len()
 }
 
 // Remove an element from the MapSet.
