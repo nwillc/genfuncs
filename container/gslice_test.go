@@ -655,3 +655,10 @@ func TestSlice_ForEachI(t *testing.T) {
 		})
 	}
 }
+
+func TestGSlice_Values(t *testing.T) {
+	s := container.GSlice[int]{1, 2, 3, 4}
+	v := s.Values()
+
+	assert.Equal(t, s.Compare(v, genfuncs.Order[int]), genfuncs.OrderedEqual)
+}
