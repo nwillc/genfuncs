@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/github/license/nwillc/genfuncs.svg)](https://tldrlegal.com/license/-isc-license)
 [![CI](https://github.com/nwillc/genfuncs/workflows/CI/badge.svg)](https://github.com/nwillc/genfuncs/actions/workflows/CI.yml)
 [![codecov.io](https://codecov.io/github/nwillc/genfuncs/coverage.svg?branch=master)](https://codecov.io/github/nwillc/genfuncs?branch=master)
+[![Reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/nwillc/genfuncs)
 [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
 
 # Genfuncs
@@ -1276,7 +1277,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.11.0"
+const Version = "v0.11.1"
 ```
 
 
