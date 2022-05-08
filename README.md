@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/github/license/nwillc/genfuncs.svg)](https://tldrlegal.com/license/-isc-license)
 [![CI](https://github.com/nwillc/genfuncs/workflows/CI/badge.svg)](https://github.com/nwillc/genfuncs/actions/workflows/CI.yml)
 [![codecov.io](https://codecov.io/github/nwillc/genfuncs/coverage.svg?branch=master)](https://codecov.io/github/nwillc/genfuncs?branch=master)
-[![goreportcard.com](https://goreportcard.com/badge/github.com/nwillc/genfuncs)](https://goreportcard.com/badge/github.com/nwillc/genfuncs)
+[![goreportcard.com](https://goreportcard.com/badge/github.com/nwillc/genfuncs)](https://goreportcard.com/report/github.com/nwillc/genfuncs)
 [![Reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/nwillc/genfuncs)
 [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
 
