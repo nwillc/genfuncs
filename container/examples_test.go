@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -21,7 +21,6 @@ import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 	"os"
-	"strings"
 	"testing"
 )
 
@@ -33,145 +32,100 @@ func TestFunctionExamples(t *testing.T) {
 	if _, ok := os.LookupEnv("RUN_EXAMPLES"); !ok {
 		t.Skip("skipping: RUN_EXAMPLES not set")
 	}
-	// Map
-	ExampleContains()
-	ExampleKeys()
-	ExampleValues()
-	// GSlice fluent
-	ExampleSlice_All()
-	ExampleSlice_Any()
-	ExampleSlice_Filter()
-	ExampleSlice_Find()
-	ExampleSlice_FindLast()
-	ExampleSlice_JoinToString()
-	ExampleSlice_SortBy()
-	ExampleSlice_Swap()
-	// slice functions
-	ExampleAssociate()
-	ExampleAssociateWith()
-	ExampleDistinct()
-	ExampleFlatMap()
-	ExampleFold()
-	ExampleGroupBy()
-	ExampleMap()
+	ExampleGMap_Contains()
+	ExampleGMap_Keys()
+	ExampleGMap_Values()
+	ExampleGSlice_All()
+	ExampleGSlice_Any()
+	ExampleGSlice_Filter()
+	ExampleGSlice_Find()
+	ExampleGSlice_FindLast()
+	ExampleGSlice_JoinToString()
+	ExampleGSlice_SortBy()
+	ExampleGSlice_Swap()
 }
 
-func ExampleContains() {
-	fmt.Println(wordPositions.Contains("hello")) // true
-	fmt.Println(wordPositions.Contains("no"))    // false
+func ExampleGMap_Contains() {
+	fmt.Println(wordPositions.Contains("hello"))
+	fmt.Println(wordPositions.Contains("no"))
+	// Output:
+	// true
+	// false
 }
 
-func ExampleKeys() {
-	fmt.Println(wordPositions.Keys()) // [hello, world]
+func ExampleGMap_Keys() {
+	fmt.Println(wordPositions.Keys().SortBy(genfuncs.LessOrdered[string]))
+	// Output: [hello world]
 }
 
-func ExampleValues() {
-	fmt.Println(wordPositions.Values()) // [1, 2]
+func ExampleGMap_Values() {
+	wordPositions.Values().ForEach(func(_, i int) { fmt.Println(i) })
+	// Unordered Output:
+	// 1
+	// 2
 }
 
-func ExampleSlice_All() {
+func ExampleGSlice_All() {
 	var numbers container.GSlice[int] = []int{1, 2, 3, 4}
-	fmt.Println(numbers.All(greaterThanZero)) // true
+	fmt.Println(numbers.All(greaterThanZero))
+	// Output: true
 }
 
-func ExampleSlice_Any() {
+func ExampleGSlice_Any() {
 	var fruits container.GSlice[string] = []string{"apple", "banana", "grape"}
 	isPear := genfuncs.IsEqualOrdered("pear")
-	fmt.Println(fruits.Any(isPear))               // false
-	fmt.Println(fruits.Any(genfuncs.Not(isPear))) // true
+	fmt.Println(fruits.Any(isPear))
+	fmt.Println(fruits.Any(genfuncs.Not(isPear)))
+	// Output:
+	// false
+	// true
 }
 
-func ExampleSlice_Filter() {
+func ExampleGSlice_Filter() {
 	var values container.GSlice[int] = []int{1, -2, 2, -3}
-	fmt.Println(values.Filter(greaterThanZero)) // [1 2]
+	values.Filter(greaterThanZero).ForEach(func(_, i int) {
+		fmt.Println(i)
+	})
+	// Unordered Output:
+	// 1
+	// 2
 }
 
-func ExampleSlice_Find() {
+func ExampleGSlice_Find() {
 	var values container.GSlice[int] = []int{-1, -2, 2, -3}
-	fmt.Println(values.Find(greaterThanZero)) // 2 true
+	fmt.Println(values.Find(greaterThanZero))
+	// Output: 2 true
 }
 
-func ExampleSlice_FindLast() {
+func ExampleGSlice_FindLast() {
 	var values container.GSlice[int] = []int{-1, -2, 2, 3}
-	fmt.Println(values.FindLast(greaterThanZero)) // 3 true
+	fmt.Println(values.FindLast(greaterThanZero))
+	// Output: 3 true
 }
 
-func ExampleSlice_JoinToString() {
+func ExampleGSlice_JoinToString() {
 	var toString genfuncs.ToString[string] = func(s string) string { return s }
-	fmt.Println(words.JoinToString(
+	fmt.Println(words.SortBy(genfuncs.LessOrdered[string]).JoinToString(
 		toString,
 		" ",
 		"> ",
 		" <",
-	)) // > hello world <
+	))
+	// Output: > hello world <
 }
 
-func ExampleSlice_SortBy() {
+func ExampleGSlice_SortBy() {
 	var numbers container.GSlice[int] = []int{1, 0, 9, 6, 0}
-	fmt.Println(numbers)                                   // [1 0 9 6 0]
-	fmt.Println(numbers.SortBy(genfuncs.LessOrdered[int])) // [0 0 1 6 9]
+	fmt.Println(numbers)
+	fmt.Println(numbers.SortBy(genfuncs.LessOrdered[int]))
+	// Output:
+	// [1 0 9 6 0]
+	// [0 0 1 6 9]
 }
 
-func ExampleSlice_Swap() {
+func ExampleGSlice_Swap() {
+	words = words.SortBy(genfuncs.LessOrdered[string])
 	words.Swap(0, 1)
-	fmt.Println(words) // [world hello]
-}
-
-// slice functions
-
-func ExampleAssociate() {
-	byLastName := func(n string) (string, string) {
-		parts := strings.Split(n, " ")
-		return parts[1], n
-	}
-	names := []string{"fred flintstone", "barney rubble"}
-	nameMap := container.Associate(names, byLastName)
-	fmt.Println(nameMap["rubble"]) // barney rubble
-}
-
-func ExampleAssociateWith() {
-	oddEven := func(i int) string {
-		if i%2 == 0 {
-			return "EVEN"
-		}
-		return "ODD"
-	}
-	numbers := []int{1, 2, 3, 4}
-	odsEvensMap := container.AssociateWith(numbers, oddEven)
-	fmt.Println(odsEvensMap[2]) // EVEN
-	fmt.Println(odsEvensMap[3]) // ODD
-}
-
-func ExampleDistinct() {
-	values := []int{1, 2, 2, 3, 1, 3}
-	fmt.Println(container.Distinct(values)) // [1 2 3]
-}
-
-func ExampleFlatMap() {
-	slicer := func(s string) container.GSlice[string] { return strings.Split(s, "") }
-	fmt.Println(container.GSliceFlatMap(words.SortBy(genfuncs.LessOrdered[string]), slicer)) // [h e l l o w o r l d]
-}
-
-func ExampleFold() {
-	numbers := []int{1, 2, 3, 4, 5}
-	sum := func(a int, b int) int { return a + b }
-	fmt.Println(container.Fold(numbers, 0, sum)) // 15
-}
-
-func ExampleGroupBy() {
-	oddEven := func(i int) string {
-		if i%2 == 0 {
-			return "EVEN"
-		}
-		return "ODD"
-	}
-	numbers := []int{1, 2, 3, 4}
-	grouped := container.GroupBy(numbers, oddEven)
-	fmt.Println(grouped["ODD"]) // [1 3]
-}
-
-func ExampleMap() {
-	numbers := []int{69, 88, 65, 77, 80, 76, 69}
-	toString := func(i int) string { return string(rune(i)) }
-	fmt.Println(container.GSliceMap(numbers, toString)) // [E X A M P L E]
+	fmt.Println(words)
+	// Output: [world hello]
 }

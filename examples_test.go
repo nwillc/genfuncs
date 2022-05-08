@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021,  nwillc@gmail.com
+ *  Copyright (c) 2022,  nwillc@gmail.com
  *
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -32,8 +32,6 @@ func TestFunctionExamples(t *testing.T) {
 	// Functions
 	ExampleMax()
 	ExampleMin()
-	// ExampleSLexicalOrder()
-	// ExampleSReverseLexicalOrder()
 	ExampleStringerToString()
 	ExampleTransformArgs()
 }
@@ -49,17 +47,6 @@ func ExampleMax() {
 	words := []string{"dog", "cat", "gorilla"}
 	fmt.Println(genfuncs.Max(words...)) // gorilla
 }
-
-// func ExampleSLexicalOrder() {
-// 	fmt.Println(genfuncs.LessOrdered("a", "b")) // true
-// 	fmt.Println(genfuncs.LessOrdered("a", "a")) // false
-// 	fmt.Println(genfuncs.LessOrdered("b", "a")) // false
-// }
-//
-// func ExampleSReverseLexicalOrder() {
-// 	fmt.Println(genfuncs.SLexicalOrdered("a", "b"))        // true
-// 	fmt.Println(genfuncs.SReverseLexicalOrdered("a", "b")) // false
-// }
 
 func ExampleStringerToString() {
 	var epoch time.Time

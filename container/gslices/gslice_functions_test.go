@@ -14,16 +14,22 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package container_test
+package gslices_test
 
 import (
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/gslices"
 	"strconv"
 	"testing"
 
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
 )
+
+type PersonName struct {
+	First string
+	Last  string
+}
 
 func TestAssociate(t *testing.T) {
 	var firstLast genfuncs.MapKeyValueFor[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
@@ -84,7 +90,7 @@ func TestAssociate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fNameMap := container.Associate(tt.args.slice, tt.args.transform)
+			fNameMap := gslices.Associate(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, fNameMap.Len())
 			for k := range fNameMap {
 				_, ok := fNameMap[k]
@@ -132,7 +138,7 @@ func TestAssociateWith(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultMap := container.AssociateWith(tt.args.slice, tt.args.transform)
+			resultMap := gslices.AssociateWith(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, resultMap.Len())
 			for _, k := range tt.args.slice {
 				v, ok := resultMap[k]
@@ -176,7 +182,7 @@ func TestDistinct(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			distinct := container.Distinct(tt.args.slice)
+			distinct := gslices.Distinct(tt.args.slice)
 			assert.Equal(t, len(tt.want), distinct.Len())
 		})
 	}
@@ -212,18 +218,15 @@ func TestFlatMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := container.GSliceFlatMap(tt.args.slice, tt.args.transform)
-			assert.Equal(t, len(tt.want), got.Len())
-			for _, s := range tt.want {
-				assert.True(t, got.Any(genfuncs.IsEqualOrdered(s)))
-			}
+			got := gslices.FlatMap(tt.args.slice, tt.args.transform)
+			assert.ElementsMatch(t, tt.want, got)
 		})
 	}
 }
 
 func TestFold(t *testing.T) {
 	si := []int{1, 2, 3}
-	sum := container.Fold(si, 10, func(r int, i int) int { return r + i })
+	sum := gslices.Fold(si, 10, func(r int, i int) int { return r + i })
 	assert.Equal(t, 16, sum)
 }
 
@@ -253,7 +256,7 @@ func TestGroupBy(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultsMap := container.GroupBy(tt.args.slice, tt.args.keySelector)
+			resultsMap := gslices.GroupBy(tt.args.slice, tt.args.keySelector)
 			assert.Equal(t, len(tt.want), resultsMap.Len())
 			for k, v := range tt.want {
 				assert.True(t, v.All(func(i int) bool {
@@ -294,18 +297,15 @@ func TestMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := container.GSliceMap(tt.args.slice, tt.args.transform)
-			assert.Equal(t, len(tt.want), got.Len())
-			for _, s := range tt.want {
-				assert.True(t, got.Any(genfuncs.IsEqualOrdered(s)))
-			}
+			got := gslices.Map(tt.args.slice, tt.args.transform)
+			assert.ElementsMatch(t, tt.want, got)
 		})
 	}
 }
 
 func TestToSet(t *testing.T) {
 	s := container.GSlice[string]{"a", "b", "c", "b", "a"}
-	set := container.ToSet(s)
+	set := gslices.ToSet(s)
 	assert.Equal(t, 3, set.Len())
 	for _, l := range s {
 		assert.True(t, set.Contains(l))

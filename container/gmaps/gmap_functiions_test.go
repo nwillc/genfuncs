@@ -14,10 +14,11 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package container_test
+package gmaps_test
 
 import (
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/gmaps"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -30,8 +31,16 @@ func TestFlatMerge(t *testing.T) {
 	m2["a"] = container.GSlice[string]{"2"}
 	m2["b"] = container.GSlice[string]{"1"}
 
-	m3 := container.MapMerge(m1, m2)
+	m3 := gmaps.MapMerge(m1, m2)
 	assert.Equal(t, 2, m3.Len())
 	assert.Equal(t, 2, m3["a"].Len())
 	assert.Equal(t, 1, m3["b"].Len())
+}
+
+func TestMap(t *testing.T) {
+	m := container.GMap[int, int]{1: 2, 3: 4, 5: 6}
+
+	sums := gmaps.Map(m, func(k int, v int) int { return k + v })
+	want := container.GSlice[int]{3, 7, 11}
+	assert.ElementsMatch(t, want, sums)
 }

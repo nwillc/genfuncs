@@ -337,11 +337,6 @@ import "github.com/nwillc/genfuncs/container"
 
 ## Index
 
-- [Constants](<#constants>)
-- [func Fold[T, R any](slice GSlice[T], initial R, operation genfuncs.BiFunction[R, T, R]) R](<#func-fold>)
-- [func left(i int) int](<#func-left>)
-- [func parent(i int) int](<#func-parent>)
-- [func right(i int) int](<#func-right>)
 - [type Container](<#type-container>)
 - [type Deque](<#type-deque>)
   - [func NewDeque[T any](t ...T) *Deque[T]](<#func-newdeque>)
@@ -358,17 +353,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (d *Deque[T]) RemoveLeft() T](<#func-dequet-removeleft>)
   - [func (d *Deque[T]) RemoveRight() T](<#func-dequet-removeright>)
   - [func (d *Deque[T]) Values() GSlice[T]](<#func-dequet-values>)
-  - [func (d *Deque[T]) contract()](<#func-dequet-contract>)
-  - [func (d *Deque[T]) copy(slice GSlice[T])](<#func-dequet-copy>)
-  - [func (d *Deque[T]) expand()](<#func-dequet-expand>)
-  - [func (d *Deque[T]) next(i int) int](<#func-dequet-next>)
-  - [func (d *Deque[T]) prev(i int) int](<#func-dequet-prev>)
-  - [func (d *Deque[T]) resize()](<#func-dequet-resize>)
 - [type GMap](<#type-gmap>)
-  - [func Associate[T, V any, K comparable](slice GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) GMap[K, V]](<#func-associate>)
-  - [func AssociateWith[T comparable, V any](slice GSlice[T], valueFor genfuncs.MapValueFor[T, V]) GMap[T, V]](<#func-associatewith>)
-  - [func GroupBy[T any, K comparable](slice GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) GMap[K, GSlice[T]]](<#func-groupby>)
-  - [func MapMerge[K comparable, V any](mv ...GMap[K, GSlice[V]]) GMap[K, GSlice[V]]](<#func-mapmerge>)
   - [func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-all>)
   - [func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-any>)
   - [func (m GMap[K, V]) Contains(key K) bool](<#func-gmapk-v-contains>)
@@ -379,9 +364,6 @@ import "github.com/nwillc/genfuncs/container"
   - [func (m GMap[K, V]) Len() int](<#func-gmapk-v-len>)
   - [func (m GMap[K, V]) Values() GSlice[V]](<#func-gmapk-v-values>)
 - [type GSlice](<#type-gslice>)
-  - [func Distinct[T comparable](slice GSlice[T]) GSlice[T]](<#func-distinct>)
-  - [func GSliceFlatMap[T, R any](slice GSlice[T], transform genfuncs.Function[T, GSlice[R]]) GSlice[R]](<#func-gsliceflatmap>)
-  - [func GSliceMap[T, R any](slice GSlice[T], transform genfuncs.Function[T, R]) GSlice[R]](<#func-gslicemap>)
   - [func (s GSlice[T]) All(predicate genfuncs.Function[T, bool]) bool](<#func-gslicet-all>)
   - [func (s GSlice[T]) Any(predicate genfuncs.Function[T, bool]) bool](<#func-gslicet-any>)
   - [func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) int](<#func-gslicet-compare>)
@@ -395,7 +377,6 @@ import "github.com/nwillc/genfuncs/container"
   - [func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]](<#func-gslicet-sortby>)
   - [func (s GSlice[T]) Swap(i, j int)](<#func-gslicet-swap>)
   - [func (s GSlice[T]) Values() GSlice[T]](<#func-gslicet-values>)
-  - [func (s GSlice[T]) inBounds(i int)](<#func-gslicet-inbounds>)
 - [type HasValues](<#type-hasvalues>)
 - [type Heap](<#type-heap>)
   - [func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T]](<#func-newheap>)
@@ -405,10 +386,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (h *Heap[T]) Peek() T](<#func-heapt-peek>)
   - [func (h *Heap[T]) Remove() T](<#func-heapt-remove>)
   - [func (h *Heap[T]) Values() GSlice[T]](<#func-heapt-values>)
-  - [func (h *Heap[T]) down()](<#func-heapt-down>)
-  - [func (h *Heap[T]) up(jj int)](<#func-heapt-up>)
 - [type MapSet](<#type-mapset>)
-  - [func NewMapSet[T comparable](t ...T) *MapSet[T]](<#func-newmapset>)
   - [func (h *MapSet[T]) Add(t T)](<#func-mapsett-add>)
   - [func (h *MapSet[T]) AddAll(t ...T)](<#func-mapsett-addall>)
   - [func (h *MapSet[T]) Contains(t T) bool](<#func-mapsett-contains>)
@@ -417,61 +395,8 @@ import "github.com/nwillc/genfuncs/container"
   - [func (h *MapSet[T]) Values() GSlice[T]](<#func-mapsett-values>)
 - [type Queue](<#type-queue>)
 - [type Set](<#type-set>)
-  - [func ToSet[T comparable](slice GSlice[T]) Set[T]](<#func-toset>)
+  - [func NewMapSet[T comparable](t ...T) Set[T]](<#func-newmapset>)
 
-
-## Constants
-
-```go
-const minimumCapacity = 16
-```
-
-## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L61>)
-
-```go
-func Fold[T, R any](slice GSlice[T], initial R, operation genfuncs.BiFunction[R, T, R]) R
-```
-
-Fold accumulates a value starting with initial value and applying operation from left to right to current accumulated value and each element\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs/container"
-)
-
-func main() {
-	numbers := []int{1, 2, 3, 4, 5}
-	sum := func(a int, b int) int { return a + b }
-	fmt.Println(container.Fold(numbers, 0, sum)) // 15
-}
-```
-
-</p>
-</details>
-
-## func [left](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L119>)
-
-```go
-func left(i int) int
-```
-
-## func [parent](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L118>)
-
-```go
-func parent(i int) int
-```
-
-## func [right](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L120>)
-
-```go
-func right(i int) int
-```
 
 ## type [Container](<https://github.com/nwillc/genfuncs/blob/master/container/container.go#L20-L26>)
 
@@ -479,11 +404,12 @@ Container is a minimal container that HasValues and accepts additional elements\
 
 ```go
 type Container[T any] interface {
-    HasValues[T]
+
     // Add an element to the Container.
     Add(t T)
     // AddAll elements to the Container.
     AddAll(t ...T)
+    // contains filtered or unexported methods
 }
 ```
 
@@ -493,11 +419,7 @@ Deque is a doubly ended implementation of Queue with default behavior of a Fifo 
 
 ```go
 type Deque[T any] struct {
-    slice GSlice[T]
-    head  int
-    tail  int
-    count int
-    tNil  T
+    // contains filtered or unexported fields
 }
 ```
 
@@ -613,54 +535,6 @@ func (d *Deque[T]) Values() GSlice[T]
 
 Values in the Deque returned in a new GSlice\.
 
-### func \(\*Deque\[T\]\) [contract](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L140>)
-
-```go
-func (d *Deque[T]) contract()
-```
-
-contract Deque capacity if only 1/4 full\.
-
-### func \(\*Deque\[T\]\) [copy](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L158>)
-
-```go
-func (d *Deque[T]) copy(slice GSlice[T])
-```
-
-copy the values\, in order\, from the Deque to a GSlice\.
-
-### func \(\*Deque\[T\]\) [expand](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L128>)
-
-```go
-func (d *Deque[T]) expand()
-```
-
-expand the Deque capacity if needed\.
-
-### func \(\*Deque\[T\]\) [next](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L173>)
-
-```go
-func (d *Deque[T]) next(i int) int
-```
-
-next returns the next buffer position wrapping around buffer\.
-
-### func \(\*Deque\[T\]\) [prev](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L168>)
-
-```go
-func (d *Deque[T]) prev(i int) int
-```
-
-prev returns the previous buffer position wrapping around buffer\.
-
-### func \(\*Deque\[T\]\) [resize](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L149>)
-
-```go
-func (d *Deque[T]) resize()
-```
-
-resize the Deque to fit exactly twice its current contents\.  This is used to grow the queue when it is full\, and also to shrink it when it is only a quarter full\.
-
 ## type [GMap](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L27>)
 
 GMap is a generic type corresponding to a standard Go map and implements HasValues\.
@@ -668,119 +542,6 @@ GMap is a generic type corresponding to a standard Go map and implements HasValu
 ```go
 type GMap[K comparable, V any] map[K]V
 ```
-
-### func [Associate](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L24>)
-
-```go
-func Associate[T, V any, K comparable](slice GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) GMap[K, V]
-```
-
-Associate returns a map containing key/values created by applying a function to elements of the slice\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs/container"
-	"strings"
-)
-
-func main() {
-	byLastName := func(n string) (string, string) {
-		parts := strings.Split(n, " ")
-		return parts[1], n
-	}
-	names := []string{"fred flintstone", "barney rubble"}
-	nameMap := container.Associate(names, byLastName)
-	fmt.Println(nameMap["rubble"]) // barney rubble
-}
-```
-
-</p>
-</details>
-
-### func [AssociateWith](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L35>)
-
-```go
-func AssociateWith[T comparable, V any](slice GSlice[T], valueFor genfuncs.MapValueFor[T, V]) GMap[T, V]
-```
-
-AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the valueSelector function applied to each element\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs/container"
-)
-
-func main() {
-	oddEven := func(i int) string {
-		if i%2 == 0 {
-			return "EVEN"
-		}
-		return "ODD"
-	}
-	numbers := []int{1, 2, 3, 4}
-	odsEvensMap := container.AssociateWith(numbers, oddEven)
-	fmt.Println(odsEvensMap[2]) // EVEN
-	fmt.Println(odsEvensMap[3]) // ODD
-}
-```
-
-</p>
-</details>
-
-### func [GroupBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L71>)
-
-```go
-func GroupBy[T any, K comparable](slice GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) GMap[K, GSlice[T]]
-```
-
-GroupBy groups elements of the slice by the key returned by the given keySelector function applied to each element and returns a map where each group key is associated with a slice of corresponding elements\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs/container"
-)
-
-func main() {
-	oddEven := func(i int) string {
-		if i%2 == 0 {
-			return "EVEN"
-		}
-		return "ODD"
-	}
-	numbers := []int{1, 2, 3, 4}
-	grouped := container.GroupBy(numbers, oddEven)
-	fmt.Println(grouped["ODD"]) // [1 3]
-}
-```
-
-</p>
-</details>
-
-### func [MapMerge](<https://github.com/nwillc/genfuncs/blob/master/container/gmap_functiions.go#L20>)
-
-```go
-func MapMerge[K comparable, V any](mv ...GMap[K, GSlice[V]]) GMap[K, GSlice[V]]
-```
-
-MapMerge merges maps together into a new map\. The last value of a key is the one to be used\.
 
 ### func \(GMap\[K\, V\]\) [All](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L30>)
 
@@ -861,50 +622,6 @@ GSlice is a generic type corresponding to a standard Go slice that implements Ha
 ```go
 type GSlice[T any] []T
 ```
-
-### func [Distinct](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L45>)
-
-```go
-func Distinct[T comparable](slice GSlice[T]) GSlice[T]
-```
-
-Distinct returns a slice containing only distinct elements from the given slice\.
-
-<details><summary>Example</summary>
-<p>
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/nwillc/genfuncs/container"
-)
-
-func main() {
-	values := []int{1, 2, 2, 3, 1, 3}
-	fmt.Println(container.Distinct(values)) // [1 2 3]
-}
-```
-
-</p>
-</details>
-
-### func [GSliceFlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L51>)
-
-```go
-func GSliceFlatMap[T, R any](slice GSlice[T], transform genfuncs.Function[T, GSlice[R]]) GSlice[R]
-```
-
-GSliceFlatMap returns a slice of all elements from results of transform being invoked on each element of original slice\, and those resultant slices concatenated\.
-
-### func [GSliceMap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L82>)
-
-```go
-func GSliceMap[T, R any](slice GSlice[T], transform genfuncs.Function[T, R]) GSlice[R]
-```
-
-GSliceMap returns a slice containing the results of applying the given transform function to each element in the original slice\.
 
 ### func \(GSlice\[T\]\) [All](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L36>)
 
@@ -1010,14 +727,6 @@ func (s GSlice[T]) Values() GSlice[T]
 
 Values is the GSlice itself\.
 
-### func \(GSlice\[T\]\) [inBounds](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L149>)
-
-```go
-func (s GSlice[T]) inBounds(i int)
-```
-
-inBounds panics if given index out of GSlice's bounds\.
-
 ## type [HasValues](<https://github.com/nwillc/genfuncs/blob/master/container/has_values.go#L20-L25>)
 
 HasValues is an interface that indicates a struct contains values that can counted and be retrieved\.
@@ -1031,26 +740,13 @@ type HasValues[T any] interface {
 }
 ```
 
-```go
-var (
-    _      HasValues[int] = (*GSlice[int])(nil)
-    random                = rand.New(rand.NewSource(time.Now().Unix()))
-)
-```
-
-```go
-var _ HasValues[int] = (GMap[int, int])(nil)
-```
-
 ## type [Heap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L26-L30>)
 
 Heap implements either a min or max ordered heap of any type\. Heap implements Queue\.
 
 ```go
 type Heap[T any] struct {
-    slice    GSlice[T]
-    lessThan genfuncs.BiFunction[T, T, bool]
-    ordered  bool
+    // contains filtered or unexported fields
 }
 ```
 
@@ -1134,35 +830,15 @@ func (h *Heap[T]) Values() GSlice[T]
 
 Values returns a slice of the values in the Heap in no particular order\.
 
-### func \(\*Heap\[T\]\) [down](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L97>)
-
-```go
-func (h *Heap[T]) down()
-```
-
-### func \(\*Heap\[T\]\) [up](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L86>)
-
-```go
-func (h *Heap[T]) up(jj int)
-```
-
 ## type [MapSet](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L25-L27>)
 
 MapSet is a Set implementation based on a map\. MapSet implements Set\.
 
 ```go
 type MapSet[T comparable] struct {
-    set GMap[T, struct{}]
+    // contains filtered or unexported fields
 }
 ```
-
-### func [NewMapSet](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L30>)
-
-```go
-func NewMapSet[T comparable](t ...T) *MapSet[T]
-```
-
-NewMapSet returns a new MapSet containing given values\.
 
 ### func \(\*MapSet\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L37>)
 
@@ -1218,19 +894,12 @@ Queue is a container providing some define order when accessing elements\. Queue
 
 ```go
 type Queue[T any] interface {
-    Container[T]
+
     // Peek returns the next element without removing it.
     Peek() T
     Remove() T
+    // contains filtered or unexported methods
 }
-```
-
-```go
-var _ Queue[int] = (*Deque[int])(nil)
-```
-
-```go
-var _ Queue[int] = (*Heap[int])(nil)
 ```
 
 ## type [Set](<https://github.com/nwillc/genfuncs/blob/master/container/set.go#L20-L25>)
@@ -1239,24 +908,296 @@ Set is a Container that contains no duplicate elements\.
 
 ```go
 type Set[T comparable] interface {
-    Container[T]
+
     // Contains returns true if the Set contains a given element.
     Contains(t T) bool
     Remove(T)
+    // contains filtered or unexported methods
 }
 ```
 
+### func [NewMapSet](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L30>)
+
 ```go
-var (
-    mapNilEntry          = struct{}{}
-    _           Set[int] = (*MapSet[int])(nil)
-)
+func NewMapSet[T comparable](t ...T) Set[T]
 ```
 
-### func [ToSet](<https://github.com/nwillc/genfuncs/blob/master/container/gslice_functions.go#L91>)
+NewMapSet returns a new Set containing given values\.
+
+# gmaps
 
 ```go
-func ToSet[T comparable](slice GSlice[T]) Set[T]
+import "github.com/nwillc/genfuncs/container/gmaps"
+```
+
+## Index
+
+- [func Map[K comparable, V any, R any](m container.GMap[K, V], transform genfuncs.BiFunction[K, V, R]) container.GSlice[R]](<#func-map>)
+- [func MapMerge[K comparable, V any](mv ...container.GMap[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]]](<#func-mapmerge>)
+
+
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/gmaps/gmap_functiions.go#L25>)
+
+```go
+func Map[K comparable, V any, R any](m container.GMap[K, V], transform genfuncs.BiFunction[K, V, R]) container.GSlice[R]
+```
+
+Map returns a GSlice containing the results of applying the given transform function to each element in the GMap\.
+
+## func [MapMerge](<https://github.com/nwillc/genfuncs/blob/master/container/gmaps/gmap_functiions.go#L36>)
+
+```go
+func MapMerge[K comparable, V any](mv ...container.GMap[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]]
+```
+
+MapMerge merges maps together into a new map\. The last value of a key is the one to be used\.
+
+# gslices
+
+```go
+import "github.com/nwillc/genfuncs/container/gslices"
+```
+
+## Index
+
+- [func Associate[T, V any, K comparable](slice container.GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) container.GMap[K, V]](<#func-associate>)
+- [func AssociateWith[T comparable, V any](slice container.GSlice[T], valueFor genfuncs.MapValueFor[T, V]) container.GMap[T, V]](<#func-associatewith>)
+- [func Distinct[T comparable](slice container.GSlice[T]) container.GSlice[T]](<#func-distinct>)
+- [func FlatMap[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, container.GSlice[R]]) container.GSlice[R]](<#func-flatmap>)
+- [func Fold[T, R any](slice container.GSlice[T], initial R, operation genfuncs.BiFunction[R, T, R]) R](<#func-fold>)
+- [func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) container.GMap[K, container.GSlice[T]]](<#func-groupby>)
+- [func Map[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, R]) container.GSlice[R]](<#func-map>)
+- [func ToSet[T comparable](slice container.GSlice[T]) container.Set[T]](<#func-toset>)
+
+
+## func [Associate](<https://github.com/nwillc/genfuncs/blob/master/container/gslices/gslice_functions.go#L25>)
+
+```go
+func Associate[T, V any, K comparable](slice container.GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) container.GMap[K, V]
+```
+
+Associate returns a map containing key/values created by applying a function to elements of the slice\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/gslices"
+	"strings"
+)
+
+func main() {
+	byLastName := func(n string) (string, string) {
+		parts := strings.Split(n, " ")
+		return parts[1], n
+	}
+	names := []string{"fred flintstone", "barney rubble"}
+	nameMap := gslices.Associate(names, byLastName)
+	fmt.Println(nameMap["rubble"]) // barney rubble
+}
+```
+
+</p>
+</details>
+
+## func [AssociateWith](<https://github.com/nwillc/genfuncs/blob/master/container/gslices/gslice_functions.go#L36>)
+
+```go
+func AssociateWith[T comparable, V any](slice container.GSlice[T], valueFor genfuncs.MapValueFor[T, V]) container.GMap[T, V]
+```
+
+AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the valueSelector function applied to each element\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/gslices"
+)
+
+func main() {
+	oddEven := func(i int) string {
+		if i%2 == 0 {
+			return "EVEN"
+		}
+		return "ODD"
+	}
+	numbers := []int{1, 2, 3, 4}
+	odsEvensMap := gslices.AssociateWith(numbers, oddEven)
+	fmt.Println(odsEvensMap[2]) // EVEN
+	fmt.Println(odsEvensMap[3]) // ODD
+}
+```
+
+</p>
+</details>
+
+## func [Distinct](<https://github.com/nwillc/genfuncs/blob/master/container/gslices/gslice_functions.go#L46>)
+
+```go
+func Distinct[T comparable](slice container.GSlice[T]) container.GSlice[T]
+```
+
+Distinct returns a slice containing only distinct elements from the given slice\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/gslices"
+)
+
+func main() {
+	values := []int{1, 2, 2, 3, 1, 3}
+	fmt.Println(gslices.Distinct(values)) // [1 2 3]
+}
+```
+
+</p>
+</details>
+
+## func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/gslices/gslice_functions.go#L52>)
+
+```go
+func FlatMap[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, container.GSlice[R]]) container.GSlice[R]
+```
+
+FlatMap returns a slice of all elements from results of transform being invoked on each element of original slice\, and those resultant slices concatenated\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/gslices"
+	"strings"
+)
+
+var words container.GSlice[string] = []string{"hello", "world"}
+
+func main() {
+	slicer := func(s string) container.GSlice[string] { return strings.Split(s, "") }
+	fmt.Println(gslices.FlatMap(words.SortBy(genfuncs.LessOrdered[string]), slicer)) // [h e l l o w o r l d]
+}
+```
+
+</p>
+</details>
+
+## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/gslices/gslice_functions.go#L62>)
+
+```go
+func Fold[T, R any](slice container.GSlice[T], initial R, operation genfuncs.BiFunction[R, T, R]) R
+```
+
+Fold accumulates a value starting with initial value and applying operation from left to right to current accumulated value and each element\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/gslices"
+)
+
+func main() {
+	numbers := []int{1, 2, 3, 4, 5}
+	sum := func(a int, b int) int { return a + b }
+	fmt.Println(gslices.Fold(numbers, 0, sum)) // 15
+}
+```
+
+</p>
+</details>
+
+## func [GroupBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslices/gslice_functions.go#L72>)
+
+```go
+func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) container.GMap[K, container.GSlice[T]]
+```
+
+GroupBy groups elements of the slice by the key returned by the given keySelector function applied to each element and returns a map where each group key is associated with a slice of corresponding elements\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/gslices"
+)
+
+func main() {
+	oddEven := func(i int) string {
+		if i%2 == 0 {
+			return "EVEN"
+		}
+		return "ODD"
+	}
+	numbers := []int{1, 2, 3, 4}
+	grouped := gslices.GroupBy(numbers, oddEven)
+	fmt.Println(grouped["ODD"]) // [1 3]
+}
+```
+
+</p>
+</details>
+
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/gslices/gslice_functions.go#L83>)
+
+```go
+func Map[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, R]) container.GSlice[R]
+```
+
+Map returns a slice containing the results of applying the given transform function to each element in the original slice\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/gslices"
+)
+
+func main() {
+	numbers := []int{69, 88, 65, 77, 80, 76, 69}
+	toString := func(i int) string { return string(rune(i)) }
+	fmt.Println(gslices.Map(numbers, toString)) // [E X A M P L E]
+}
+```
+
+</p>
+</details>
+
+## func [ToSet](<https://github.com/nwillc/genfuncs/blob/master/container/gslices/gslice_functions.go#L92>)
+
+```go
+func ToSet[T comparable](slice container.GSlice[T]) container.Set[T]
 ```
 
 ToSet creates a Set from the elements of the GSlice\.

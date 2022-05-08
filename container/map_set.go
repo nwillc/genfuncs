@@ -26,8 +26,8 @@ type MapSet[T comparable] struct {
 	set GMap[T, struct{}]
 }
 
-// NewMapSet returns a new MapSet containing given values.
-func NewMapSet[T comparable](t ...T) *MapSet[T] {
+// NewMapSet returns a new Set containing given values.
+func NewMapSet[T comparable](t ...T) Set[T] {
 	s := &MapSet[T]{set: make(map[T]struct{})}
 	s.AddAll(t...)
 	return s
