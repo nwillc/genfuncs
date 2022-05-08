@@ -32,7 +32,7 @@ func Map[K comparable, V any, R any](m container.GMap[K, V], transform genfuncs.
 	return results
 }
 
-// MapMerge merges maps together into a new map. The last value of a key is the one to be used.
+// MapMerge merges maps of container.GSlice's together into a new map appending the container.GSlice's when collisions occur.
 func MapMerge[K comparable, V any](mv ...container.GMap[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]] {
 	result := make(container.GMap[K, container.GSlice[V]])
 	for _, m := range mv {

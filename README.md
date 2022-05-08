@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/github/license/nwillc/genfuncs.svg)](https://tldrlegal.com/license/-isc-license)
 [![CI](https://github.com/nwillc/genfuncs/workflows/CI/badge.svg)](https://github.com/nwillc/genfuncs/actions/workflows/CI.yml)
 [![codecov.io](https://codecov.io/github/nwillc/genfuncs/coverage.svg?branch=master)](https://codecov.io/github/nwillc/genfuncs?branch=master)
+[![goreportcard.com](https://goreportcard.com/badge/github.com/nwillc/genfuncs)](https://goreportcard.com/badge/github.com/nwillc/genfuncs)
 [![Reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/nwillc/genfuncs)
 [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
 
@@ -387,6 +388,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) GMap[K, V]](<#func-gmapk-v-filter>)
   - [func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) GMap[K, V]](<#func-gmapk-v-filterkeys>)
   - [func (m GMap[K, V]) ForEach(action func(k K, v V))](<#func-gmapk-v-foreach>)
+  - [func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) V](<#func-gmapk-v-getorelse>)
   - [func (m GMap[K, V]) Keys() GSlice[K]](<#func-gmapk-v-keys>)
   - [func (m GMap[K, V]) Len() int](<#func-gmapk-v-len>)
   - [func (m GMap[K, V]) Values() GSlice[V]](<#func-gmapk-v-values>)
@@ -618,7 +620,15 @@ func (m GMap[K, V]) ForEach(action func(k K, v V))
 
 ForEach performs the given action on each entry in the GMap\.
 
-### func \(GMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L87>)
+### func \(GMap\[K\, V\]\) [GetOrElse](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L87>)
+
+```go
+func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) V
+```
+
+GetOrElse returns the value at the given key if it exists or returns the result of defaultValue\.
+
+### func \(GMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L96>)
 
 ```go
 func (m GMap[K, V]) Keys() GSlice[K]
@@ -626,7 +636,7 @@ func (m GMap[K, V]) Keys() GSlice[K]
 
 Keys return a GSlice containing the keys of the GMap\.
 
-### func \(GMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L92>)
+### func \(GMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L101>)
 
 ```go
 func (m GMap[K, V]) Len() int
@@ -634,7 +644,7 @@ func (m GMap[K, V]) Len() int
 
 Len is the number of elements in the GMap\.
 
-### func \(GMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L97>)
+### func \(GMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L106>)
 
 ```go
 func (m GMap[K, V]) Values() GSlice[V]
@@ -983,7 +993,7 @@ Map returns a GSlice containing the results of applying the given transform func
 func MapMerge[K comparable, V any](mv ...container.GMap[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]]
 ```
 
-MapMerge merges maps together into a new map\. The last value of a key is the one to be used\.
+MapMerge merges maps of container\.GSlice's together into a new map appending the container\.GSlice's when collisions occur\.
 
 # gslices
 
@@ -1298,7 +1308,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.11.1"
+const Version = "v0.12.0"
 ```
 
 

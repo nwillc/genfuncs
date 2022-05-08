@@ -83,6 +83,15 @@ func (m GMap[K, V]) ForEach(action func(k K, v V)) {
 	}
 }
 
+// GetOrElse returns the value at the given key if it exists or returns the result of defaultValue.
+func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) V {
+	v, ok := m[k]
+	if !ok {
+		return defaultValue()
+	}
+	return v
+}
+
 // Keys return a GSlice containing the keys of the GMap.
 func (m GMap[K, V]) Keys() GSlice[K] {
 	return maps.Keys(m)

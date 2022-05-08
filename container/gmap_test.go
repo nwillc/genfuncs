@@ -327,3 +327,10 @@ func TestGMap_ForEach(t *testing.T) {
 		})
 	}
 }
+
+func TestGMap_GetOrElse(t *testing.T) {
+	m := container.GMap[string, int]{"0": 0, "1": 1, "2": 2}
+	def := func() int { return -1 }
+	assert.Equal(t, 0, m.GetOrElse("0", def))
+	assert.Equal(t, -1, m.GetOrElse("1000", def))
+}
