@@ -37,27 +37,37 @@ func TestFunctionExamples(t *testing.T) {
 }
 
 func ExampleMin() {
-	fmt.Println(genfuncs.Min(1, 2)) // 1
+	fmt.Println(genfuncs.Min(1, 2))
 	words := []string{"dog", "cat", "gorilla"}
-	fmt.Println(genfuncs.Min(words...)) // cat
+	fmt.Println(genfuncs.Min(words...))
+	// Output:
+	// 1
+	// cat
 }
 
 func ExampleMax() {
-	fmt.Println(genfuncs.Max(1, 2)) // 2
+	fmt.Println(genfuncs.Max(1, 2))
 	words := []string{"dog", "cat", "gorilla"}
-	fmt.Println(genfuncs.Max(words...)) // gorilla
+	fmt.Println(genfuncs.Max(words...))
+	// Output:
+	// 2
+	// gorilla
 }
 
 func ExampleStringerToString() {
 	var epoch time.Time
-	fmt.Println(epoch.String()) // 0001-01-01 00:00:00 +0000 UTC
+	fmt.Println(epoch.String())
 	stringer := genfuncs.StringerToString[time.Time]()
-	fmt.Println(stringer(epoch)) // 0001-01-01 00:00:00 +0000 UTC
+	fmt.Println(stringer(epoch))
+	// Output:
+	// 0001-01-01 00:00:00 +0000 UTC
+	// 0001-01-01 00:00:00 +0000 UTC
 }
 
 func ExampleTransformArgs() {
 	var unixTime = func(t time.Time) int64 { return t.Unix() }
 	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.LessOrdered[int64])
 	now := time.Now()
-	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
+	fmt.Println(chronoOrder(now, now.Add(time.Second)))
+	// Output: true
 }

@@ -13,7 +13,7 @@ in particular when working with slices, maps and sorting. Many of the functions 
 This package, while usable, is primarily a proof-of-concept since it is likely Go will provide similar before long.
 In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
 
-Examples are found in `examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
+Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
 
 The code is under the [ISC License](https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
 
@@ -133,10 +133,17 @@ import (
 )
 
 func main() {
-	fmt.Println(genfuncs.Max(1, 2)) // 2
+	fmt.Println(genfuncs.Max(1, 2))
 	words := []string{"dog", "cat", "gorilla"}
-	fmt.Println(genfuncs.Max(words...)) // gorilla
+	fmt.Println(genfuncs.Max(words...))
 }
+```
+
+#### Output
+
+```
+2
+gorilla
 ```
 
 </p>
@@ -162,10 +169,17 @@ import (
 )
 
 func main() {
-	fmt.Println(genfuncs.Min(1, 2)) // 1
+	fmt.Println(genfuncs.Min(1, 2))
 	words := []string{"dog", "cat", "gorilla"}
-	fmt.Println(genfuncs.Min(words...)) // cat
+	fmt.Println(genfuncs.Min(words...))
 }
+```
+
+#### Output
+
+```
+1
+cat
 ```
 
 </p>
@@ -211,8 +225,14 @@ func main() {
 	var unixTime = func(t time.Time) int64 { return t.Unix() }
 	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.LessOrdered[int64])
 	now := time.Now()
-	fmt.Println(chronoOrder(now, now.Add(time.Second))) // true
+	fmt.Println(chronoOrder(now, now.Add(time.Second)))
 }
+```
+
+#### Output
+
+```
+true
 ```
 
 </p>
@@ -320,10 +340,17 @@ import (
 
 func main() {
 	var epoch time.Time
-	fmt.Println(epoch.String()) // 0001-01-01 00:00:00 +0000 UTC
+	fmt.Println(epoch.String())
 	stringer := genfuncs.StringerToString[time.Time]()
-	fmt.Println(stringer(epoch)) // 0001-01-01 00:00:00 +0000 UTC
+	fmt.Println(stringer(epoch))
 }
+```
+
+#### Output
+
+```
+0001-01-01 00:00:00 +0000 UTC
+0001-01-01 00:00:00 +0000 UTC
 ```
 
 </p>
@@ -775,8 +802,14 @@ func main() {
 	for heap.Len() > 0 {
 		fmt.Print(heap.Remove())
 	}
-	fmt.Println() // 1234
+	fmt.Println()
 }
+```
+
+#### Output
+
+```
+1234
 ```
 
 </p>
@@ -997,8 +1030,14 @@ func main() {
 	}
 	names := []string{"fred flintstone", "barney rubble"}
 	nameMap := gslices.Associate(names, byLastName)
-	fmt.Println(nameMap["rubble"]) // barney rubble
+	fmt.Println(nameMap["rubble"])
 }
+```
+
+#### Output
+
+```
+barney rubble
 ```
 
 </p>
@@ -1032,9 +1071,16 @@ func main() {
 	}
 	numbers := []int{1, 2, 3, 4}
 	odsEvensMap := gslices.AssociateWith(numbers, oddEven)
-	fmt.Println(odsEvensMap[2]) // EVEN
-	fmt.Println(odsEvensMap[3]) // ODD
+	fmt.Println(odsEvensMap[2])
+	fmt.Println(odsEvensMap[3])
 }
+```
+
+#### Output
+
+```
+EVEN
+ODD
 ```
 
 </p>
@@ -1061,8 +1107,18 @@ import (
 
 func main() {
 	values := []int{1, 2, 2, 3, 1, 3}
-	fmt.Println(gslices.Distinct(values)) // [1 2 3]
+	gslices.Distinct(values).ForEach(func(_, i int) {
+		fmt.Println(i)
+	})
 }
+```
+
+#### Output
+
+```
+1
+2
+3
 ```
 
 </p>
@@ -1094,8 +1150,14 @@ var words container.GSlice[string] = []string{"hello", "world"}
 
 func main() {
 	slicer := func(s string) container.GSlice[string] { return strings.Split(s, "") }
-	fmt.Println(gslices.FlatMap(words.SortBy(genfuncs.LessOrdered[string]), slicer)) // [h e l l o w o r l d]
+	fmt.Println(gslices.FlatMap(words.SortBy(genfuncs.LessOrdered[string]), slicer))
 }
+```
+
+#### Output
+
+```
+[h e l l o w o r l d]
 ```
 
 </p>
@@ -1123,8 +1185,14 @@ import (
 func main() {
 	numbers := []int{1, 2, 3, 4, 5}
 	sum := func(a int, b int) int { return a + b }
-	fmt.Println(gslices.Fold(numbers, 0, sum)) // 15
+	fmt.Println(gslices.Fold(numbers, 0, sum))
 }
+```
+
+#### Output
+
+```
+15
 ```
 
 </p>
@@ -1158,8 +1226,14 @@ func main() {
 	}
 	numbers := []int{1, 2, 3, 4}
 	grouped := gslices.GroupBy(numbers, oddEven)
-	fmt.Println(grouped["ODD"]) // [1 3]
+	fmt.Println(grouped["ODD"])
 }
+```
+
+#### Output
+
+```
+[1 3]
 ```
 
 </p>
@@ -1187,8 +1261,14 @@ import (
 func main() {
 	numbers := []int{69, 88, 65, 77, 80, 76, 69}
 	toString := func(i int) string { return string(rune(i)) }
-	fmt.Println(gslices.Map(numbers, toString)) // [E X A M P L E]
+	fmt.Println(gslices.Map(numbers, toString))
 }
+```
+
+#### Output
+
+```
+[E X A M P L E]
 ```
 
 </p>
