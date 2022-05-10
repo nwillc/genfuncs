@@ -5,6 +5,7 @@
 [![codecov.io](https://codecov.io/github/nwillc/genfuncs/coverage.svg?branch=master)](https://codecov.io/github/nwillc/genfuncs?branch=master)
 [![goreportcard.com](https://goreportcard.com/badge/github.com/nwillc/genfuncs)](https://goreportcard.com/report/github.com/nwillc/genfuncs)
 [![Reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/nwillc/genfuncs)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
 
 # Genfuncs
@@ -1255,7 +1256,7 @@ func main() {
 func Map[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, R]) container.GSlice[R]
 ```
 
-Map returns a slice containing the results of applying the given transform function to each element in the original slice\.
+Map returns a new container\.GSlice containing the results of applying the given transform function to each element in the original slice\.
 
 <details><summary>Example</summary>
 <p>

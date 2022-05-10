@@ -79,7 +79,7 @@ func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor genfuncs.Map
 	return m
 }
 
-// Map returns a slice containing the results of applying the given transform function to each element in the original slice.
+// Map returns a new container.GSlice containing the results of applying the given transform function to each element in the original slice.
 func Map[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, R]) container.GSlice[R] {
 	var results = make(container.GSlice[R], slice.Len())
 	slice.ForEach(func(i int, t T) {
