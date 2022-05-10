@@ -398,6 +398,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (s GSlice[T]) All(predicate genfuncs.Function[T, bool]) bool](<#func-gslicet-all>)
   - [func (s GSlice[T]) Any(predicate genfuncs.Function[T, bool]) bool](<#func-gslicet-any>)
   - [func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) int](<#func-gslicet-compare>)
+  - [func (s GSlice[T]) Equal(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) bool](<#func-gslicet-equal>)
   - [func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T]](<#func-gslicet-filter>)
   - [func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool)](<#func-gslicet-find>)
   - [func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool)](<#func-gslicet-findlast>)
@@ -686,7 +687,15 @@ func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, in
 
 Compare one GSlice to another\, applying a comparison to each pair of corresponding entries\. Compare returns 0 if all the pair's match\, \-1 if this GSlice is less\, or 1 if it is greater\.
 
-### func \(GSlice\[T\]\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L62>)
+### func \(GSlice\[T\]\) [Equal](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L63>)
+
+```go
+func (s GSlice[T]) Equal(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) bool
+```
+
+Equal compares this GSlice to another\, applying a comparison to each pair\, if the lengths are equal and all the values are then true is returned\.
+
+### func \(GSlice\[T\]\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L68>)
 
 ```go
 func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T]
@@ -694,7 +703,7 @@ func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T]
 
 Filter returns a slice containing only elements matching the given predicate\.
 
-### func \(GSlice\[T\]\) [Find](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L73>)
+### func \(GSlice\[T\]\) [Find](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L79>)
 
 ```go
 func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool)
@@ -702,7 +711,7 @@ func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool)
 
 Find returns the first element matching the given predicate and true\, or false when no such element was found\.
 
-### func \(GSlice\[T\]\) [FindLast](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L84>)
+### func \(GSlice\[T\]\) [FindLast](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L90>)
 
 ```go
 func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool)
@@ -710,7 +719,7 @@ func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool)
 
 FindLast returns the last element matching the given predicate and true\, or false when no such element was found\.
 
-### func \(GSlice\[T\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L98>)
+### func \(GSlice\[T\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L104>)
 
 ```go
 func (s GSlice[T]) ForEach(action func(i int, t T))
@@ -718,7 +727,7 @@ func (s GSlice[T]) ForEach(action func(i int, t T))
 
 ForEach element of the GSlice invoke given function with the element\. Syntactic sugar for a range that intends to traverse all the elements\, i\.e\. no exiting midway through\.
 
-### func \(GSlice\[T\]\) [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L106>)
+### func \(GSlice\[T\]\) [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L112>)
 
 ```go
 func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string
@@ -726,7 +735,7 @@ func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string,
 
 JoinToString creates a string from all the elements using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
 
-### func \(GSlice\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L121>)
+### func \(GSlice\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L127>)
 
 ```go
 func (s GSlice[T]) Len() int
@@ -734,7 +743,7 @@ func (s GSlice[T]) Len() int
 
 Len is the number of elements in the GSlice\.
 
-### func \(GSlice\[T\]\) [Random](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L126>)
+### func \(GSlice\[T\]\) [Random](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L132>)
 
 ```go
 func (s GSlice[T]) Random() T
@@ -742,7 +751,7 @@ func (s GSlice[T]) Random() T
 
 Random returns a random element of the GSlice\.
 
-### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L131>)
+### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L137>)
 
 ```go
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]
@@ -750,7 +759,7 @@ func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]
 
 SortBy copies a slice\, sorts the copy applying the Order and returns it\.
 
-### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L139>)
+### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L145>)
 
 ```go
 func (s GSlice[T]) Swap(i, j int)
@@ -758,7 +767,7 @@ func (s GSlice[T]) Swap(i, j int)
 
 Swap two values in the slice\.
 
-### func \(GSlice\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L144>)
+### func \(GSlice\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L150>)
 
 ```go
 func (s GSlice[T]) Values() GSlice[T]
