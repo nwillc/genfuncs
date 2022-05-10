@@ -153,7 +153,7 @@ func TestGMap_Filter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			filtered := m.Filter(genfuncs.IsGreaterOrdered(tt.args.greaterThan)).Values().SortBy(genfuncs.LessOrdered[string])
-			assert.True(t, filtered.Compare(tt.want, genfuncs.Order[string]) == 0)
+			assert.True(t, filtered.Equal(tt.want, genfuncs.Order[string]))
 		})
 	}
 }
@@ -193,7 +193,7 @@ func TestGMap_FilterKeys(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			filtered := m.FilterKeys(genfuncs.IsGreaterOrdered(tt.args.greaterThan)).Values().SortBy(genfuncs.LessOrdered[string])
-			assert.True(t, filtered.Compare(tt.want, genfuncs.Order[string]) == 0)
+			assert.True(t, filtered.Equal(tt.want, genfuncs.Order[string]))
 		})
 	}
 }

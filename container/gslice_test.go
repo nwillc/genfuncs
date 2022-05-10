@@ -200,7 +200,7 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.args.slice.Filter(tt.args.predicate)
-			assert.Equal(t, genfuncs.OrderedEqual, result.Compare(tt.want, genfuncs.Order[int]))
+			assert.True(t, result.Equal(tt.want, genfuncs.Order[int]))
 		})
 	}
 }
@@ -660,5 +660,47 @@ func TestGSlice_Values(t *testing.T) {
 	s := container.GSlice[int]{1, 2, 3, 4}
 	v := s.Values()
 
-	assert.Equal(t, s.Compare(v, genfuncs.Order[int]), genfuncs.OrderedEqual)
+	assert.True(t, s.Equal(v, genfuncs.Order[int]))
+}
+
+func TestGSlice_Equal(t *testing.T) {
+	type args struct {
+		s2 container.GSlice[int]
+	}
+	tests := []struct {
+		name string
+		s1   container.GSlice[int]
+		args args
+		want bool
+	}{
+		{
+			name: "Equal",
+			s1:   container.GSlice[int]{1, 2, 3},
+			args: args{
+				s2: container.GSlice[int]{1, 2, 3},
+			},
+			want: true,
+		},
+		{
+			name: "Wrong Order",
+			s1:   container.GSlice[int]{1, 2, 3},
+			args: args{
+				s2: container.GSlice[int]{2, 1, 3},
+			},
+			want: false,
+		},
+		{
+			name: "Different Lengths",
+			s1:   container.GSlice[int]{1, 2, 3},
+			args: args{
+				s2: container.GSlice[int]{1, 2},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.s1.Equal(tt.args.s2, genfuncs.Order[int]))
+		})
+	}
 }

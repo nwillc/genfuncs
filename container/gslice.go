@@ -58,6 +58,12 @@ func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, in
 	return slices.CompareFunc(s, s2, comparison)
 }
 
+// Equal compares this GSlice to another, applying a comparison to each pair, if the lengths are equal and all the values
+// are then true is returned.
+func (s GSlice[T]) Equal(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) bool {
+	return s.Compare(s2, comparison) == genfuncs.OrderedEqual
+}
+
 // Filter returns a slice containing only elements matching the given predicate.
 func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T] {
 	var results []T
