@@ -410,7 +410,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (s GSlice[T]) Values() GSlice[T]](<#func-gslicet-values>)
 - [type HasValues](<#type-hasvalues>)
 - [type Heap](<#type-heap>)
-  - [func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T]](<#func-newheap>)
+  - [func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T]](<#func-newheap>)
   - [func (h *Heap[T]) Add(v T)](<#func-heapt-add>)
   - [func (h *Heap[T]) AddAll(values ...T)](<#func-heapt-addall>)
   - [func (h *Heap[T]) Len() int](<#func-heapt-len>)
@@ -779,9 +779,9 @@ type HasValues[T any] interface {
 }
 ```
 
-## type [Heap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L26-L30>)
+## type [Heap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L28-L32>)
 
-Heap implements either a min or max ordered heap of any type\. Heap implements Queue\.
+Heap implements an ordered heap of any type which can be min heap or max heap depending on the compare provided\. Heap implements Queue\.
 
 ```go
 type Heap[T any] struct {
@@ -789,13 +789,13 @@ type Heap[T any] struct {
 }
 ```
 
-### func [NewHeap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L33>)
+### func [NewHeap](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L35>)
 
 ```go
-func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T]
+func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T]
 ```
 
-NewHeap return a heap ordered based on the LessThan and pushes any values provided\.
+NewHeap return a heap ordered based on the compare and adds any values provided\.
 
 <details><summary>Example</summary>
 <p>
@@ -827,7 +827,7 @@ func main() {
 </p>
 </details>
 
-### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L43>)
+### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L45>)
 
 ```go
 func (h *Heap[T]) Add(v T)
@@ -835,7 +835,7 @@ func (h *Heap[T]) Add(v T)
 
 Add a value onto the heap\.
 
-### func \(\*Heap\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L50>)
+### func \(\*Heap\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L52>)
 
 ```go
 func (h *Heap[T]) AddAll(values ...T)
@@ -843,7 +843,7 @@ func (h *Heap[T]) AddAll(values ...T)
 
 AddAll the values onto the Heap\.
 
-### func \(\*Heap\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L40>)
+### func \(\*Heap\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L42>)
 
 ```go
 func (h *Heap[T]) Len() int
@@ -851,7 +851,7 @@ func (h *Heap[T]) Len() int
 
 Len returns current length of the heap\.
 
-### func \(\*Heap\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L59>)
+### func \(\*Heap\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L61>)
 
 ```go
 func (h *Heap[T]) Peek() T
@@ -859,7 +859,7 @@ func (h *Heap[T]) Peek() T
 
 Peek returns the next element without removing it\.
 
-### func \(\*Heap\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L74>)
+### func \(\*Heap\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L76>)
 
 ```go
 func (h *Heap[T]) Remove() T
@@ -867,7 +867,7 @@ func (h *Heap[T]) Remove() T
 
 Remove an item off the heap\.
 
-### func \(\*Heap\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L82>)
+### func \(\*Heap\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L84>)
 
 ```go
 func (h *Heap[T]) Values() GSlice[T]

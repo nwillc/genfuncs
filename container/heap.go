@@ -20,18 +20,20 @@ import (
 	"github.com/nwillc/genfuncs"
 )
 
+// Heap implements Queue.
 var _ Queue[int] = (*Heap[int])(nil)
 
-// Heap implements either a min or max ordered heap of any type. Heap implements Queue.
+// Heap implements an ordered heap of any type which can be min heap or max heap depending on the compare provided.
+// Heap implements Queue.
 type Heap[T any] struct {
-	slice    GSlice[T]
-	lessThan genfuncs.BiFunction[T, T, bool]
-	ordered  bool
+	slice   GSlice[T]
+	compare genfuncs.BiFunction[T, T, bool]
+	ordered bool
 }
 
-// NewHeap return a heap ordered based on the LessThan and pushes any values provided.
-func NewHeap[T any](lessThan genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T] {
-	h := &Heap[T]{lessThan: lessThan}
+// NewHeap return a heap ordered based on the compare and adds any values provided.
+func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T] {
+	h := &Heap[T]{compare: compare}
 	h.AddAll(values...)
 	return h
 }
@@ -86,7 +88,7 @@ func (h *Heap[T]) Values() GSlice[T] {
 func (h *Heap[T]) up(jj int) {
 	for {
 		i := parent(jj)
-		if i == jj || !h.lessThan(h.slice[jj], h.slice[i]) {
+		if i == jj || !h.compare(h.slice[jj], h.slice[i]) {
 			break
 		}
 		h.slice.Swap(i, jj)
@@ -104,10 +106,10 @@ func (h *Heap[T]) down() {
 		}
 		j := j1
 		j2 := right(i1)
-		if j2 < n && h.lessThan(h.slice[j2], h.slice[j1]) {
+		if j2 < n && h.compare(h.slice[j2], h.slice[j1]) {
 			j = j2
 		}
-		if !h.lessThan(h.slice[j], h.slice[i1]) {
+		if !h.compare(h.slice[j], h.slice[i1]) {
 			break
 		}
 		h.slice.Swap(i1, j)
