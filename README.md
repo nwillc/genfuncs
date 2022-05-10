@@ -11,9 +11,10 @@
 # Genfuncs
 
 Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with slices, maps and sorting. Many of the functions are based on Kotlin's Sequence and Map. 
-This package, while usable, is primarily a proof-of-concept since it is likely Go will provide similar before long.
-In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
+in particular when working with containers like slices, maps, queues, sets etc. Many of the functions are based on 
+Kotlin's Sequence and Map. This package, while usable, is primarily a proof-of-concept since it is likely Go will 
+provide similar before long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar 
+functions and I incorporate them here.
 
 Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
 
