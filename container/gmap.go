@@ -21,9 +21,10 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+// GMap implements the Map interface.
 var _ Map[int, int] = (GMap[int, int])(nil)
 
-// GMap is a generic type corresponding to a standard Go map and implements Map.
+// GMap is a generic type employing the standard Go map and implementation Map.
 type GMap[K comparable, V any] map[K]V
 
 // All returns true if all values in GMap satisfy the predicate.
@@ -52,6 +53,7 @@ func (m GMap[K, V]) Contains(key K) bool {
 	return ok
 }
 
+// Delete an entry in the GMap.
 func (m GMap[K, V]) Delete(key K) {
 	delete(m, key)
 }
@@ -87,6 +89,7 @@ func (m GMap[K, V]) ForEach(action func(k K, v V)) {
 	}
 }
 
+// Get returns an entry from the Map. The returned bool indicates if the key is in the Map.
 func (m GMap[K, V]) Get(key K) (v V, ok bool) {
 	v, ok = m[key]
 	return v, ok
@@ -111,6 +114,7 @@ func (m GMap[K, V]) Len() int {
 	return len(m)
 }
 
+// Put a key and value in the Map.
 func (m GMap[K, V]) Put(key K, value V) {
 	m[key] = value
 }
