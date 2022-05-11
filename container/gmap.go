@@ -21,9 +21,9 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-var _ HasValues[int] = (GMap[int, int])(nil)
+var _ Map[int, int] = (GMap[int, int])(nil)
 
-// GMap is a generic type corresponding to a standard Go map and implements HasValues.
+// GMap is a generic type corresponding to a standard Go map and implements Map.
 type GMap[K comparable, V any] map[K]V
 
 // All returns true if all values in GMap satisfy the predicate.
@@ -50,6 +50,10 @@ func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool {
 func (m GMap[K, V]) Contains(key K) bool {
 	_, ok := m[key]
 	return ok
+}
+
+func (m GMap[K, V]) Delete(key K) {
+	delete(m, key)
 }
 
 // Filter a GMap by a predicate, returning a new GMap that contains only values that satisfy the predicate.
@@ -83,6 +87,11 @@ func (m GMap[K, V]) ForEach(action func(k K, v V)) {
 	}
 }
 
+func (m GMap[K, V]) Get(key K) (v V, ok bool) {
+	v, ok = m[key]
+	return v, ok
+}
+
 // GetOrElse returns the value at the given key if it exists or returns the result of defaultValue.
 func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) V {
 	v, ok := m[k]
@@ -100,6 +109,10 @@ func (m GMap[K, V]) Keys() GSlice[K] {
 // Len is the number of elements in the GMap.
 func (m GMap[K, V]) Len() int {
 	return len(m)
+}
+
+func (m GMap[K, V]) Put(key K, value V) {
+	m[key] = value
 }
 
 // Values returns a GSlice of all the values in the GMap.

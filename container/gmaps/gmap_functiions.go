@@ -22,7 +22,7 @@ import (
 )
 
 // Map returns a GSlice containing the results of applying the given transform function to each element in the GMap.
-func Map[K comparable, V any, R any](m container.GMap[K, V], transform genfuncs.BiFunction[K, V, R]) container.GSlice[R] {
+func Map[K comparable, V any, R any](m container.Map[K, V], transform genfuncs.BiFunction[K, V, R]) container.GSlice[R] {
 	results := make(container.GSlice[R], m.Len())
 	i := 0
 	m.ForEach(func(k K, v V) {
@@ -33,13 +33,13 @@ func Map[K comparable, V any, R any](m container.GMap[K, V], transform genfuncs.
 }
 
 // MapMerge merges maps of container.GSlice's together into a new map appending the container.GSlice's when collisions occur.
-func MapMerge[K comparable, V any](mv ...container.GMap[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]] {
+func MapMerge[K comparable, V any](mv ...container.Map[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]] {
 	result := make(container.GMap[K, container.GSlice[V]])
 	for _, m := range mv {
-		for k, v := range m {
+		m.ForEach(func(k K, v container.GSlice[V]) {
 			v1 := result[k]
 			result[k] = append(v1, v...)
-		}
+		})
 	}
 	return result
 }
