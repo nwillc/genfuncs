@@ -96,3 +96,16 @@ func TestSyncMap_Delete(t *testing.T) {
 	assert.Equal(t, "", v)
 	assert.False(t, ok)
 }
+
+func TestSyncMap_Contains(t *testing.T) {
+	m := container.NewSyncMap[int, string]()
+	m.Put(1, "1")
+	m.Put(2, "2")
+	m.Put(3, "3")
+
+	var ok bool
+	ok = m.Contains(2)
+	assert.True(t, ok)
+	ok = m.Contains(5)
+	assert.False(t, ok)
+}

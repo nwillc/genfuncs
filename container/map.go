@@ -18,6 +18,7 @@ package container
 
 type Map[K comparable, V any] interface {
 	HasValues[V]
+	Contains(key K) bool
 	Delete(key K)
 	Get(key K) (value V, ok bool)
 	Put(key K, value V)
