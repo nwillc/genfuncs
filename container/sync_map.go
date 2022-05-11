@@ -17,14 +17,13 @@
 package container
 
 import (
-	"reflect"
 	"sync"
 )
 
 // SyncMap implements Map.
 var _ Map[int, int] = (*SyncMap[int, int])(nil)
 
-// SyncMap is a Map implementation employing sync,Map and is therefore GoRoutine safe,
+// SyncMap is a Map implementation employing sync.Map and is therefore GoRoutine safe,
 type SyncMap[K any, V any] struct {
 	m sync.Map
 }
@@ -45,35 +44,32 @@ func (s *SyncMap[K, V]) Delete(key K) {
 	s.m.Delete(key)
 }
 
-// ForEach traverses the Map applying the given function to all entries. Reflection is used to cast sync.Map's any types
+// ForEach traverses the Map applying the given function to all entries. The sync.Map's any types are cast
 // to the appropriate types.
 func (s *SyncMap[K, V]) ForEach(f func(key K, value V)) {
 	s.m.Range(func(k any, v any) bool {
-		kk := reflect.ValueOf(k).Interface().(K)
-		vv := reflect.ValueOf(v).Interface().(V)
-		f(kk, vv)
+		f(k.(K), v.(V))
 		return true
 	})
 }
 
-// Get the value for the key. Reflection is used to cast the sync.Map any type to the appropriate type. The returned
+// Get the value for the key. The sync.Map any type to cast to the appropriate type. The returned
 // ok value will be false if the map is not contained in the Map.
 func (s *SyncMap[K, V]) Get(key K) (value V, ok bool) {
 	var vv V
 	v, ok := s.m.Load(key)
 	if ok {
-		vv = reflect.ValueOf(v).Interface().(V)
+		vv = v.(V)
 	}
 	return vv, ok
 }
 
-// Keys returns the keys in the Map by traversing it and using reflection to cast the sync.Map's any to the appropriate
-// types.
+// Keys returns the keys in the Map by traversing it and casting the sync.Map's any to the appropriate
+// type.
 func (s *SyncMap[K, V]) Keys() GSlice[K] {
 	var gs GSlice[K]
 	s.m.Range(func(k any, _ any) bool {
-		kk := reflect.ValueOf(k).Interface().(K)
-		gs = append(gs, kk)
+		gs = append(gs, k.(K))
 		return true
 	})
 	return gs
@@ -91,12 +87,11 @@ func (s *SyncMap[K, V]) Put(key K, value V) {
 	s.m.Store(key, value)
 }
 
-// Values returns the values in the Map, reflection is used to cast the sync.Map any values to the Map's type.
+// Values returns the values in the Map, The sync.Map any values is cast to the Map's type.
 func (s *SyncMap[K, V]) Values() GSlice[V] {
 	var gs GSlice[V]
 	s.m.Range(func(_ any, v any) bool {
-		vv := reflect.ValueOf(v).Interface().(V)
-		gs = append(gs, vv)
+		gs = append(gs, v.(V))
 		return true
 	})
 	return gs
