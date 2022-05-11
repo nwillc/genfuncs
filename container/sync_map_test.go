@@ -24,14 +24,18 @@ import (
 	"testing"
 )
 
-func TestSyncMap_ForEach(t *testing.T) {
-	m := container.NewSyncMap[int, string]()
-	m.Put(1, "1")
-	m.Put(2, "2")
-	m.Put(3, "3")
+var testSyncMap container.Map[int, string]
 
+func init() {
+	testSyncMap = container.NewSyncMap[int, string]()
+	testSyncMap.Put(1, "1")
+	testSyncMap.Put(2, "2")
+	testSyncMap.Put(3, "3")
+}
+
+func TestSyncMap_ForEach(t *testing.T) {
 	all := container.GSlice[string]{}
-	m.ForEach(func(k int, v string) {
+	testSyncMap.ForEach(func(k int, v string) {
 		all = append(all, fmt.Sprintf("%d.%s", k, v))
 	})
 	all = all.SortBy(genfuncs.LessOrdered[string])
@@ -39,73 +43,47 @@ func TestSyncMap_ForEach(t *testing.T) {
 }
 
 func TestSyncMap_Len(t *testing.T) {
-	m := container.NewSyncMap[int, string]()
-	m.Put(1, "1")
-	m.Put(2, "2")
-	m.Put(3, "3")
-	assert.Equal(t, 3, m.Len())
+	assert.Equal(t, 3, testSyncMap.Len())
 }
 
 func TestSyncMap_Values(t *testing.T) {
-	m := container.NewSyncMap[int, string]()
-	m.Put(1, "1")
-	m.Put(2, "2")
-	m.Put(3, "3")
-	values := m.Values().SortBy(genfuncs.LessOrdered[string])
+	values := testSyncMap.Values().SortBy(genfuncs.LessOrdered[string])
 	assert.True(t, container.GSlice[string]{"1", "2", "3"}.Equal(values, genfuncs.Order[string]))
 }
 
 func TestSyncMap_Keys(t *testing.T) {
-	m := container.NewSyncMap[int, string]()
-	m.Put(1, "1")
-	m.Put(2, "2")
-	m.Put(3, "3")
-	values := m.Keys().SortBy(genfuncs.LessOrdered[int])
+	values := testSyncMap.Keys().SortBy(genfuncs.LessOrdered[int])
 	assert.True(t, container.GSlice[int]{1, 2, 3}.Equal(values, genfuncs.Order[int]))
 }
 
 func TestSyncMap_Get(t *testing.T) {
-	m := container.NewSyncMap[int, string]()
-	m.Put(1, "1")
-	m.Put(2, "2")
-	m.Put(3, "3")
-
 	var v string
 	var ok bool
-	v, ok = m.Get(4)
+	v, ok = testSyncMap.Get(4)
 	assert.Equal(t, "", v)
 	assert.False(t, ok)
-	v, ok = m.Get(2)
+	v, ok = testSyncMap.Get(2)
 	assert.Equal(t, "2", v)
 	assert.True(t, ok)
 }
 
 func TestSyncMap_Delete(t *testing.T) {
-	m := container.NewSyncMap[int, string]()
-	m.Put(1, "1")
-	m.Put(2, "2")
-	m.Put(3, "3")
-
 	var v string
 	var ok bool
-	v, ok = m.Get(2)
-	assert.Equal(t, "2", v)
+	testSyncMap.Put(20, "20")
+	v, ok = testSyncMap.Get(20)
+	assert.Equal(t, "20", v)
 	assert.True(t, ok)
-	m.Delete(2)
-	v, ok = m.Get(2)
+	testSyncMap.Delete(20)
+	v, ok = testSyncMap.Get(20)
 	assert.Equal(t, "", v)
 	assert.False(t, ok)
 }
 
 func TestSyncMap_Contains(t *testing.T) {
-	m := container.NewSyncMap[int, string]()
-	m.Put(1, "1")
-	m.Put(2, "2")
-	m.Put(3, "3")
-
 	var ok bool
-	ok = m.Contains(2)
+	ok = testSyncMap.Contains(2)
 	assert.True(t, ok)
-	ok = m.Contains(5)
+	ok = testSyncMap.Contains(5)
 	assert.False(t, ok)
 }
