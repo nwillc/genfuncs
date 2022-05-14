@@ -16,7 +16,10 @@ based on Kotlin's Sequence and Map. This package, while very usable, is primaril
 Go will provide similar before long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar 
 functions and I incorporate them here.
 
-Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
+General notes:
+ - A Map interface is provided to allow both Go's normal map and it's sync.Map to be used polymorphically.
+ - Generally these functions are pure without side effects at the cost of copying data.
+ - Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
 
 The code is under the [ISC License](https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
 
@@ -387,12 +390,15 @@ import "github.com/nwillc/genfuncs/container"
   - [func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-all>)
   - [func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-any>)
   - [func (m GMap[K, V]) Contains(key K) bool](<#func-gmapk-v-contains>)
+  - [func (m GMap[K, V]) Delete(key K)](<#func-gmapk-v-delete>)
   - [func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) GMap[K, V]](<#func-gmapk-v-filter>)
   - [func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) GMap[K, V]](<#func-gmapk-v-filterkeys>)
   - [func (m GMap[K, V]) ForEach(action func(k K, v V))](<#func-gmapk-v-foreach>)
+  - [func (m GMap[K, V]) Get(key K) (v V, ok bool)](<#func-gmapk-v-get>)
   - [func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) V](<#func-gmapk-v-getorelse>)
   - [func (m GMap[K, V]) Keys() GSlice[K]](<#func-gmapk-v-keys>)
   - [func (m GMap[K, V]) Len() int](<#func-gmapk-v-len>)
+  - [func (m GMap[K, V]) Put(key K, value V)](<#func-gmapk-v-put>)
   - [func (m GMap[K, V]) Values() GSlice[V]](<#func-gmapk-v-values>)
 - [type GSlice](<#type-gslice>)
   - [func (s GSlice[T]) All(predicate genfuncs.Function[T, bool]) bool](<#func-gslicet-all>)
@@ -418,6 +424,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (h *Heap[T]) Peek() T](<#func-heapt-peek>)
   - [func (h *Heap[T]) Remove() T](<#func-heapt-remove>)
   - [func (h *Heap[T]) Values() GSlice[T]](<#func-heapt-values>)
+- [type Map](<#type-map>)
 - [type MapSet](<#type-mapset>)
   - [func (h *MapSet[T]) Add(t T)](<#func-mapsett-add>)
   - [func (h *MapSet[T]) AddAll(t ...T)](<#func-mapsett-addall>)
@@ -428,6 +435,18 @@ import "github.com/nwillc/genfuncs/container"
 - [type Queue](<#type-queue>)
 - [type Set](<#type-set>)
   - [func NewMapSet[T comparable](t ...T) Set[T]](<#func-newmapset>)
+- [type SyncMap](<#type-syncmap>)
+  - [func NewSyncMap[K comparable, V any]() *SyncMap[K, V]](<#func-newsyncmap>)
+  - [func (s *SyncMap[K, V]) Contains(key K) bool](<#func-syncmapk-v-contains>)
+  - [func (s *SyncMap[K, V]) Delete(key K)](<#func-syncmapk-v-delete>)
+  - [func (s *SyncMap[K, V]) ForEach(f func(key K, value V))](<#func-syncmapk-v-foreach>)
+  - [func (s *SyncMap[K, V]) Get(key K) (value V, ok bool)](<#func-syncmapk-v-get>)
+  - [func (s *SyncMap[K, V]) GetAndDelete(key K) (value V, ok bool)](<#func-syncmapk-v-getanddelete>)
+  - [func (s *SyncMap[K, V]) GetOrPut(key K, value V) (actual V, ok bool)](<#func-syncmapk-v-getorput>)
+  - [func (s *SyncMap[K, V]) Keys() GSlice[K]](<#func-syncmapk-v-keys>)
+  - [func (s *SyncMap[K, V]) Len() int](<#func-syncmapk-v-len>)
+  - [func (s *SyncMap[K, V]) Put(key K, value V)](<#func-syncmapk-v-put>)
+  - [func (s *SyncMap[K, V]) Values() GSlice[V]](<#func-syncmapk-v-values>)
 
 
 ## type [Container](<https://github.com/nwillc/genfuncs/blob/master/container/container.go#L20-L26>)
@@ -567,15 +586,15 @@ func (d *Deque[T]) Values() GSlice[T]
 
 Values in the Deque returned in a new GSlice\.
 
-## type [GMap](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L27>)
+## type [GMap](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L28>)
 
-GMap is a generic type corresponding to a standard Go map and implements HasValues\.
+GMap is a generic type employing the standard Go map and implementation Map\.
 
 ```go
 type GMap[K comparable, V any] map[K]V
 ```
 
-### func \(GMap\[K\, V\]\) [All](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L30>)
+### func \(GMap\[K\, V\]\) [All](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L31>)
 
 ```go
 func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool
@@ -583,7 +602,7 @@ func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool
 
 All returns true if all values in GMap satisfy the predicate\.
 
-### func \(GMap\[K\, V\]\) [Any](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L40>)
+### func \(GMap\[K\, V\]\) [Any](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L41>)
 
 ```go
 func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool
@@ -591,7 +610,7 @@ func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool
 
 Any returns true if any values in GMap satisfy the predicate\.
 
-### func \(GMap\[K\, V\]\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L50>)
+### func \(GMap\[K\, V\]\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L51>)
 
 ```go
 func (m GMap[K, V]) Contains(key K) bool
@@ -599,7 +618,15 @@ func (m GMap[K, V]) Contains(key K) bool
 
 Contains returns true if the GMap contains the given key\.
 
-### func \(GMap\[K\, V\]\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L56>)
+### func \(GMap\[K\, V\]\) [Delete](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L57>)
+
+```go
+func (m GMap[K, V]) Delete(key K)
+```
+
+Delete an entry in the GMap\.
+
+### func \(GMap\[K\, V\]\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L62>)
 
 ```go
 func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) GMap[K, V]
@@ -607,7 +634,7 @@ func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) GMap[K, V]
 
 Filter a GMap by a predicate\, returning a new GMap that contains only values that satisfy the predicate\.
 
-### func \(GMap\[K\, V\]\) [FilterKeys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L68>)
+### func \(GMap\[K\, V\]\) [FilterKeys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L74>)
 
 ```go
 func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) GMap[K, V]
@@ -615,7 +642,7 @@ func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) GMap[K, V]
 
 FilterKeys returns a new GMap that contains only values whose key satisfy the predicate\.
 
-### func \(GMap\[K\, V\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L80>)
+### func \(GMap\[K\, V\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L86>)
 
 ```go
 func (m GMap[K, V]) ForEach(action func(k K, v V))
@@ -623,7 +650,15 @@ func (m GMap[K, V]) ForEach(action func(k K, v V))
 
 ForEach performs the given action on each entry in the GMap\.
 
-### func \(GMap\[K\, V\]\) [GetOrElse](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L87>)
+### func \(GMap\[K\, V\]\) [Get](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L93>)
+
+```go
+func (m GMap[K, V]) Get(key K) (v V, ok bool)
+```
+
+Get returns an entry from the Map\. The returned bool indicates if the key is in the Map\.
+
+### func \(GMap\[K\, V\]\) [GetOrElse](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L99>)
 
 ```go
 func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) V
@@ -631,7 +666,7 @@ func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) V
 
 GetOrElse returns the value at the given key if it exists or returns the result of defaultValue\.
 
-### func \(GMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L96>)
+### func \(GMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L108>)
 
 ```go
 func (m GMap[K, V]) Keys() GSlice[K]
@@ -639,7 +674,7 @@ func (m GMap[K, V]) Keys() GSlice[K]
 
 Keys return a GSlice containing the keys of the GMap\.
 
-### func \(GMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L101>)
+### func \(GMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L113>)
 
 ```go
 func (m GMap[K, V]) Len() int
@@ -647,7 +682,15 @@ func (m GMap[K, V]) Len() int
 
 Len is the number of elements in the GMap\.
 
-### func \(GMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L106>)
+### func \(GMap\[K\, V\]\) [Put](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L118>)
+
+```go
+func (m GMap[K, V]) Put(key K, value V)
+```
+
+Put a key and value in the Map\.
+
+### func \(GMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L123>)
 
 ```go
 func (m GMap[K, V]) Values() GSlice[V]
@@ -884,6 +927,22 @@ func (h *Heap[T]) Values() GSlice[T]
 
 Values returns a slice of the values in the Heap in no particular order\.
 
+## type [Map](<https://github.com/nwillc/genfuncs/blob/master/container/map.go#L20-L28>)
+
+Map interface to provide a polymorphic and generic interface to map implementations\.
+
+```go
+type Map[K comparable, V any] interface {
+    Contains(key K) bool
+    Delete(key K)
+    Get(key K) (value V, ok bool)
+    Put(key K, value V)
+    ForEach(f func(key K, value V))
+    Keys() GSlice[K]
+    // contains filtered or unexported methods
+}
+```
+
 ## type [MapSet](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L25-L27>)
 
 MapSet is a Set implementation based on a map\. MapSet implements Set\.
@@ -978,6 +1037,104 @@ func NewMapSet[T comparable](t ...T) Set[T]
 
 NewMapSet returns a new Set containing given values\.
 
+## type [SyncMap](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L27-L29>)
+
+SyncMap is a Map implementation employing sync\.Map and is therefore GoRoutine safe\,
+
+```go
+type SyncMap[K any, V any] struct {
+    // contains filtered or unexported fields
+}
+```
+
+### func [NewSyncMap](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L32>)
+
+```go
+func NewSyncMap[K comparable, V any]() *SyncMap[K, V]
+```
+
+NewSyncMap creates a new SyncMap instance\.
+
+### func \(\*SyncMap\[K\, V\]\) [Contains](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L37>)
+
+```go
+func (s *SyncMap[K, V]) Contains(key K) bool
+```
+
+Contains returns true if the Map contains the given key\.
+
+### func \(\*SyncMap\[K\, V\]\) [Delete](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L43>)
+
+```go
+func (s *SyncMap[K, V]) Delete(key K)
+```
+
+Delete an entry from the Map\.
+
+### func \(\*SyncMap\[K\, V\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L49>)
+
+```go
+func (s *SyncMap[K, V]) ForEach(f func(key K, value V))
+```
+
+ForEach traverses the Map applying the given function to all entries\. The sync\.Map's any types are cast to the appropriate types\.
+
+### func \(\*SyncMap\[K\, V\]\) [Get](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L58>)
+
+```go
+func (s *SyncMap[K, V]) Get(key K) (value V, ok bool)
+```
+
+Get the value for the key\. The sync\.Map any type to cast to the appropriate type\. The returned ok value will be false if the map is not contained in the Map\.
+
+### func \(\*SyncMap\[K\, V\]\) [GetAndDelete](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L68>)
+
+```go
+func (s *SyncMap[K, V]) GetAndDelete(key K) (value V, ok bool)
+```
+
+GetAndDelete returns the value from the SyncMap corresponding to the key\, returning it\, and deletes it\.
+
+### func \(\*SyncMap\[K\, V\]\) [GetOrPut](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L79>)
+
+```go
+func (s *SyncMap[K, V]) GetOrPut(key K, value V) (actual V, ok bool)
+```
+
+GetOrPut returns the existing value for the key if present\. Otherwise\, it puts and returns the given value\. The ok result is true if the value was present\, false if put\.
+
+### func \(\*SyncMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L86>)
+
+```go
+func (s *SyncMap[K, V]) Keys() GSlice[K]
+```
+
+Keys returns the keys in the Map by traversing it and casting the sync\.Map's any to the appropriate type\.
+
+### func \(\*SyncMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L96>)
+
+```go
+func (s *SyncMap[K, V]) Len() int
+```
+
+Len returns the element count\. This requires a traversal of the Map\.
+
+### func \(\*SyncMap\[K\, V\]\) [Put](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L103>)
+
+```go
+func (s *SyncMap[K, V]) Put(key K, value V)
+```
+
+Put a key value pair into the Map\.
+
+### func \(\*SyncMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L108>)
+
+```go
+func (s *SyncMap[K, V]) Values() GSlice[V]
+```
+
+Values returns the values in the Map\, The sync\.Map any values is cast to the Map's type\.
+
 # gmaps
 
 ```go
@@ -986,14 +1143,14 @@ import "github.com/nwillc/genfuncs/container/gmaps"
 
 ## Index
 
-- [func Map[K comparable, V any, R any](m container.GMap[K, V], transform genfuncs.BiFunction[K, V, R]) container.GSlice[R]](<#func-map>)
-- [func MapMerge[K comparable, V any](mv ...container.GMap[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]]](<#func-mapmerge>)
+- [func Map[K comparable, V any, R any](m container.Map[K, V], transform genfuncs.BiFunction[K, V, R]) container.GSlice[R]](<#func-map>)
+- [func MapMerge[K comparable, V any](mv ...container.Map[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]]](<#func-mapmerge>)
 
 
 ## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/gmaps/gmap_functiions.go#L25>)
 
 ```go
-func Map[K comparable, V any, R any](m container.GMap[K, V], transform genfuncs.BiFunction[K, V, R]) container.GSlice[R]
+func Map[K comparable, V any, R any](m container.Map[K, V], transform genfuncs.BiFunction[K, V, R]) container.GSlice[R]
 ```
 
 Map returns a GSlice containing the results of applying the given transform function to each element in the GMap\.
@@ -1001,7 +1158,7 @@ Map returns a GSlice containing the results of applying the given transform func
 ## func [MapMerge](<https://github.com/nwillc/genfuncs/blob/master/container/gmaps/gmap_functiions.go#L36>)
 
 ```go
-func MapMerge[K comparable, V any](mv ...container.GMap[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]]
+func MapMerge[K comparable, V any](mv ...container.Map[K, container.GSlice[V]]) container.GMap[K, container.GSlice[V]]
 ```
 
 MapMerge merges maps of container\.GSlice's together into a new map appending the container\.GSlice's when collisions occur\.
@@ -1319,7 +1476,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.12.0"
+const Version = "v0.13.0"
 ```
 
 
