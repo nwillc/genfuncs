@@ -91,9 +91,22 @@ func TestSyncMap_Contains(t *testing.T) {
 func TestSyncMap_GetAndDelete(t *testing.T) {
 	var v string
 	var ok bool
+	testSyncMap.Put(4, "4")
+	v, ok = testSyncMap.GetAndDelete(4)
+	assert.Equal(t, "4", v)
+	assert.True(t, ok)
 	v, ok = testSyncMap.GetAndDelete(4)
 	assert.Equal(t, "", v)
 	assert.False(t, ok)
-	v, ok = testSyncMap.Get(4)
+}
+
+func TestSyncMap_GetOrPut(t *testing.T) {
+	_, ok := testSyncMap.Get(5)
 	assert.False(t, ok)
+	v, ok := testSyncMap.GetOrPut(5, "5")
+	assert.False(t, ok)
+	assert.Equal(t, "5", v)
+	v, ok = testSyncMap.GetOrPut(5, "5")
+	assert.True(t, ok)
+	assert.Equal(t, "5", v)
 }

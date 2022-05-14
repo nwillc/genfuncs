@@ -344,3 +344,13 @@ func TestGMap_Delete(t *testing.T) {
 	v, ok = m.Get("0")
 	assert.False(t, ok)
 }
+
+func TestGMap_Put(t *testing.T) {
+	m := container.GMap[string, int]{}
+	_, ok := m.Get("0")
+	assert.False(t, ok)
+	m.Put("0", 0)
+	v, ok := m.Get("0")
+	assert.True(t, ok)
+	assert.Equal(t, v, 0)
+}
