@@ -36,6 +36,8 @@ go get github.com/nwillc/genfuncs
 # Packages
 - [genfuncs](<#genfuncs>)
 - [genfuncs/container](<#container>)
+- [genfuncs/container/gmaps](<#gmaps>)
+- [genfuncs/container/gslices](<#gslices>)
 
 # genfuncs
 
