@@ -64,6 +64,23 @@ func (s *SyncMap[K, V]) Get(key K) (value V, ok bool) {
 	return vv, ok
 }
 
+// GetAndDelete returns the value from the SyncMap corresponding to the key, returning it, and deletes it.
+func (s *SyncMap[K, V]) GetAndDelete(key K) (value V, ok bool) {
+	var vv V
+	v, ok := s.m.LoadAndDelete(key)
+	if ok {
+		vv = v.(V)
+	}
+	return vv, ok
+}
+
+// GetOrPut returns the existing value for the key if present. Otherwise, it puts and returns the given value.
+// The ok result is true if the value was present, false if put.
+func (s *SyncMap[K, V]) GetOrPut(key K, value V) (actual V, ok bool) {
+	v, ok := s.m.LoadOrStore(key, value)
+	return v.(V), ok
+}
+
 // Keys returns the keys in the Map by traversing it and casting the sync.Map's any to the appropriate
 // type.
 func (s *SyncMap[K, V]) Keys() GSlice[K] {

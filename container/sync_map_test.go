@@ -24,7 +24,7 @@ import (
 	"testing"
 )
 
-var testSyncMap container.Map[int, string]
+var testSyncMap *container.SyncMap[int, string]
 
 func init() {
 	testSyncMap = container.NewSyncMap[int, string]()
@@ -85,5 +85,15 @@ func TestSyncMap_Contains(t *testing.T) {
 	ok = testSyncMap.Contains(2)
 	assert.True(t, ok)
 	ok = testSyncMap.Contains(5)
+	assert.False(t, ok)
+}
+
+func TestSyncMap_GetAndDelete(t *testing.T) {
+	var v string
+	var ok bool
+	v, ok = testSyncMap.GetAndDelete(4)
+	assert.Equal(t, "", v)
+	assert.False(t, ok)
+	v, ok = testSyncMap.Get(4)
 	assert.False(t, ok)
 }

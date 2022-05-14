@@ -334,3 +334,13 @@ func TestGMap_GetOrElse(t *testing.T) {
 	assert.Equal(t, 0, m.GetOrElse("0", def))
 	assert.Equal(t, -1, m.GetOrElse("1000", def))
 }
+
+func TestGMap_Delete(t *testing.T) {
+	m := container.GMap[string, int]{"0": 0, "1": 1, "2": 2}
+	v, ok := m.Get("0")
+	assert.True(t, ok)
+	assert.Equal(t, v, 0)
+	m.Delete("0")
+	v, ok = m.Get("0")
+	assert.False(t, ok)
+}
