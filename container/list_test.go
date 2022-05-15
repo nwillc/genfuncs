@@ -27,6 +27,8 @@ func TestNewList(t *testing.T) {
 	l := container.NewList[int]()
 	assert.NotNil(t, l)
 	assert.Equal(t, 0, l.Len())
+	assert.Nil(t, l.PeekLeft())
+	assert.Nil(t, l.PeekRight())
 }
 
 func TestList_AddRight(t *testing.T) {
