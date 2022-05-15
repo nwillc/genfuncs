@@ -38,6 +38,8 @@ header: |+
   # Packages
   - [genfuncs](<#genfuncs>)
   - [genfuncs/container](<#container>)
+  - [genfuncs/container/gmaps](<#gmaps>)
+  - [genfuncs/container/gslices](<#gslices>)
 
 repository:
   url: https://github.com/nwillc/genfuncs

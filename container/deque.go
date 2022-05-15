@@ -16,57 +16,46 @@
 
 package container
 
-const minimumCapacity = 16
+import "github.com/nwillc/genfuncs"
 
 var _ Queue[int] = (*Deque[int])(nil)
 
 // Deque is a doubly ended implementation of Queue with default behavior of a Fifo but provides left and right access.
+// Employs a List for storage.
 type Deque[T any] struct {
-	slice GSlice[T]
-	head  int
-	tail  int
-	count int
-	tNil  T
+	list *List[T]
 }
 
 // NewDeque creates a Deque containing any provided elements.
 func NewDeque[T any](t ...T) *Deque[T] {
-	d := &Deque[T]{}
+	d := &Deque[T]{list: NewList[T]()}
 	d.AddAll(t...)
 	return d
 }
 
 // Add an element to the right of the Deque.
 func (d *Deque[T]) Add(t T) {
-	d.AddRight(t)
+	d.list.Add(t)
 }
 
 // AddAll elements to the right of the Deque.
 func (d *Deque[T]) AddAll(t ...T) {
-	for _, e := range t {
-		d.AddRight(e)
-	}
+	d.list.AddAll(t...)
 }
 
 // AddLeft an element to the left of the Deque.
 func (d *Deque[T]) AddLeft(t T) {
-	d.expand()
-	d.head = d.prev(d.head)
-	d.slice[d.head] = t
-	d.count++
+	d.list.AddLeft(t)
 }
 
 // AddRight an element to the right of the Deque.
 func (d *Deque[T]) AddRight(t T) {
-	d.expand()
-	d.slice[d.tail] = t
-	d.tail = d.next(d.tail)
-	d.count++
+	d.list.AddRight(t)
 }
 
 // Len reports the length of the Deque.
 func (d *Deque[T]) Len() int {
-	return d.count
+	return d.list.Len()
 }
 
 // Peek returns the left most element in the Deque without removing it.
@@ -76,15 +65,18 @@ func (d *Deque[T]) Peek() T {
 
 // PeekLeft returns the left most element in the Deque without removing it.
 func (d *Deque[T]) PeekLeft() T {
-	d.slice.inBounds(d.head)
-	return d.slice[d.head]
+	if d.Len() == 0 {
+		panic(genfuncs.NoSuchElement)
+	}
+	return d.list.PeekLeft().Value
 }
 
 // PeekRight returns the right most element in the Deque without removing it.
 func (d *Deque[T]) PeekRight() T {
-	p := d.prev(d.tail)
-	d.slice.inBounds(p)
-	return d.slice[p]
+	if d.Len() == 0 {
+		panic(genfuncs.NoSuchElement)
+	}
+	return d.list.PeekRight().Value
 }
 
 // Remove and return the left most element in the Deque.
@@ -94,82 +86,23 @@ func (d *Deque[T]) Remove() T {
 
 // RemoveLeft and return the left most element in the Deque.
 func (d *Deque[T]) RemoveLeft() T {
-	v := d.PeekLeft()
-	d.slice[d.head] = d.tNil
-	d.head = d.next(d.head)
-	d.count--
-	d.contract()
-	return v
+	if d.Len() == 0 {
+		panic(genfuncs.NoSuchElement)
+	}
+	e := d.list.PeekLeft()
+	return d.list.Remove(e)
 }
 
 // RemoveRight and return the right most element in the Deque.
 func (d *Deque[T]) RemoveRight() T {
-	v := d.PeekRight()
-	d.tail = d.prev(d.tail)
-	d.slice[d.tail] = d.tNil
-	d.count--
-	d.contract()
-	return v
+	if d.Len() == 0 {
+		panic(genfuncs.NoSuchElement)
+	}
+	e := d.list.PeekRight()
+	return d.list.Remove(e)
 }
 
 // Values in the Deque returned in a new GSlice.
 func (d *Deque[T]) Values() GSlice[T] {
-	newSlice := make(GSlice[T], d.Len())
-	d.copy(newSlice)
-	return newSlice
-}
-
-// Cap returns the capacity of the Deque.
-func (d *Deque[T]) Cap() int {
-	return d.slice.Len()
-}
-
-// expand the Deque capacity if needed.
-func (d *Deque[T]) expand() {
-	if d.Len() != d.Cap() {
-		return
-	}
-	if d.Cap() == 0 {
-		d.slice = make(GSlice[T], minimumCapacity)
-		return
-	}
-	d.resize()
-}
-
-// contract Deque capacity if only 1/4 full.
-func (d *Deque[T]) contract() {
-	if d.Cap() > minimumCapacity && (d.Len()<<2) == d.Cap() {
-		d.resize()
-	}
-}
-
-// resize the Deque to fit exactly twice its current contents.  This is
-// used to grow the queue when it is full, and also to shrink it when it is
-// only a quarter full.
-func (d *Deque[T]) resize() {
-	newSlice := make([]T, d.count<<1)
-	d.copy(newSlice)
-	d.head = 0
-	d.tail = d.count
-	d.slice = newSlice
-}
-
-// copy the values, in order, from the Deque to a GSlice.
-func (d *Deque[T]) copy(slice GSlice[T]) {
-	if d.tail > d.head {
-		copy(slice, d.slice[d.head:d.tail])
-	} else {
-		n := copy(slice, d.slice[d.head:])
-		copy(slice[n:], d.slice[:d.tail])
-	}
-}
-
-// prev returns the previous buffer position wrapping around buffer.
-func (d *Deque[T]) prev(i int) int {
-	return (i - 1) & (d.Cap() - 1) // bitwise modulus
-}
-
-// next returns the next buffer position wrapping around buffer.
-func (d *Deque[T]) next(i int) int {
-	return (i + 1) & (d.Cap() - 1) // bitwise modulus
+	return d.list.Values()
 }

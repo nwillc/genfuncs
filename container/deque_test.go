@@ -193,6 +193,6 @@ func TestDeque_AddLeft(t *testing.T) {
 
 func TestDeque_Values(t *testing.T) {
 	s := container.GSlice[int]{1, 2, 3}
-	d := container.NewDeque(s...)
+	d := container.NewDeque[int](s...)
 	assert.True(t, s.Equal(d.Values(), genfuncs.Order[int]))
 }
