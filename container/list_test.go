@@ -67,3 +67,15 @@ func TestList_Values(t *testing.T) {
 	l := container.NewList[int](expect...)
 	assert.True(t, expect.Equal(l.Values(), genfuncs.Order[int]))
 }
+
+func TestElement_NextPrev(t *testing.T) {
+	l := container.NewList[int](1, 2)
+	left := l.PeekLeft()
+	right := l.PeekRight()
+
+	assert.Equal(t, left.Next(), right)
+	assert.Nil(t, left.Prev())
+
+	assert.Equal(t, right.Prev(), left)
+	assert.Nil(t, right.Next())
+}
