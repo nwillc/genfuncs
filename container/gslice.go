@@ -150,10 +150,3 @@ func (s GSlice[T]) Swap(i, j int) {
 func (s GSlice[T]) Values() GSlice[T] {
 	return s
 }
-
-// inBounds panics if given index out of GSlice's bounds.
-func (s GSlice[T]) inBounds(i int) {
-	if i < 0 || i > s.Len()-1 {
-		panic(genfuncs.NoSuchElement)
-	}
-}
