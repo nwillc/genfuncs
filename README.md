@@ -11,14 +11,15 @@
 # Genfuncs
 
 Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with containers like heaps, maps, queues, sets, slices, etc. Many of the functions are 
-based on Kotlin's Sequence and Map. This package, while very usable, is primarily a proof-of-concept since it is likely 
+in particular when working with containers like heap, list, map, queue, set, slice, etc. Many of the functions are 
+based on Kotlin's Sequence and Map. Attempts were also made to introduce more polymorphism into Go's containers.
+This package, while very usable, is primarily a proof-of-concept since it is likely 
 Go will provide similar before long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar 
 functions and I incorporate them here.
 
 General notes:
  - A Map interface is provided to allow both Go's normal map and it's sync.Map to be used polymorphically.
- - Generally these functions are pure without side effects at the cost of copying data.
+ - The bias of these functions is to be pure, without side effects, at the cost of copying data.
  - Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
 
 The code is under the [ISC License](https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
@@ -963,7 +964,7 @@ Values returns a slice of the values in the Heap in no particular order\.
 
 ## type [List](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L46-L49>)
 
-List represents a doubly linked list\, based on list\.List but made type aware with generics\.
+List represents a doubly linked list\, based on list\.List but made type aware with generics\. List implements Container\.
 
 ```go
 type List[T any] struct {
