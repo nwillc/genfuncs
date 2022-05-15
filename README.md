@@ -379,7 +379,6 @@ import "github.com/nwillc/genfuncs/container"
   - [func (d *Deque[T]) AddAll(t ...T)](<#func-dequet-addall>)
   - [func (d *Deque[T]) AddLeft(t T)](<#func-dequet-addleft>)
   - [func (d *Deque[T]) AddRight(t T)](<#func-dequet-addright>)
-  - [func (d *Deque[T]) Cap() int](<#func-dequet-cap>)
   - [func (d *Deque[T]) Len() int](<#func-dequet-len>)
   - [func (d *Deque[T]) Peek() T](<#func-dequet-peek>)
   - [func (d *Deque[T]) PeekLeft() T](<#func-dequet-peekleft>)
@@ -388,6 +387,9 @@ import "github.com/nwillc/genfuncs/container"
   - [func (d *Deque[T]) RemoveLeft() T](<#func-dequet-removeleft>)
   - [func (d *Deque[T]) RemoveRight() T](<#func-dequet-removeright>)
   - [func (d *Deque[T]) Values() GSlice[T]](<#func-dequet-values>)
+- [type Element](<#type-element>)
+  - [func (e *Element[T]) Next() *Element[T]](<#func-elementt-next>)
+  - [func (e *Element[T]) Prev() *Element[T]](<#func-elementt-prev>)
 - [type GMap](<#type-gmap>)
   - [func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-all>)
   - [func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-any>)
@@ -426,6 +428,17 @@ import "github.com/nwillc/genfuncs/container"
   - [func (h *Heap[T]) Peek() T](<#func-heapt-peek>)
   - [func (h *Heap[T]) Remove() T](<#func-heapt-remove>)
   - [func (h *Heap[T]) Values() GSlice[T]](<#func-heapt-values>)
+- [type List](<#type-list>)
+  - [func NewList[T any](values ...T) *List[T]](<#func-newlist>)
+  - [func (l *List[T]) Add(value T)](<#func-listt-add>)
+  - [func (l *List[T]) AddAll(values ...T)](<#func-listt-addall>)
+  - [func (l *List[T]) AddLeft(value T) *Element[T]](<#func-listt-addleft>)
+  - [func (l *List[T]) AddRight(v T) *Element[T]](<#func-listt-addright>)
+  - [func (l *List[T]) Len() int](<#func-listt-len>)
+  - [func (l *List[T]) PeekLeft() *Element[T]](<#func-listt-peekleft>)
+  - [func (l *List[T]) PeekRight() *Element[T]](<#func-listt-peekright>)
+  - [func (l *List[T]) Remove(e *Element[T]) T](<#func-listt-remove>)
+  - [func (l *List[T]) Values() GSlice[T]](<#func-listt-values>)
 - [type Map](<#type-map>)
 - [type MapSet](<#type-mapset>)
   - [func (h *MapSet[T]) Add(t T)](<#func-mapsett-add>)
@@ -466,9 +479,9 @@ type Container[T any] interface {
 }
 ```
 
-## type [Deque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L24-L30>)
+## type [Deque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L25-L27>)
 
-Deque is a doubly ended implementation of Queue with default behavior of a Fifo but provides left and right access\.
+Deque is a doubly ended implementation of Queue with default behavior of a Fifo but provides left and right access\. Employs a List for storage\.
 
 ```go
 type Deque[T any] struct {
@@ -476,7 +489,7 @@ type Deque[T any] struct {
 }
 ```
 
-### func [NewDeque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L33>)
+### func [NewDeque](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L30>)
 
 ```go
 func NewDeque[T any](t ...T) *Deque[T]
@@ -484,7 +497,7 @@ func NewDeque[T any](t ...T) *Deque[T]
 
 NewDeque creates a Deque containing any provided elements\.
 
-### func \(\*Deque\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L40>)
+### func \(\*Deque\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L37>)
 
 ```go
 func (d *Deque[T]) Add(t T)
@@ -492,7 +505,7 @@ func (d *Deque[T]) Add(t T)
 
 Add an element to the right of the Deque\.
 
-### func \(\*Deque\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L45>)
+### func \(\*Deque\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L42>)
 
 ```go
 func (d *Deque[T]) AddAll(t ...T)
@@ -500,7 +513,7 @@ func (d *Deque[T]) AddAll(t ...T)
 
 AddAll elements to the right of the Deque\.
 
-### func \(\*Deque\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L52>)
+### func \(\*Deque\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L47>)
 
 ```go
 func (d *Deque[T]) AddLeft(t T)
@@ -508,7 +521,7 @@ func (d *Deque[T]) AddLeft(t T)
 
 AddLeft an element to the left of the Deque\.
 
-### func \(\*Deque\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L60>)
+### func \(\*Deque\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L52>)
 
 ```go
 func (d *Deque[T]) AddRight(t T)
@@ -516,15 +529,7 @@ func (d *Deque[T]) AddRight(t T)
 
 AddRight an element to the right of the Deque\.
 
-### func \(\*Deque\[T\]\) [Cap](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L123>)
-
-```go
-func (d *Deque[T]) Cap() int
-```
-
-Cap returns the capacity of the Deque\.
-
-### func \(\*Deque\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L68>)
+### func \(\*Deque\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L57>)
 
 ```go
 func (d *Deque[T]) Len() int
@@ -532,7 +537,7 @@ func (d *Deque[T]) Len() int
 
 Len reports the length of the Deque\.
 
-### func \(\*Deque\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L73>)
+### func \(\*Deque\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L62>)
 
 ```go
 func (d *Deque[T]) Peek() T
@@ -540,7 +545,7 @@ func (d *Deque[T]) Peek() T
 
 Peek returns the left most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L78>)
+### func \(\*Deque\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L67>)
 
 ```go
 func (d *Deque[T]) PeekLeft() T
@@ -548,7 +553,7 @@ func (d *Deque[T]) PeekLeft() T
 
 PeekLeft returns the left most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L84>)
+### func \(\*Deque\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L75>)
 
 ```go
 func (d *Deque[T]) PeekRight() T
@@ -556,7 +561,7 @@ func (d *Deque[T]) PeekRight() T
 
 PeekRight returns the right most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L91>)
+### func \(\*Deque\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L83>)
 
 ```go
 func (d *Deque[T]) Remove() T
@@ -564,7 +569,7 @@ func (d *Deque[T]) Remove() T
 
 Remove and return the left most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [RemoveLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L96>)
+### func \(\*Deque\[T\]\) [RemoveLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L88>)
 
 ```go
 func (d *Deque[T]) RemoveLeft() T
@@ -572,7 +577,7 @@ func (d *Deque[T]) RemoveLeft() T
 
 RemoveLeft and return the left most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [RemoveRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L106>)
+### func \(\*Deque\[T\]\) [RemoveRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L97>)
 
 ```go
 func (d *Deque[T]) RemoveRight() T
@@ -580,13 +585,40 @@ func (d *Deque[T]) RemoveRight() T
 
 RemoveRight and return the right most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L116>)
+### func \(\*Deque\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L106>)
 
 ```go
 func (d *Deque[T]) Values() GSlice[T]
 ```
 
 Values in the Deque returned in a new GSlice\.
+
+## type [Element](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L23-L27>)
+
+Element is an element of List\.
+
+```go
+type Element[T any] struct {
+    Value T
+    // contains filtered or unexported fields
+}
+```
+
+### func \(\*Element\[T\]\) [Next](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L30>)
+
+```go
+func (e *Element[T]) Next() *Element[T]
+```
+
+Next returns the next list element or nil\.
+
+### func \(\*Element\[T\]\) [Prev](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L38>)
+
+```go
+func (e *Element[T]) Prev() *Element[T]
+```
+
+Prev returns the previous list element or nil\.
 
 ## type [GMap](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L28>)
 
@@ -928,6 +960,96 @@ func (h *Heap[T]) Values() GSlice[T]
 ```
 
 Values returns a slice of the values in the Heap in no particular order\.
+
+## type [List](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L46-L49>)
+
+List represents a doubly linked list\, based on list\.List but made type aware with generics\.
+
+```go
+type List[T any] struct {
+    // contains filtered or unexported fields
+}
+```
+
+### func [NewList](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L52>)
+
+```go
+func NewList[T any](values ...T) *List[T]
+```
+
+NewList instantiates a new List containing any values provided\.
+
+### func \(\*List\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L62>)
+
+```go
+func (l *List[T]) Add(value T)
+```
+
+Add a value to the right of the List\.
+
+### func \(\*List\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L67>)
+
+```go
+func (l *List[T]) AddAll(values ...T)
+```
+
+AddAll values to the right of the List\.
+
+### func \(\*List\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L95>)
+
+```go
+func (l *List[T]) AddLeft(value T) *Element[T]
+```
+
+AddLeft adds a value to the left of the List\.
+
+### func \(\*List\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L100>)
+
+```go
+func (l *List[T]) AddRight(v T) *Element[T]
+```
+
+AddRight adds a value to the right of the List\.
+
+### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L74>)
+
+```go
+func (l *List[T]) Len() int
+```
+
+Len returns the number of values in the List\.
+
+### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L79>)
+
+```go
+func (l *List[T]) PeekLeft() *Element[T]
+```
+
+PeekLeft returns the leftmost value in the List or nil if empty\.
+
+### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L87>)
+
+```go
+func (l *List[T]) PeekRight() *Element[T]
+```
+
+PeekRight returns the rightmost value in the List or nil if empty\.
+
+### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L105>)
+
+```go
+func (l *List[T]) Remove(e *Element[T]) T
+```
+
+Remove removes a given value from the List\.
+
+### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L113>)
+
+```go
+func (l *List[T]) Values() GSlice[T]
+```
+
+Values returns the values in the list as a GSlice\.
 
 ## type [Map](<https://github.com/nwillc/genfuncs/blob/master/container/map.go#L20-L28>)
 
@@ -1478,7 +1600,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.13.0"
+const Version = "v0.13.1"
 ```
 
 
