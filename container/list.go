@@ -96,7 +96,8 @@ func (l *List[T]) ForEach(action func(value T)) {
 	}
 }
 
-// Get returns the ListElement at index. This traverses all the ListElement from the end nearest the index.
+// Get returns the ListElement at index. This traverses all the ListElement from the end nearest the index. If index
+// is not within the bounds of the list nil is returned.
 func (l *List[T]) Get(index int) *ListElement[T] {
 	if index < 0 || index >= l.Len() {
 		return nil
@@ -120,7 +121,7 @@ func (l *List[T]) Get(index int) *ListElement[T] {
 			i--
 		}
 	}
-	return nil
+	panic("index in bounds but element not found")
 }
 
 // Len returns the number of values in the List.
@@ -161,7 +162,7 @@ func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) {
 	sort.Sort(s)
 }
 
-// Swap the Value of two elements in the List.
+// Swap the Value of two elements in the List. If either index is not within the bounds of the List no action is taken.
 func (l *List[T]) Swap(i, j int) {
 	iElement := l.Get(i)
 	jElement := l.Get(j)

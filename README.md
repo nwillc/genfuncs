@@ -996,15 +996,15 @@ func (l *List[T]) ForEach(action func(value T))
 
 ForEach invokes the action for each value in the list\.
 
-### func \(\*List\[T\]\) [Get](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L100>)
+### func \(\*List\[T\]\) [Get](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L101>)
 
 ```go
 func (l *List[T]) Get(index int) *ListElement[T]
 ```
 
-Get returns the ListElement at index\. This traverses all the ListElement from the end nearest the index\.
+Get returns the ListElement at index\. This traverses all the ListElement from the end nearest the index\. If index is not within the bounds of the list nil is returned\.
 
-### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L127>)
+### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L128>)
 
 ```go
 func (l *List[T]) Len() int
@@ -1012,7 +1012,7 @@ func (l *List[T]) Len() int
 
 Len returns the number of values in the List\.
 
-### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L132>)
+### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L133>)
 
 ```go
 func (l *List[T]) PeekLeft() *ListElement[T]
@@ -1020,7 +1020,7 @@ func (l *List[T]) PeekLeft() *ListElement[T]
 
 PeekLeft returns the leftmost value in the List or nil if empty\.
 
-### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L140>)
+### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L141>)
 
 ```go
 func (l *List[T]) PeekRight() *ListElement[T]
@@ -1028,7 +1028,7 @@ func (l *List[T]) PeekRight() *ListElement[T]
 
 PeekRight returns the rightmost value in the List or nil if empty\.
 
-### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L148>)
+### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L149>)
 
 ```go
 func (l *List[T]) Remove(e *ListElement[T]) T
@@ -1036,7 +1036,7 @@ func (l *List[T]) Remove(e *ListElement[T]) T
 
 Remove removes a given value from the List\.
 
-### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L156>)
+### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L157>)
 
 ```go
 func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool])
@@ -1044,15 +1044,15 @@ func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool])
 
 SortBy sorts the List by the order of the lessThan function\.
 
-### func \(\*List\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L165>)
+### func \(\*List\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L166>)
 
 ```go
 func (l *List[T]) Swap(i, j int)
 ```
 
-Swap the Value of two elements in the List\.
+Swap the Value of two elements in the List\. If either index is not within the bounds of the List no action is taken\.
 
-### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L175>)
+### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L176>)
 
 ```go
 func (l *List[T]) Values() GSlice[T]
