@@ -455,7 +455,7 @@ import "github.com/nwillc/genfuncs/container"
 - [type Set](<#type-set>)
   - [func NewMapSet[T comparable](t ...T) Set[T]](<#func-newmapset>)
 - [type SyncMap](<#type-syncmap>)
-  - [func NewSyncMap[K any, V any]() *SyncMap[K, V]](<#func-newsyncmap>)
+  - [func NewSyncMap\[K any, V any\]() *SyncMap[K, V]](<#func-newsyncmap>)
   - [func (s *SyncMap[K, V]) Contains(key K) bool](<#func-syncmapk-v-contains>)
   - [func (s *SyncMap[K, V]) Delete(key K)](<#func-syncmapk-v-delete>)
   - [func (s *SyncMap[K, V]) ForEach(f func(key K, value V))](<#func-syncmapk-v-foreach>)
