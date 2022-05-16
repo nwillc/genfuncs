@@ -23,7 +23,7 @@ import (
 // SyncMap implements Map.
 var _ Map[int, int] = (*SyncMap[int, int])(nil)
 
-// SyncMap is a Map implementation employing sync.Map and is therefore GoRoutine safe,
+// SyncMap is a Map implementation employing sync.Map and is therefore GoRoutine safe.
 type SyncMap[K any, V any] struct {
 	m sync.Map
 }

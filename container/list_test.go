@@ -214,3 +214,15 @@ func TestList_SortBy(t *testing.T) {
 		})
 	}
 }
+
+func TestList_Swap(t *testing.T) {
+	l := container.NewList[int](1, 2)
+	assert.Equal(t, 1, l.PeekLeft().Value)
+	assert.Equal(t, 2, l.PeekRight().Value)
+	l.Swap(0, 1)
+	assert.Equal(t, 2, l.PeekLeft().Value)
+	assert.Equal(t, 1, l.PeekRight().Value)
+	l.Swap(-1, 1)
+	assert.Equal(t, 2, l.PeekLeft().Value)
+	assert.Equal(t, 1, l.PeekRight().Value)
+}
