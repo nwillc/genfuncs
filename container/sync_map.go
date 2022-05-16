@@ -29,7 +29,7 @@ type SyncMap[K any, V any] struct {
 }
 
 // NewSyncMap creates a new SyncMap instance.
-func NewSyncMap[K comparable, V any]() *SyncMap[K, V] {
+func NewSyncMap[K any, V any]() *SyncMap[K, V] {
 	return &SyncMap[K, V]{}
 }
 

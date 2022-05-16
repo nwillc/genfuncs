@@ -455,7 +455,7 @@ import "github.com/nwillc/genfuncs/container"
 - [type Set](<#type-set>)
   - [func NewMapSet[T comparable](t ...T) Set[T]](<#func-newmapset>)
 - [type SyncMap](<#type-syncmap>)
-  - [func NewSyncMap[K comparable, V any]() *SyncMap[K, V]](<#func-newsyncmap>)
+  - [func NewSyncMap[K any, V any]() *SyncMap[K, V]](<#func-newsyncmap>)
   - [func (s *SyncMap[K, V]) Contains(key K) bool](<#func-syncmapk-v-contains>)
   - [func (s *SyncMap[K, V]) Delete(key K)](<#func-syncmapk-v-delete>)
   - [func (s *SyncMap[K, V]) ForEach(f func(key K, value V))](<#func-syncmapk-v-foreach>)
@@ -1210,7 +1210,7 @@ type SyncMap[K any, V any] struct {
 ### func [NewSyncMap](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L32>)
 
 ```go
-func NewSyncMap[K comparable, V any]() *SyncMap[K, V]
+func NewSyncMap[K any, V any]() *SyncMap[K, V]
 ```
 
 NewSyncMap creates a new SyncMap instance\.
@@ -1636,7 +1636,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.13.1"
+const Version = "v0.13.2"
 ```
 
 
