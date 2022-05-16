@@ -11,15 +11,14 @@
 # Genfuncs
 
 Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
-in particular when working with containers like heap, list, map, queue, set, slice, etc. Many of the functions are 
+in particular when working with containers like heap, list, map, queue, set, slice, etc. Many of the functions are
 based on Kotlin's Sequence and Map. Attempts were also made to introduce more polymorphism into Go's containers.
-This package, while very usable, is primarily a proof-of-concept since it is likely 
-Go will provide similar before long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar 
-functions and I incorporate them here.
+This package, while very usable, is primarily a proof-of-concept since it is likely Go will provide similar before
+long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
 
 General notes:
  - A Map interface is provided to allow both Go's normal map and it's sync.Map to be used polymorphically.
- - The bias of these functions is to be pure, without side effects, at the cost of copying data.
+ - The bias of these functions where appropriate is to be pure, without side effects, at the cost of copying data.
  - Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
 
 The code is under the [ISC License](https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
@@ -388,9 +387,6 @@ import "github.com/nwillc/genfuncs/container"
   - [func (d *Deque[T]) RemoveLeft() T](<#func-dequet-removeleft>)
   - [func (d *Deque[T]) RemoveRight() T](<#func-dequet-removeright>)
   - [func (d *Deque[T]) Values() GSlice[T]](<#func-dequet-values>)
-- [type Element](<#type-element>)
-  - [func (e *Element[T]) Next() *Element[T]](<#func-elementt-next>)
-  - [func (e *Element[T]) Prev() *Element[T]](<#func-elementt-prev>)
 - [type GMap](<#type-gmap>)
   - [func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-all>)
   - [func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool](<#func-gmapk-v-any>)
@@ -433,13 +429,20 @@ import "github.com/nwillc/genfuncs/container"
   - [func NewList[T any](values ...T) *List[T]](<#func-newlist>)
   - [func (l *List[T]) Add(value T)](<#func-listt-add>)
   - [func (l *List[T]) AddAll(values ...T)](<#func-listt-addall>)
-  - [func (l *List[T]) AddLeft(value T) *Element[T]](<#func-listt-addleft>)
-  - [func (l *List[T]) AddRight(v T) *Element[T]](<#func-listt-addright>)
+  - [func (l *List[T]) AddLeft(value T) *ListElement[T]](<#func-listt-addleft>)
+  - [func (l *List[T]) AddRight(v T) *ListElement[T]](<#func-listt-addright>)
+  - [func (l *List[T]) ForEach(action func(value T))](<#func-listt-foreach>)
+  - [func (l *List[T]) Get(index int) *ListElement[T]](<#func-listt-get>)
   - [func (l *List[T]) Len() int](<#func-listt-len>)
-  - [func (l *List[T]) PeekLeft() *Element[T]](<#func-listt-peekleft>)
-  - [func (l *List[T]) PeekRight() *Element[T]](<#func-listt-peekright>)
-  - [func (l *List[T]) Remove(e *Element[T]) T](<#func-listt-remove>)
+  - [func (l *List[T]) PeekLeft() *ListElement[T]](<#func-listt-peekleft>)
+  - [func (l *List[T]) PeekRight() *ListElement[T]](<#func-listt-peekright>)
+  - [func (l *List[T]) Remove(e *ListElement[T]) T](<#func-listt-remove>)
+  - [func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool])](<#func-listt-sortby>)
+  - [func (l *List[T]) Swap(i, j int)](<#func-listt-swap>)
   - [func (l *List[T]) Values() GSlice[T]](<#func-listt-values>)
+- [type ListElement](<#type-listelement>)
+  - [func (e *ListElement[T]) Next() *ListElement[T]](<#func-listelementt-next>)
+  - [func (e *ListElement[T]) Prev() *ListElement[T]](<#func-listelementt-prev>)
 - [type Map](<#type-map>)
 - [type MapSet](<#type-mapset>)
   - [func (h *MapSet[T]) Add(t T)](<#func-mapsett-add>)
@@ -593,33 +596,6 @@ func (d *Deque[T]) Values() GSlice[T]
 ```
 
 Values in the Deque returned in a new GSlice\.
-
-## type [Element](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L23-L27>)
-
-Element is an element of List\.
-
-```go
-type Element[T any] struct {
-    Value T
-    // contains filtered or unexported fields
-}
-```
-
-### func \(\*Element\[T\]\) [Next](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L30>)
-
-```go
-func (e *Element[T]) Next() *Element[T]
-```
-
-Next returns the next list element or nil\.
-
-### func \(\*Element\[T\]\) [Prev](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L38>)
-
-```go
-func (e *Element[T]) Prev() *Element[T]
-```
-
-Prev returns the previous list element or nil\.
 
 ## type [GMap](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L28>)
 
@@ -962,9 +938,9 @@ func (h *Heap[T]) Values() GSlice[T]
 
 Values returns a slice of the values in the Heap in no particular order\.
 
-## type [List](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L46-L49>)
+## type [List](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L55-L58>)
 
-List represents a doubly linked list\, based on list\.List but made type aware with generics\. List implements Container\.
+List is a doubly linked list\, inspired by list\.List but reworked to be generic\. List implements Container\.
 
 ```go
 type List[T any] struct {
@@ -972,7 +948,7 @@ type List[T any] struct {
 }
 ```
 
-### func [NewList](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L52>)
+### func [NewList](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L61>)
 
 ```go
 func NewList[T any](values ...T) *List[T]
@@ -980,7 +956,7 @@ func NewList[T any](values ...T) *List[T]
 
 NewList instantiates a new List containing any values provided\.
 
-### func \(\*List\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L62>)
+### func \(\*List\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L71>)
 
 ```go
 func (l *List[T]) Add(value T)
@@ -988,7 +964,7 @@ func (l *List[T]) Add(value T)
 
 Add a value to the right of the List\.
 
-### func \(\*List\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L67>)
+### func \(\*List\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L76>)
 
 ```go
 func (l *List[T]) AddAll(values ...T)
@@ -996,23 +972,39 @@ func (l *List[T]) AddAll(values ...T)
 
 AddAll values to the right of the List\.
 
-### func \(\*List\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L95>)
+### func \(\*List\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L83>)
 
 ```go
-func (l *List[T]) AddLeft(value T) *Element[T]
+func (l *List[T]) AddLeft(value T) *ListElement[T]
 ```
 
 AddLeft adds a value to the left of the List\.
 
-### func \(\*List\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L100>)
+### func \(\*List\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L88>)
 
 ```go
-func (l *List[T]) AddRight(v T) *Element[T]
+func (l *List[T]) AddRight(v T) *ListElement[T]
 ```
 
 AddRight adds a value to the right of the List\.
 
-### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L74>)
+### func \(\*List\[T\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L93>)
+
+```go
+func (l *List[T]) ForEach(action func(value T))
+```
+
+ForEach invokes the action for each value in the list\.
+
+### func \(\*List\[T\]\) [Get](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L100>)
+
+```go
+func (l *List[T]) Get(index int) *ListElement[T]
+```
+
+Get returns the ListElement at index\. This traverses all the ListElement from the end nearest the index\.
+
+### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L127>)
 
 ```go
 func (l *List[T]) Len() int
@@ -1020,37 +1012,80 @@ func (l *List[T]) Len() int
 
 Len returns the number of values in the List\.
 
-### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L79>)
+### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L132>)
 
 ```go
-func (l *List[T]) PeekLeft() *Element[T]
+func (l *List[T]) PeekLeft() *ListElement[T]
 ```
 
 PeekLeft returns the leftmost value in the List or nil if empty\.
 
-### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L87>)
+### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L140>)
 
 ```go
-func (l *List[T]) PeekRight() *Element[T]
+func (l *List[T]) PeekRight() *ListElement[T]
 ```
 
 PeekRight returns the rightmost value in the List or nil if empty\.
 
-### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L105>)
+### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L148>)
 
 ```go
-func (l *List[T]) Remove(e *Element[T]) T
+func (l *List[T]) Remove(e *ListElement[T]) T
 ```
 
 Remove removes a given value from the List\.
 
-### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L113>)
+### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L156>)
+
+```go
+func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool])
+```
+
+SortBy sorts the List by the order of the lessThan function\.
+
+### func \(\*List\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L165>)
+
+```go
+func (l *List[T]) Swap(i, j int)
+```
+
+Swap the Value of two elements in the List\.
+
+### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L175>)
 
 ```go
 func (l *List[T]) Values() GSlice[T]
 ```
 
 Values returns the values in the list as a GSlice\.
+
+## type [ListElement](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L32-L36>)
+
+ListElement is an element of List\.
+
+```go
+type ListElement[T any] struct {
+    Value T
+    // contains filtered or unexported fields
+}
+```
+
+### func \(\*ListElement\[T\]\) [Next](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L39>)
+
+```go
+func (e *ListElement[T]) Next() *ListElement[T]
+```
+
+Next returns the next list element or nil\.
+
+### func \(\*ListElement\[T\]\) [Prev](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L47>)
+
+```go
+func (e *ListElement[T]) Prev() *ListElement[T]
+```
+
+Prev returns the previous list element or nil\.
 
 ## type [Map](<https://github.com/nwillc/genfuncs/blob/master/container/map.go#L20-L28>)
 

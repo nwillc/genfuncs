@@ -16,18 +16,27 @@
 
 package container
 
-// List implements Container
-var _ Container[int] = (*List[int])(nil)
+import (
+	"github.com/nwillc/genfuncs"
+	"sort"
+)
 
-// Element is an element of List.
-type Element[T any] struct {
-	next, prev *Element[T]
+var (
+	// List implements Container
+	_ Container[int] = (*List[int])(nil)
+	// listSorter implements sort.Interface
+	_ sort.Interface = (*listSorter[int])(nil)
+)
+
+// ListElement is an element of List.
+type ListElement[T any] struct {
+	next, prev *ListElement[T]
 	list       *List[T]
 	Value      T
 }
 
 // Next returns the next list element or nil.
-func (e *Element[T]) Next() *Element[T] {
+func (e *ListElement[T]) Next() *ListElement[T] {
 	if p := e.next; e.list != nil && p != &e.list.root {
 		return p
 	}
@@ -35,16 +44,16 @@ func (e *Element[T]) Next() *Element[T] {
 }
 
 // Prev returns the previous list element or nil.
-func (e *Element[T]) Prev() *Element[T] {
+func (e *ListElement[T]) Prev() *ListElement[T] {
 	if p := e.prev; e.list != nil && p != &e.list.root {
 		return p
 	}
 	return nil
 }
 
-// List represents a doubly linked list, based on list.List but made type aware with generics.
+// List is a doubly linked list, inspired by list.List but reworked to be generic. List implements Container.
 type List[T any] struct {
-	root Element[T]
+	root ListElement[T]
 	len  int
 }
 
@@ -70,13 +79,57 @@ func (l *List[T]) AddAll(values ...T) {
 	}
 }
 
+// AddLeft adds a value to the left of the List.
+func (l *List[T]) AddLeft(value T) *ListElement[T] {
+	return l.insertValue(value, &l.root)
+}
+
+// AddRight adds a value to the right of the List.
+func (l *List[T]) AddRight(v T) *ListElement[T] {
+	return l.insertValue(v, l.root.prev)
+}
+
+// ForEach invokes the action for each value in the list.
+func (l *List[T]) ForEach(action func(value T)) {
+	for e := l.PeekLeft(); e != nil; e = e.Next() {
+		action(e.Value)
+	}
+}
+
+// Get returns the ListElement at index. This traverses all the ListElement from the end nearest the index.
+func (l *List[T]) Get(index int) *ListElement[T] {
+	if index < 0 || index >= l.Len() {
+		return nil
+	}
+	if index < l.Len()/2 {
+		// Closer to left end
+		i := 0
+		for e := l.PeekLeft(); e != nil; e = e.Next() {
+			if i == index {
+				return e
+			}
+			i++
+		}
+	} else {
+		// Closer to right end
+		i := l.Len() - 1
+		for e := l.PeekRight(); e != nil; e = e.Prev() {
+			if i == index {
+				return e
+			}
+			i--
+		}
+	}
+	return nil
+}
+
 // Len returns the number of values in the List.
 func (l *List[T]) Len() int {
 	return l.len
 }
 
 // PeekLeft returns the leftmost value in the List or nil if empty.
-func (l *List[T]) PeekLeft() *Element[T] {
+func (l *List[T]) PeekLeft() *ListElement[T] {
 	if l.len == 0 {
 		return nil
 	}
@@ -84,49 +137,56 @@ func (l *List[T]) PeekLeft() *Element[T] {
 }
 
 // PeekRight returns the rightmost value in the List or nil if empty.
-func (l *List[T]) PeekRight() *Element[T] {
+func (l *List[T]) PeekRight() *ListElement[T] {
 	if l.len == 0 {
 		return nil
 	}
 	return l.root.prev
 }
 
-// AddLeft adds a value to the left of the List.
-func (l *List[T]) AddLeft(value T) *Element[T] {
-	return l.insertValue(value, &l.root)
-}
-
-// AddRight adds a value to the right of the List.
-func (l *List[T]) AddRight(v T) *Element[T] {
-	return l.insertValue(v, l.root.prev)
-}
-
 // Remove removes a given value from the List.
-func (l *List[T]) Remove(e *Element[T]) T {
+func (l *List[T]) Remove(e *ListElement[T]) T {
 	if e.list == l {
 		l.remove(e)
 	}
 	return e.Value
 }
 
+// SortBy sorts the List by the order of the lessThan function.
+func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) {
+	s := listSorter[T]{
+		List:  l,
+		order: lessThan,
+	}
+	sort.Sort(s)
+}
+
+// Swap the Value of two elements in the List.
+func (l *List[T]) Swap(i, j int) {
+	iElement := l.Get(i)
+	jElement := l.Get(j)
+	if iElement == nil || jElement == nil {
+		return
+	}
+	iElement.Value, jElement.Value = jElement.Value, iElement.Value
+}
+
 // Values returns the values in the list as a GSlice.
 func (l *List[T]) Values() GSlice[T] {
 	s := make(GSlice[T], l.Len())
-	if l.Len() > 0 {
-		i := 0
-		for e := l.PeekLeft(); e != nil; e = e.Next() {
-			s[i] = e.Value
-			i++
-		}
-	}
+	i := 0
+	l.ForEach(func(value T) {
+		s[i] = value
+		i++
+	})
 	return s
 }
 
-func (l *List[T]) insertValue(v T, at *Element[T]) *Element[T] {
-	return l.insert(&Element[T]{Value: v}, at)
+func (l *List[T]) insertValue(v T, at *ListElement[T]) *ListElement[T] {
+	return l.insert(&ListElement[T]{Value: v}, at)
 }
 
-func (l *List[T]) insert(e, at *Element[T]) *Element[T] {
+func (l *List[T]) insert(e, at *ListElement[T]) *ListElement[T] {
 	e.prev = at
 	e.next = at.next
 	e.prev.next = e
@@ -136,11 +196,20 @@ func (l *List[T]) insert(e, at *Element[T]) *Element[T] {
 	return e
 }
 
-func (l *List[T]) remove(e *Element[T]) {
+func (l *List[T]) remove(e *ListElement[T]) {
 	e.prev.next = e.next
 	e.next.prev = e.prev
 	e.next = nil
 	e.prev = nil
 	e.list = nil
 	l.len--
+}
+
+type listSorter[T any] struct {
+	*List[T]
+	order genfuncs.BiFunction[T, T, bool]
+}
+
+func (s listSorter[T]) Less(i, j int) bool {
+	return s.order(s.Get(i).Value, s.Get(j).Value)
 }

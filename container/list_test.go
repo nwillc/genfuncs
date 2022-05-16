@@ -65,9 +65,32 @@ func TestList_Remove(t *testing.T) {
 }
 
 func TestList_Values(t *testing.T) {
-	expect := container.GSlice[int]{1, 2}
-	l := container.NewList[int](expect...)
-	assert.True(t, expect.Equal(l.Values(), genfuncs.Order[int]))
+	type args struct {
+		expect container.GSlice[int]
+	}
+	tests := []struct {
+		name string
+		args
+	}{
+		{
+			name: "empty",
+			args: args{
+				expect: container.GSlice[int]{},
+			},
+		},
+		{
+			name: "two",
+			args: args{
+				expect: container.GSlice[int]{1, 2},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := container.NewList[int](tt.args.expect...)
+			assert.True(t, tt.args.expect.Equal(l.Values(), genfuncs.Order[int]))
+		})
+	}
 }
 
 func TestElement_NextPrev(t *testing.T) {
@@ -80,4 +103,114 @@ func TestElement_NextPrev(t *testing.T) {
 
 	assert.Equal(t, right.Prev(), left)
 	assert.Nil(t, right.Next())
+}
+
+func TestList_Get(t *testing.T) {
+	l := container.NewList[int](1, 2, 7, 0)
+	type args struct {
+		index int
+	}
+	tests := []struct {
+		name string
+		args args
+		want *container.ListElement[int]
+	}{
+		{
+			name: "Negative index",
+			args: args{
+				index: -1,
+			},
+			want: nil,
+		},
+		{
+			name: "too large index",
+			args: args{
+				index: 10,
+			},
+			want: nil,
+		},
+		{
+			name: "first",
+			args: args{
+				index: 0,
+			},
+			want: &container.ListElement[int]{Value: 1},
+		},
+		{
+			name: "last",
+			args: args{
+				index: 3,
+			},
+			want: &container.ListElement[int]{Value: 0},
+		},
+		{
+			name: "in middle",
+			args: args{
+				index: 2,
+			},
+			want: &container.ListElement[int]{Value: 7},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := l.Get(tt.args.index)
+			if tt.want == nil {
+				assert.Nil(t, e)
+				return
+			}
+			assert.Equal(t, tt.want.Value, e.Value)
+		})
+	}
+}
+
+func TestList_SortBy(t *testing.T) {
+	type args struct {
+		list  *container.List[int]
+		order genfuncs.BiFunction[int, int, bool]
+	}
+	tests := []struct {
+		name string
+		args args
+		want container.GSlice[int]
+	}{
+		{
+			name: "empty",
+			args: args{
+				list:  container.NewList[int](),
+				order: genfuncs.LessOrdered[int],
+			},
+			want: container.GSlice[int]{},
+		},
+		{
+			name: "single",
+			args: args{
+				list:  container.NewList[int](1),
+				order: genfuncs.LessOrdered[int],
+			},
+			want: container.GSlice[int]{1},
+		},
+		{
+			name: "sort ascending",
+			args: args{
+				list:  container.NewList[int](2, 1, 7, 3),
+				order: genfuncs.LessOrdered[int],
+			},
+			want: container.GSlice[int]{1, 2, 3, 7},
+		},
+		{
+			name: "sort descending",
+			args: args{
+				list:  container.NewList[int](1, 7, 3, 9),
+				order: genfuncs.GreaterOrdered[int],
+			},
+			want: container.GSlice[int]{9, 7, 3, 1},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.args.list.SortBy(tt.args.order)
+			values := tt.args.list.Values()
+			assert.True(t, tt.want.Equal(values, genfuncs.Order[int]))
+		})
+	}
 }
