@@ -1175,7 +1175,7 @@ type Queue[T any] interface {
 }
 ```
 
-## type [Set](<https://github.com/nwillc/genfuncs/blob/master/container/set.go#L20-L25>)
+## type [Set](<https://github.com/nwillc/genfuncs/blob/master/container/set.go#L20-L26>)
 
 Set is a Container that contains no duplicate elements\.
 
@@ -1184,6 +1184,7 @@ type Set[T comparable] interface {
 
     // Contains returns true if the Set contains a given element.
     Contains(t T) bool
+    // Remove the element from the Set.
     Remove(T)
     // contains filtered or unexported methods
 }
@@ -1636,7 +1637,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.13.2"
+const Version = "v0.13.3"
 ```
 
 
