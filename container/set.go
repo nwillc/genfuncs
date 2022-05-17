@@ -21,5 +21,6 @@ type Set[T comparable] interface {
 	Container[T]
 	// Contains returns true if the Set contains a given element.
 	Contains(t T) bool
+	// Remove the element from the Set.
 	Remove(T)
 }
