@@ -437,7 +437,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (l *List[T]) PeekLeft() *ListElement[T]](<#func-listt-peekleft>)
   - [func (l *List[T]) PeekRight() *ListElement[T]](<#func-listt-peekright>)
   - [func (l *List[T]) Remove(e *ListElement[T]) T](<#func-listt-remove>)
-  - [func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool])](<#func-listt-sortby>)
+  - [func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) *List[T]](<#func-listt-sortby>)
   - [func (l *List[T]) Swap(i, j int)](<#func-listt-swap>)
   - [func (l *List[T]) Values() GSlice[T]](<#func-listt-values>)
 - [type ListElement](<#type-listelement>)
@@ -455,7 +455,7 @@ import "github.com/nwillc/genfuncs/container"
 - [type Set](<#type-set>)
   - [func NewMapSet[T comparable](t ...T) Set[T]](<#func-newmapset>)
 - [type SyncMap](<#type-syncmap>)
-  - [func NewSyncMap\[K any, V any\]() *SyncMap[K, V]](<#func-newsyncmap>)
+  - [func NewSyncMap[K any, V any]() *SyncMap[K, V]](<#func-newsyncmap>)
   - [func (s *SyncMap[K, V]) Contains(key K) bool](<#func-syncmapk-v-contains>)
   - [func (s *SyncMap[K, V]) Delete(key K)](<#func-syncmapk-v-delete>)
   - [func (s *SyncMap[K, V]) ForEach(f func(key K, value V))](<#func-syncmapk-v-foreach>)
@@ -805,15 +805,15 @@ func (s GSlice[T]) Random() T
 
 Random returns a random element of the GSlice\.
 
-### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L137>)
+### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L138>)
 
 ```go
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]
 ```
 
-SortBy copies a slice\, sorts the copy applying the Order and returns it\.
+SortBy copies a slice\, sorts the copy applying the Order and returns it\. This is not a pure function\, the GSlice is sorted in place\, the returned slice is to allow for fluid calls in chains\.
 
-### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L145>)
+### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L144>)
 
 ```go
 func (s GSlice[T]) Swap(i, j int)
@@ -821,7 +821,7 @@ func (s GSlice[T]) Swap(i, j int)
 
 Swap two values in the slice\.
 
-### func \(GSlice\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L150>)
+### func \(GSlice\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L149>)
 
 ```go
 func (s GSlice[T]) Values() GSlice[T]
@@ -890,7 +890,7 @@ func main() {
 </p>
 </details>
 
-### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L45>)
+### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L48>)
 
 ```go
 func (h *Heap[T]) Add(v T)
@@ -898,7 +898,7 @@ func (h *Heap[T]) Add(v T)
 
 Add a value onto the heap\.
 
-### func \(\*Heap\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L52>)
+### func \(\*Heap\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L55>)
 
 ```go
 func (h *Heap[T]) AddAll(values ...T)
@@ -906,7 +906,7 @@ func (h *Heap[T]) AddAll(values ...T)
 
 AddAll the values onto the Heap\.
 
-### func \(\*Heap\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L42>)
+### func \(\*Heap\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L45>)
 
 ```go
 func (h *Heap[T]) Len() int
@@ -914,7 +914,7 @@ func (h *Heap[T]) Len() int
 
 Len returns current length of the heap\.
 
-### func \(\*Heap\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L61>)
+### func \(\*Heap\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L64>)
 
 ```go
 func (h *Heap[T]) Peek() T
@@ -922,7 +922,7 @@ func (h *Heap[T]) Peek() T
 
 Peek returns the next element without removing it\.
 
-### func \(\*Heap\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L76>)
+### func \(\*Heap\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L79>)
 
 ```go
 func (h *Heap[T]) Remove() T
@@ -930,7 +930,7 @@ func (h *Heap[T]) Remove() T
 
 Remove an item off the heap\.
 
-### func \(\*Heap\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L84>)
+### func \(\*Heap\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L87>)
 
 ```go
 func (h *Heap[T]) Values() GSlice[T]
@@ -1036,15 +1036,15 @@ func (l *List[T]) Remove(e *ListElement[T]) T
 
 Remove removes a given value from the List\.
 
-### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L157>)
+### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L158>)
 
 ```go
-func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool])
+func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) *List[T]
 ```
 
-SortBy sorts the List by the order of the lessThan function\.
+SortBy sorts the List by the order of the lessThan function\. This is not a pure function\, the List is sorted\, the List returned is to allow for fluid call chains\.
 
-### func \(\*List\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L166>)
+### func \(\*List\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L168>)
 
 ```go
 func (l *List[T]) Swap(i, j int)
@@ -1052,7 +1052,7 @@ func (l *List[T]) Swap(i, j int)
 
 Swap the Value of two elements in the List\. If either index is not within the bounds of the List no action is taken\.
 
-### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L176>)
+### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L178>)
 
 ```go
 func (l *List[T]) Values() GSlice[T]
@@ -1199,7 +1199,7 @@ NewMapSet returns a new Set containing given values\.
 
 ## type [SyncMap](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L27-L29>)
 
-SyncMap is a Map implementation employing sync\.Map and is therefore GoRoutine safe\,
+SyncMap is a Map implementation employing sync\.Map and is therefore GoRoutine safe\.
 
 ```go
 type SyncMap[K any, V any] struct {

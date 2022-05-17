@@ -153,13 +153,15 @@ func (l *List[T]) Remove(e *ListElement[T]) T {
 	return e.Value
 }
 
-// SortBy sorts the List by the order of the lessThan function.
-func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) {
+// SortBy sorts the List by the order of the lessThan function. This is not a pure function, the List is sorted, the
+// List returned is to allow for fluid call chains.
+func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) *List[T] {
 	s := listSorter[T]{
 		List:  l,
 		order: lessThan,
 	}
 	sort.Sort(s)
+	return l
 }
 
 // Swap the Value of two elements in the List. If either index is not within the bounds of the List no action is taken.

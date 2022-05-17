@@ -133,12 +133,11 @@ func (s GSlice[T]) Random() T {
 	return s[random.Intn(s.Len())]
 }
 
-// SortBy copies a slice, sorts the copy applying the Order and returns it.
+// SortBy copies a slice, sorts the copy applying the Order and returns it. This is not a pure function, the GSlice
+// is sorted in place, the returned slice is to allow for fluid calls in chains.
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T] {
-	dst := make([]T, s.Len())
-	copy(dst, s)
-	slices.SortStableFunc(dst, lessThan)
-	return dst
+	slices.SortStableFunc(s, lessThan)
+	return s
 }
 
 // Swap two values in the slice.

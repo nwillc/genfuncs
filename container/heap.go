@@ -33,7 +33,10 @@ type Heap[T any] struct {
 
 // NewHeap return a heap ordered based on the compare and adds any values provided.
 func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T] {
-	h := &Heap[T]{compare: compare}
+	h := &Heap[T]{
+		compare: compare,
+		slice:   make(GSlice[T], 0, len(values)),
+	}
 	h.AddAll(values...)
 	return h
 }
