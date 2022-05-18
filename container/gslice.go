@@ -34,8 +34,9 @@ type GSlice[T any] []T
 
 // All returns true if all elements of slice match the predicate.
 func (s GSlice[T]) All(predicate genfuncs.Function[T, bool]) bool {
-	for _, e := range s {
-		if !predicate(e) {
+	length := s.Len()
+	for i := 0; i < length; i++ {
+		if !predicate(s[i]) {
 			return false
 		}
 	}
@@ -44,8 +45,9 @@ func (s GSlice[T]) All(predicate genfuncs.Function[T, bool]) bool {
 
 // Any returns true if any element of the slice matches the predicate.
 func (s GSlice[T]) Any(predicate genfuncs.Function[T, bool]) bool {
-	for _, e := range s {
-		if predicate(e) {
+	length := s.Len()
+	for i := 0; i < length; i++ {
+		if predicate(s[i]) {
 			return true
 		}
 	}
@@ -77,9 +79,10 @@ func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T] {
 
 // Find returns the first element matching the given predicate and true, or false when no such element was found.
 func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
-	for _, t := range s {
-		if predicate(t) {
-			return t, true
+	length := s.Len()
+	for i := 0; i < length; i++ {
+		if predicate(s[i]) {
+			return s[i], true
 		}
 	}
 	var t T
@@ -102,8 +105,9 @@ func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
 // ForEach element of the GSlice invoke given function with the element. Syntactic sugar for a range that intends to
 // traverse all the elements, i.e. no exiting midway through.
 func (s GSlice[T]) ForEach(action func(i int, t T)) {
-	for i, t := range s {
-		action(i, t)
+	length := s.Len()
+	for i := 0; i < length; i++ {
+		action(i, s[i])
 	}
 }
 
