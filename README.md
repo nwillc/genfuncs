@@ -16,18 +16,29 @@ based on Kotlin's Sequence and Map. Attempts were also made to introduce more po
 This package, while very usable, is primarily a proof-of-concept since it is likely Go will provide similar before
 long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
 
-General notes:
+## Code Style
+
+The coding style is not always idiomatic, in particular:
+
+ - All functions have named return values and those variable are used in the return statements.
+ - Some places where the `range` build-in could be used instead use explicit indexing.
+
+Both of these, while less idiomatic, were done because they measurably improve performance.
+
+## General notes:
  - A Map interface is provided to allow both Go's normal map and it's sync.Map to be used polymorphically.
  - The bias of these functions where appropriate is to be pure, without side effects, at the cost of copying data.
  - Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
 
+## License
+
 The code is under the [ISC License](https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
 
-# Requirements
+## Requirements
 
 Build with Go 1.18+
 
-# Getting
+## Getting
 
 ```bash
 go get github.com/nwillc/genfuncs
@@ -410,12 +421,13 @@ import "github.com/nwillc/genfuncs/container"
   - [func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool)](<#func-gslicet-find>)
   - [func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool)](<#func-gslicet-findlast>)
   - [func (s GSlice[T]) ForEach(action func(i int, t T))](<#func-gslicet-foreach>)
+  - [func (s GSlice[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool)](<#func-gslicet-issorted>)
   - [func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string](<#func-gslicet-jointostring>)
   - [func (s GSlice[T]) Len() int](<#func-gslicet-len>)
-  - [func (s GSlice[T]) Random() T](<#func-gslicet-random>)
-  - [func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]](<#func-gslicet-sortby>)
+  - [func (s GSlice[T]) Random() (t T)](<#func-gslicet-random>)
+  - [func (s GSlice[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (sorted GSlice[T])](<#func-gslicet-sortby>)
   - [func (s GSlice[T]) Swap(i, j int)](<#func-gslicet-swap>)
-  - [func (s GSlice[T]) Values() GSlice[T]](<#func-gslicet-values>)
+  - [func (s GSlice[T]) Values() (values GSlice[T])](<#func-gslicet-values>)
 - [type HasValues](<#type-hasvalues>)
 - [type Heap](<#type-heap>)
   - [func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) (heap *Heap[T])](<#func-newheap>)
@@ -426,23 +438,23 @@ import "github.com/nwillc/genfuncs/container"
   - [func (h *Heap[T]) Remove() (value T)](<#func-heapt-remove>)
   - [func (h *Heap[T]) Values() (values GSlice[T])](<#func-heapt-values>)
 - [type List](<#type-list>)
-  - [func NewList[T any](values ...T) *List[T]](<#func-newlist>)
+  - [func NewList[T any](values ...T) (l *List[T])](<#func-newlist>)
   - [func (l *List[T]) Add(value T)](<#func-listt-add>)
   - [func (l *List[T]) AddAll(values ...T)](<#func-listt-addall>)
-  - [func (l *List[T]) AddLeft(value T) *ListElement[T]](<#func-listt-addleft>)
-  - [func (l *List[T]) AddRight(v T) *ListElement[T]](<#func-listt-addright>)
+  - [func (l *List[T]) AddLeft(value T) (e *ListElement[T])](<#func-listt-addleft>)
+  - [func (l *List[T]) AddRight(v T) (e *ListElement[T])](<#func-listt-addright>)
   - [func (l *List[T]) ForEach(action func(value T))](<#func-listt-foreach>)
-  - [func (l *List[T]) Get(index int) *ListElement[T]](<#func-listt-get>)
-  - [func (l *List[T]) Len() int](<#func-listt-len>)
-  - [func (l *List[T]) PeekLeft() *ListElement[T]](<#func-listt-peekleft>)
-  - [func (l *List[T]) PeekRight() *ListElement[T]](<#func-listt-peekright>)
-  - [func (l *List[T]) Remove(e *ListElement[T]) T](<#func-listt-remove>)
-  - [func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) *List[T]](<#func-listt-sortby>)
-  - [func (l *List[T]) Swap(i, j int)](<#func-listt-swap>)
-  - [func (l *List[T]) Values() GSlice[T]](<#func-listt-values>)
+  - [func (l *List[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool)](<#func-listt-issorted>)
+  - [func (l *List[T]) Len() (length int)](<#func-listt-len>)
+  - [func (l *List[T]) PeekLeft() (e *ListElement[T])](<#func-listt-peekleft>)
+  - [func (l *List[T]) PeekRight() (e *ListElement[T])](<#func-listt-peekright>)
+  - [func (l *List[T]) Remove(e *ListElement[T]) (t T)](<#func-listt-remove>)
+  - [func (l *List[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (result *List[T])](<#func-listt-sortby>)
+  - [func (l *List[T]) Values() (values GSlice[T])](<#func-listt-values>)
 - [type ListElement](<#type-listelement>)
-  - [func (e *ListElement[T]) Next() (n *ListElement[T])](<#func-listelementt-next>)
-  - [func (e *ListElement[T]) Prev() (p *ListElement[T])](<#func-listelementt-prev>)
+  - [func (e *ListElement[T]) Next() (next *ListElement[T])](<#func-listelementt-next>)
+  - [func (e *ListElement[T]) Prev() (prev *ListElement[T])](<#func-listelementt-prev>)
+  - [func (e *ListElement[T]) Swap(e2 *ListElement[T])](<#func-listelementt-swap>)
 - [type Map](<#type-map>)
 - [type MapSet](<#type-mapset>)
   - [func (h *MapSet[T]) Add(t T)](<#func-mapsett-add>)
@@ -781,6 +793,14 @@ func (s GSlice[T]) ForEach(action func(i int, t T))
 
 ForEach element of the GSlice invoke given function with the element\. Syntactic sugar for a range that intends to traverse all the elements\, i\.e\. no exiting midway through\.
 
+### func \(GSlice\[T\]\) [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L131>)
+
+```go
+func (s GSlice[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool)
+```
+
+IsSorted returns true if the GSlice is sorted by order\.
+
 ### func \(GSlice\[T\]\) [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L116>)
 
 ```go
@@ -789,7 +809,7 @@ func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string,
 
 JoinToString creates a string from all the elements using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
 
-### func \(GSlice\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L131>)
+### func \(GSlice\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L137>)
 
 ```go
 func (s GSlice[T]) Len() int
@@ -797,23 +817,23 @@ func (s GSlice[T]) Len() int
 
 Len is the number of elements in the GSlice\.
 
-### func \(GSlice\[T\]\) [Random](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L136>)
+### func \(GSlice\[T\]\) [Random](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L142>)
 
 ```go
-func (s GSlice[T]) Random() T
+func (s GSlice[T]) Random() (t T)
 ```
 
 Random returns a random element of the GSlice\.
 
-### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L142>)
+### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L149>)
 
 ```go
-func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T]
+func (s GSlice[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (sorted GSlice[T])
 ```
 
 SortBy copies a slice\, sorts the copy applying the Ordered and returns it\. This is not a pure function\, the GSlice is sorted in place\, the returned slice is to allow for fluid calls in chains\.
 
-### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L148>)
+### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L156>)
 
 ```go
 func (s GSlice[T]) Swap(i, j int)
@@ -821,10 +841,10 @@ func (s GSlice[T]) Swap(i, j int)
 
 Swap two values in the slice\.
 
-### func \(GSlice\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L153>)
+### func \(GSlice\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L161>)
 
 ```go
-func (s GSlice[T]) Values() GSlice[T]
+func (s GSlice[T]) Values() (values GSlice[T])
 ```
 
 Values is the GSlice itself\.
@@ -938,7 +958,7 @@ func (h *Heap[T]) Values() (values GSlice[T])
 
 Values returns a slice of the values in the Heap in no particular order\.
 
-## type [List](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L57-L60>)
+## type [List](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L62-L65>)
 
 List is a doubly linked list\, inspired by list\.List but reworked to be generic\. List implements Container\.
 
@@ -948,15 +968,15 @@ type List[T any] struct {
 }
 ```
 
-### func [NewList](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L63>)
+### func [NewList](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L68>)
 
 ```go
-func NewList[T any](values ...T) *List[T]
+func NewList[T any](values ...T) (l *List[T])
 ```
 
 NewList instantiates a new List containing any values provided\.
 
-### func \(\*List\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L73>)
+### func \(\*List\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L78>)
 
 ```go
 func (l *List[T]) Add(value T)
@@ -964,7 +984,7 @@ func (l *List[T]) Add(value T)
 
 Add a value to the right of the List\.
 
-### func \(\*List\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L78>)
+### func \(\*List\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L83>)
 
 ```go
 func (l *List[T]) AddAll(values ...T)
@@ -972,23 +992,23 @@ func (l *List[T]) AddAll(values ...T)
 
 AddAll values to the right of the List\.
 
-### func \(\*List\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L85>)
+### func \(\*List\[T\]\) [AddLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L93>)
 
 ```go
-func (l *List[T]) AddLeft(value T) *ListElement[T]
+func (l *List[T]) AddLeft(value T) (e *ListElement[T])
 ```
 
 AddLeft adds a value to the left of the List\.
 
-### func \(\*List\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L90>)
+### func \(\*List\[T\]\) [AddRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L99>)
 
 ```go
-func (l *List[T]) AddRight(v T) *ListElement[T]
+func (l *List[T]) AddRight(v T) (e *ListElement[T])
 ```
 
 AddRight adds a value to the right of the List\.
 
-### func \(\*List\[T\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L95>)
+### func \(\*List\[T\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L105>)
 
 ```go
 func (l *List[T]) ForEach(action func(value T))
@@ -996,71 +1016,63 @@ func (l *List[T]) ForEach(action func(value T))
 
 ForEach invokes the action for each value in the list\.
 
-### func \(\*List\[T\]\) [Get](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L103>)
+### func \(\*List\[T\]\) [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L112>)
 
 ```go
-func (l *List[T]) Get(index int) *ListElement[T]
+func (l *List[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool)
 ```
 
-Get returns the ListElement at index\. This traverses all the ListElement from the end nearest the index\. If index is not within the bounds of the list nil is returned\.
+IsSorted returns true if the List is sorted by order\.
 
-### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L130>)
+### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L126>)
 
 ```go
-func (l *List[T]) Len() int
+func (l *List[T]) Len() (length int)
 ```
 
 Len returns the number of values in the List\.
 
-### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L135>)
+### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L132>)
 
 ```go
-func (l *List[T]) PeekLeft() *ListElement[T]
+func (l *List[T]) PeekLeft() (e *ListElement[T])
 ```
 
 PeekLeft returns the leftmost value in the List or nil if empty\.
 
-### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L143>)
+### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L140>)
 
 ```go
-func (l *List[T]) PeekRight() *ListElement[T]
+func (l *List[T]) PeekRight() (e *ListElement[T])
 ```
 
 PeekRight returns the rightmost value in the List or nil if empty\.
 
-### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L151>)
+### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L148>)
 
 ```go
-func (l *List[T]) Remove(e *ListElement[T]) T
+func (l *List[T]) Remove(e *ListElement[T]) (t T)
 ```
 
 Remove removes a given value from the List\.
 
-### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L160>)
+### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L158>)
 
 ```go
-func (l *List[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) *List[T]
+func (l *List[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (result *List[T])
 ```
 
-SortBy sorts the List by the order of the lessThan function\. This is not a pure function\, the List is sorted\, the List returned is to allow for fluid call chains\.
+SortBy sorts the List by the order of the order function\. This is not a pure function\, the List is sorted\, the List returned is to allow for fluid call chains\. List does not provide efficient indexed access so a Bubble sort is employed\.
 
-### func \(\*List\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L170>)
-
-```go
-func (l *List[T]) Swap(i, j int)
-```
-
-Swap the Value of two elements in the List\. If either index is not within the bounds of the List no action is taken\.
-
-### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L180>)
+### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L165>)
 
 ```go
-func (l *List[T]) Values() GSlice[T]
+func (l *List[T]) Values() (values GSlice[T])
 ```
 
 Values returns the values in the list as a GSlice\.
 
-## type [ListElement](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L32-L36>)
+## type [ListElement](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L29-L33>)
 
 ListElement is an element of List\.
 
@@ -1071,21 +1083,29 @@ type ListElement[T any] struct {
 }
 ```
 
-### func \(\*ListElement\[T\]\) [Next](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L39>)
+### func \(\*ListElement\[T\]\) [Next](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L36>)
 
 ```go
-func (e *ListElement[T]) Next() (n *ListElement[T])
+func (e *ListElement[T]) Next() (next *ListElement[T])
 ```
 
 Next returns the next list element or nil\.
 
-### func \(\*ListElement\[T\]\) [Prev](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L48>)
+### func \(\*ListElement\[T\]\) [Prev](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L45>)
 
 ```go
-func (e *ListElement[T]) Prev() (p *ListElement[T])
+func (e *ListElement[T]) Prev() (prev *ListElement[T])
 ```
 
 Prev returns the previous list element or nil\.
+
+### func \(\*ListElement\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L54>)
+
+```go
+func (e *ListElement[T]) Swap(e2 *ListElement[T])
+```
+
+Swap the values of two ListElements\.
 
 ## type [Map](<https://github.com/nwillc/genfuncs/blob/master/container/map.go#L20-L28>)
 
@@ -1637,7 +1657,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.14.0"
+const Version = "v0.14.1"
 ```
 
 
