@@ -66,7 +66,7 @@ import "github.com/nwillc/genfuncs"
 - [type MapKeyValueFor](<#type-mapkeyvaluefor>)
 - [type MapValueFor](<#type-mapvaluefor>)
 - [type ToString](<#type-tostring>)
-  - [func StringerToString[T fmt.Stringer]() (fn ToString[T])](<#func-stringertostring>)
+  - [func StringerToString[T fmt.Stringer]\(\) (fn ToString[T])](<#func-stringertostring>)
 
 
 ## Variables
