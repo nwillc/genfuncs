@@ -36,9 +36,9 @@ var (
 )
 
 // OrderedEqual returns true jf a is ordered equal to b.
-func OrderedEqual[O constraints.Ordered](a, b O) (orderedEqualToo bool) {
-	orderedEqualToo = Ordered(a, b) == EqualTo
-	return orderedEqualToo
+func OrderedEqual[O constraints.Ordered](a, b O) (orderedEqualTo bool) {
+	orderedEqualTo = Ordered(a, b) == EqualTo
+	return orderedEqualTo
 }
 
 // OrderedEqualTo return a function that returns true if its argument is ordered equal to a.

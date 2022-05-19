@@ -127,21 +127,29 @@ func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string,
 	return sb.String()
 }
 
+// IsSorted returns true if the GSlice is sorted by order.
+func (s GSlice[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool) {
+	ok = slices.IsSortedFunc(s, order)
+	return ok
+}
+
 // Len is the number of elements in the GSlice.
 func (s GSlice[T]) Len() int {
 	return len(s)
 }
 
 // Random returns a random element of the GSlice.
-func (s GSlice[T]) Random() T {
-	return s[random.Intn(s.Len())]
+func (s GSlice[T]) Random() (t T) {
+	t = s[random.Intn(s.Len())]
+	return t
 }
 
 // SortBy copies a slice, sorts the copy applying the Ordered and returns it. This is not a pure function, the GSlice
 // is sorted in place, the returned slice is to allow for fluid calls in chains.
-func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T] {
-	slices.SortStableFunc(s, lessThan)
-	return s
+func (s GSlice[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (sorted GSlice[T]) {
+	slices.SortStableFunc(s, order)
+	sorted = s
+	return sorted
 }
 
 // Swap two values in the slice.
@@ -150,6 +158,7 @@ func (s GSlice[T]) Swap(i, j int) {
 }
 
 // Values is the GSlice itself.
-func (s GSlice[T]) Values() GSlice[T] {
-	return s
+func (s GSlice[T]) Values() (values GSlice[T]) {
+	values = s
+	return values
 }

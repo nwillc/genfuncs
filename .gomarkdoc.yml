@@ -17,19 +17,30 @@ header: |+
   based on Kotlin's Sequence and Map. Attempts were also made to introduce more polymorphism into Go's containers.
   This package, while very usable, is primarily a proof-of-concept since it is likely Go will provide similar before
   long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
+
+  ## Code Style
+
+  The coding style is not always idiomatic, in particular:
+
+   - All functions have named return values and those variable are used in the return statements.
+   - Some places where the `range` build-in could be used instead use explicit indexing.
+
+  Both of these, while less idiomatic, were done because they measurably improve performance.
   
-  General notes:
+  ## General notes:
    - A Map interface is provided to allow both Go's normal map and it's sync.Map to be used polymorphically.
    - The bias of these functions where appropriate is to be pure, without side effects, at the cost of copying data.
    - Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
-  
+
+  ## License
+
   The code is under the [ISC License](https://github.com/nwillc/genfuncs/blob/master/LICENSE.md).
   
-  # Requirements
+  ## Requirements
   
   Build with Go 1.18+
   
-  # Getting
+  ## Getting
   
   ```bash
   go get github.com/nwillc/genfuncs

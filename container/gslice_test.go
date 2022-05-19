@@ -392,7 +392,6 @@ func TestSortBy(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []string
 	}{
 		{
 			name: "Empty",
@@ -400,7 +399,6 @@ func TestSortBy(t *testing.T) {
 				slice:      []string{},
 				comparator: genfuncs.OrderedLess[string],
 			},
-			want: []string{},
 		},
 		{
 			name: "Single",
@@ -408,7 +406,6 @@ func TestSortBy(t *testing.T) {
 				slice:      []string{"a"},
 				comparator: genfuncs.OrderedLess[string],
 			},
-			want: []string{"a"},
 		},
 		{
 			name: "Double",
@@ -416,7 +413,6 @@ func TestSortBy(t *testing.T) {
 				slice:      []string{"a", "b"},
 				comparator: genfuncs.OrderedLess[string],
 			},
-			want: []string{"a", "b"},
 		},
 		{
 			name: "Double Reverse",
@@ -424,7 +420,6 @@ func TestSortBy(t *testing.T) {
 				slice:      []string{"a", "b"},
 				comparator: genfuncs.OrderedGreater[string],
 			},
-			want: []string{"b", "a"},
 		},
 		{
 			name: "Min Max",
@@ -432,7 +427,6 @@ func TestSortBy(t *testing.T) {
 				slice:      letters,
 				comparator: genfuncs.OrderedLess[string],
 			},
-			want: []string{"e", "s", "t", "t"},
 		},
 		{
 			name: "Max Min",
@@ -440,7 +434,6 @@ func TestSortBy(t *testing.T) {
 				slice:      letters,
 				comparator: genfuncs.OrderedGreater[string],
 			},
-			want: []string{"t", "t", "s", "e"},
 		},
 		{
 			name: "More than 12",
@@ -448,7 +441,6 @@ func TestSortBy(t *testing.T) {
 				slice:      alphabet,
 				comparator: genfuncs.OrderedLess[string],
 			},
-			want: alphabet,
 		},
 		{
 			name: "Test duplicates",
@@ -456,21 +448,17 @@ func TestSortBy(t *testing.T) {
 				slice:      []string{"d", "z", "d", "a", "d", "a", "d", "a", "d", "a", "a"},
 				comparator: genfuncs.OrderedLess[string],
 			},
-			want: []string{"a", "a", "a", "a", "a", "d", "d", "d", "d", "d", "z"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dst := tt.args.slice.SortBy(tt.args.comparator)
-			assert.Equal(t, len(tt.want), dst.Len())
-			for i := 0; i < len(tt.want); i++ {
-				assert.Equal(t, tt.want[i], dst[i], "failed position %d", i)
-			}
+			tt.args.slice.SortBy(tt.args.comparator)
+			assert.True(t, tt.args.slice.IsSorted(tt.args.comparator))
 		})
 	}
 }
 
-func TestRandomSorts(t *testing.T) {
+func TestGSliceRandomSorts(t *testing.T) {
 	random := rand.New(rand.NewSource(time.Now().Unix()))
 	passes := 20
 

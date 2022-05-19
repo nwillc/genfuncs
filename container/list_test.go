@@ -20,7 +20,9 @@ import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 func TestNewList(t *testing.T) {
@@ -105,64 +107,6 @@ func TestElement_NextPrev(t *testing.T) {
 	assert.Nil(t, right.Next())
 }
 
-func TestList_Get(t *testing.T) {
-	l := container.NewList[int](1, 2, 7, 0)
-	type args struct {
-		index int
-	}
-	tests := []struct {
-		name string
-		args args
-		want *container.ListElement[int]
-	}{
-		{
-			name: "Negative index",
-			args: args{
-				index: -1,
-			},
-			want: nil,
-		},
-		{
-			name: "too large index",
-			args: args{
-				index: 10,
-			},
-			want: nil,
-		},
-		{
-			name: "first",
-			args: args{
-				index: 0,
-			},
-			want: &container.ListElement[int]{Value: 1},
-		},
-		{
-			name: "last",
-			args: args{
-				index: 3,
-			},
-			want: &container.ListElement[int]{Value: 0},
-		},
-		{
-			name: "in middle",
-			args: args{
-				index: 2,
-			},
-			want: &container.ListElement[int]{Value: 7},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			e := l.Get(tt.args.index)
-			if tt.want == nil {
-				assert.Nil(t, e)
-				return
-			}
-			assert.Equal(t, tt.want.Value, e.Value)
-		})
-	}
-}
-
 func TestList_SortBy(t *testing.T) {
 	type args struct {
 		list  *container.List[int]
@@ -215,14 +159,78 @@ func TestList_SortBy(t *testing.T) {
 	}
 }
 
-func TestList_Swap(t *testing.T) {
-	l := container.NewList[int](1, 2)
-	assert.Equal(t, 1, l.PeekLeft().Value)
-	assert.Equal(t, 2, l.PeekRight().Value)
-	l.Swap(0, 1)
-	assert.Equal(t, 2, l.PeekLeft().Value)
-	assert.Equal(t, 1, l.PeekRight().Value)
-	l.Swap(-1, 1)
-	assert.Equal(t, 2, l.PeekLeft().Value)
-	assert.Equal(t, 1, l.PeekRight().Value)
+func TestList_RandomSorts(t *testing.T) {
+	random := rand.New(rand.NewSource(time.Now().Unix()))
+	passes := 10
+
+	type args struct {
+		count int
+	}
+
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "One",
+			args: args{
+				count: 1,
+			},
+		},
+		{
+			name: "Two",
+			args: args{
+				count: 2,
+			},
+		},
+		{
+			name: "Three",
+			args: args{
+				count: 3,
+			},
+		},
+		{
+			name: "Four",
+			args: args{
+				count: 4,
+			},
+		},
+		{
+			name: "Medium",
+			args: args{
+				count: 16,
+			},
+		},
+		{
+			name: "Large",
+			args: args{
+				count: 64,
+			},
+		},
+		{
+			name: "Larger",
+			args: args{
+				count: 4096,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for pass := passes; pass > 0; pass-- {
+				count := tt.args.count + random.Intn(tt.args.count)
+				numbers := container.NewList[int]()
+				for i := 0; i < count; i++ {
+					numbers.Add(random.Int() % 10)
+				}
+				numbers.SortBy(genfuncs.OrderedLess[int])
+				assert.True(t, numbers.IsSorted(genfuncs.OrderedLess[int]))
+				for i := 0; i < count; i++ {
+					numbers.Add(random.Int())
+				}
+				numbers = numbers.SortBy(genfuncs.OrderedGreater[int])
+				assert.True(t, numbers.IsSorted(genfuncs.OrderedGreater[int]))
+			}
+		})
+	}
 }
