@@ -28,29 +28,31 @@ var _ Map[int, int] = (GMap[int, int])(nil)
 type GMap[K comparable, V any] map[K]V
 
 // All returns true if all values in GMap satisfy the predicate.
-func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) bool {
+func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) (ok bool) {
 	for _, v := range m {
 		if !predicate(v) {
-			return false
+			return ok
 		}
 	}
-	return true
+	ok = true
+	return ok
 }
 
 // Any returns true if any values in GMap satisfy the predicate.
-func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) bool {
+func (m GMap[K, V]) Any(predicate genfuncs.Function[V, bool]) (ok bool) {
 	for _, v := range m {
 		if predicate(v) {
-			return true
+			ok = true
+			return ok
 		}
 	}
-	return false
+	return ok
 }
 
 // Contains returns true if the GMap contains the given key.
-func (m GMap[K, V]) Contains(key K) bool {
-	_, ok := m[key]
-	return ok
+func (m GMap[K, V]) Contains(key K) (isTrue bool) {
+	_, isTrue = m[key]
+	return isTrue
 }
 
 // Delete an entry in the GMap.
@@ -59,8 +61,8 @@ func (m GMap[K, V]) Delete(key K) {
 }
 
 // Filter a GMap by a predicate, returning a new GMap that contains only values that satisfy the predicate.
-func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) GMap[K, V] {
-	result := make(GMap[K, V])
+func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) (result GMap[K, V]) {
+	result = make(GMap[K, V])
 	for k, v := range m {
 		if !predicate(v) {
 			continue
@@ -71,8 +73,8 @@ func (m GMap[K, V]) Filter(predicate genfuncs.Function[V, bool]) GMap[K, V] {
 }
 
 // FilterKeys returns a new GMap that contains only values whose key satisfy the predicate.
-func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) GMap[K, V] {
-	result := make(GMap[K, V])
+func (m GMap[K, V]) FilterKeys(predicate genfuncs.Function[K, bool]) (result GMap[K, V]) {
+	result = make(GMap[K, V])
 	for k, v := range m {
 		if !predicate(k) {
 			continue
@@ -96,22 +98,26 @@ func (m GMap[K, V]) Get(key K) (v V, ok bool) {
 }
 
 // GetOrElse returns the value at the given key if it exists or returns the result of defaultValue.
-func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) V {
-	v, ok := m[k]
-	if !ok {
-		return defaultValue()
+func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) (value V) {
+	ok := false
+	value, ok = m[k]
+	if ok {
+		return value
 	}
-	return v
+	value = defaultValue()
+	return value
 }
 
 // Keys return a GSlice containing the keys of the GMap.
-func (m GMap[K, V]) Keys() GSlice[K] {
-	return maps.Keys(m)
+func (m GMap[K, V]) Keys() (keys GSlice[K]) {
+	keys = maps.Keys(m)
+	return keys
 }
 
 // Len is the number of elements in the GMap.
-func (m GMap[K, V]) Len() int {
-	return len(m)
+func (m GMap[K, V]) Len() (length int) {
+	length = len(m)
+	return length
 }
 
 // Put a key and value in the Map.
@@ -120,6 +126,7 @@ func (m GMap[K, V]) Put(key K, value V) {
 }
 
 // Values returns a GSlice of all the values in the GMap.
-func (m GMap[K, V]) Values() GSlice[V] {
-	return maps.Values(m)
+func (m GMap[K, V]) Values() (values GSlice[V]) {
+	values = maps.Values(m)
+	return values
 }

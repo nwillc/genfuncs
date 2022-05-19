@@ -23,54 +23,60 @@ import (
 
 var (
 	// Orderings
-	OrderedLess    = -1
-	OrderedEqual   = 0
-	OrderedGreater = 1
+	LessThan    = -1
+	EqualTo     = 0
+	GreaterThan = 1
 
 	// Predicates
-	IsBlank    = IsEqualOrdered("")
+	IsBlank    = OrderedEqualTo("")
 	IsNotBlank = Not(IsBlank)
-	F32IsZero  = IsEqualOrdered(float32(0.0))
-	F64IsZero  = IsEqualOrdered(0.0)
-	IIsZero    = IsEqualOrdered(0)
+	F32IsZero  = OrderedEqualTo(float32(0.0))
+	F64IsZero  = OrderedEqualTo(0.0)
+	IIsZero    = OrderedEqualTo(0)
 )
 
-// EqualOrder tests if constraints.Ordered a equal to b.
-func EqualOrder[O constraints.Ordered](a, b O) bool {
-	return Order(a, b) == OrderedEqual
+// OrderedEqual returns true jf a is ordered equal to b.
+func OrderedEqual[O constraints.Ordered](a, b O) (orderedEqualToo bool) {
+	orderedEqualToo = Ordered(a, b) == EqualTo
+	return orderedEqualToo
 }
 
-// IsEqualOrdered return a EqualOrder for a.
-func IsEqualOrdered[O constraints.Ordered](a O) Function[O, bool] {
-	return Curried[O, bool](EqualOrder[O], a)
+// OrderedEqualTo return a function that returns true if its argument is ordered equal to a.
+func OrderedEqualTo[O constraints.Ordered](a O) (fn Function[O, bool]) {
+	fn = Curried[O, bool](OrderedEqual[O], a)
+	return fn
 }
 
-// GreaterOrdered tests if constraints.Ordered a is greater than b.
-func GreaterOrdered[O constraints.Ordered](a, b O) bool {
-	return Order(a, b) == OrderedGreater
+// OrderedGreater returns true if a is ordered greater than b.
+func OrderedGreater[O constraints.Ordered](a, b O) (orderedGreaterThan bool) {
+	orderedGreaterThan = Ordered(a, b) == GreaterThan
+	return orderedGreaterThan
 }
 
-// IsGreaterOrdered returns a function that returns true if its argument is greater than a.
-func IsGreaterOrdered[O constraints.Ordered](a O) Function[O, bool] {
-	return Curried[O, bool](GreaterOrdered[O], a)
+// OrderedGreaterThan returns a function that returns true if its argument is ordered greater than a.
+func OrderedGreaterThan[O constraints.Ordered](a O) (fn Function[O, bool]) {
+	fn = Curried[O, bool](OrderedGreater[O], a)
+	return fn
 }
 
-// LessOrdered tests if constraints.Ordered a is less than b.
-func LessOrdered[O constraints.Ordered](a, b O) bool {
-	return Order(a, b) == OrderedLess
+// OrderedLess returns true if a is ordered less than b.
+func OrderedLess[O constraints.Ordered](a, b O) (orderedLess bool) {
+	orderedLess = Ordered(a, b) == LessThan
+	return orderedLess
 }
 
-// IsLessOrdered returns a function that returns true if its argument is less than a.
-func IsLessOrdered[O constraints.Ordered](a O) Function[O, bool] {
-	return Curried[O, bool](LessOrdered[O], a)
+// OrderedLessThan returns a function that returns true if its argument is ordered less than a.
+func OrderedLessThan[O constraints.Ordered](a O) (fn Function[O, bool]) {
+	fn = Curried[O, bool](OrderedLess[O], a)
+	return fn
 }
 
 // Max returns max value one or more constraints.Ordered values,
-func Max[T constraints.Ordered](v ...T) T {
+func Max[T constraints.Ordered](v ...T) (max T) {
 	if len(v) == 0 {
 		panic(fmt.Errorf("%w: at leat one value required", IllegalArguments))
 	}
-	max := v[0]
+	max = v[0]
 	for _, val := range v {
 		if val > max {
 			max = val
@@ -80,11 +86,11 @@ func Max[T constraints.Ordered](v ...T) T {
 }
 
 // Min returns min value of one or more constraints.Ordered values,
-func Min[T constraints.Ordered](v ...T) T {
+func Min[T constraints.Ordered](v ...T) (min T) {
 	if len(v) == 0 {
 		panic(fmt.Errorf("%w: at leat one value required", IllegalArguments))
 	}
-	min := v[0]
+	min = v[0]
 	for _, val := range v {
 		if val < min {
 			min = val
@@ -94,35 +100,40 @@ func Min[T constraints.Ordered](v ...T) T {
 }
 
 // StringerToString creates a ToString for any type that implements fmt.Stringer.
-func StringerToString[T fmt.Stringer]() ToString[T] {
-	return func(t T) string { return t.String() }
+func StringerToString[T fmt.Stringer]() (fn ToString[T]) {
+	fn = func(t T) string { return t.String() }
+	return fn
 }
 
 // TransformArgs uses the function to transform the arguments to be passed to the operation.
-func TransformArgs[T1, T2, R any](transform Function[T1, T2], operation BiFunction[T2, T2, R]) BiFunction[T1, T1, R] {
-	return func(a, b T1) R {
+func TransformArgs[T1, T2, R any](transform Function[T1, T2], operation BiFunction[T2, T2, R]) (fn BiFunction[T1, T1, R]) {
+	fn = func(a, b T1) R {
 		return operation(transform(a), transform(b))
 	}
+	return fn
 }
 
 // Curried takes a BiFunction and one argument, and Curries the function to return a single argument Function.
-func Curried[A, R any](operation BiFunction[A, A, R], a A) Function[A, R] {
-	return func(b A) R { return operation(b, a) }
+func Curried[A, R any](operation BiFunction[A, A, R], a A) (fn Function[A, R]) {
+	fn = func(b A) R { return operation(b, a) }
+	return fn
 }
 
 // Not takes a predicate returning and inverts the result.
-func Not[T any](predicate Function[T, bool]) Function[T, bool] {
-	return func(a T) bool { return !predicate(a) }
+func Not[T any](predicate Function[T, bool]) (fn Function[T, bool]) {
+	fn = func(a T) bool { return !predicate(a) }
+	return fn
 }
 
-// Order old school -1/0/1 order of constraints.Ordered.
-func Order[T constraints.Ordered](a, b T) int {
+// Ordered performs old school -1/0/1 comparison of constraints.Ordered arguments.
+func Ordered[T constraints.Ordered](a, b T) (order int) {
 	switch {
 	case a < b:
-		return OrderedLess
+		order = LessThan
 	case a > b:
-		return OrderedGreater
+		order = GreaterThan
 	default:
-		return OrderedEqual
+		order = EqualTo
 	}
+	return order
 }

@@ -24,7 +24,7 @@ import (
 	"testing"
 )
 
-var greaterThanZero = genfuncs.IsGreaterOrdered(0)
+var isGreaterThanZero = genfuncs.OrderedGreaterThan(0)
 var wordPositions = container.GMap[string, int]{"hello": 1, "world": 2}
 var words container.GSlice[string] = []string{"hello", "world"}
 
@@ -54,7 +54,7 @@ func ExampleGMap_Contains() {
 }
 
 func ExampleGMap_Keys() {
-	fmt.Println(wordPositions.Keys().SortBy(genfuncs.LessOrdered[string]))
+	fmt.Println(wordPositions.Keys().SortBy(genfuncs.OrderedLess[string]))
 	// Output: [hello world]
 }
 
@@ -67,13 +67,13 @@ func ExampleGMap_Values() {
 
 func ExampleGSlice_All() {
 	var numbers container.GSlice[int] = []int{1, 2, 3, 4}
-	fmt.Println(numbers.All(greaterThanZero))
+	fmt.Println(numbers.All(isGreaterThanZero))
 	// Output: true
 }
 
 func ExampleGSlice_Any() {
 	var fruits container.GSlice[string] = []string{"apple", "banana", "grape"}
-	isPear := genfuncs.IsEqualOrdered("pear")
+	isPear := genfuncs.OrderedEqualTo("pear")
 	fmt.Println(fruits.Any(isPear))
 	fmt.Println(fruits.Any(genfuncs.Not(isPear)))
 	// Output:
@@ -83,7 +83,7 @@ func ExampleGSlice_Any() {
 
 func ExampleGSlice_Filter() {
 	var values container.GSlice[int] = []int{1, -2, 2, -3}
-	values.Filter(greaterThanZero).ForEach(func(_, i int) {
+	values.Filter(isGreaterThanZero).ForEach(func(_, i int) {
 		fmt.Println(i)
 	})
 	// Unordered Output:
@@ -93,19 +93,19 @@ func ExampleGSlice_Filter() {
 
 func ExampleGSlice_Find() {
 	var values container.GSlice[int] = []int{-1, -2, 2, -3}
-	fmt.Println(values.Find(greaterThanZero))
+	fmt.Println(values.Find(isGreaterThanZero))
 	// Output: 2 true
 }
 
 func ExampleGSlice_FindLast() {
 	var values container.GSlice[int] = []int{-1, -2, 2, 3}
-	fmt.Println(values.FindLast(greaterThanZero))
+	fmt.Println(values.FindLast(isGreaterThanZero))
 	// Output: 3 true
 }
 
 func ExampleGSlice_JoinToString() {
 	var toString genfuncs.ToString[string] = func(s string) string { return s }
-	fmt.Println(words.SortBy(genfuncs.LessOrdered[string]).JoinToString(
+	fmt.Println(words.SortBy(genfuncs.OrderedLess[string]).JoinToString(
 		toString,
 		" ",
 		"> ",
@@ -117,14 +117,14 @@ func ExampleGSlice_JoinToString() {
 func ExampleGSlice_SortBy() {
 	var numbers container.GSlice[int] = []int{1, 0, 9, 6, 0}
 	fmt.Println(numbers)
-	fmt.Println(numbers.SortBy(genfuncs.LessOrdered[int]))
+	fmt.Println(numbers.SortBy(genfuncs.OrderedLess[int]))
 	// Output:
 	// [1 0 9 6 0]
 	// [0 0 1 6 9]
 }
 
 func ExampleGSlice_Swap() {
-	words = words.SortBy(genfuncs.LessOrdered[string])
+	words = words.SortBy(genfuncs.OrderedLess[string])
 	words.Swap(0, 1)
 	fmt.Println(words)
 	// Output: [world hello]

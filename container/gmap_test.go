@@ -152,8 +152,8 @@ func TestGMap_Filter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			filtered := m.Filter(genfuncs.IsGreaterOrdered(tt.args.greaterThan)).Values().SortBy(genfuncs.LessOrdered[string])
-			assert.True(t, filtered.Equal(tt.want, genfuncs.Order[string]))
+			filtered := m.Filter(genfuncs.OrderedGreaterThan(tt.args.greaterThan)).Values().SortBy(genfuncs.OrderedLess[string])
+			assert.True(t, filtered.Equal(tt.want, genfuncs.Ordered[string]))
 		})
 	}
 }
@@ -192,8 +192,8 @@ func TestGMap_FilterKeys(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			filtered := m.FilterKeys(genfuncs.IsGreaterOrdered(tt.args.greaterThan)).Values().SortBy(genfuncs.LessOrdered[string])
-			assert.True(t, filtered.Equal(tt.want, genfuncs.Order[string]))
+			filtered := m.FilterKeys(genfuncs.OrderedGreaterThan(tt.args.greaterThan)).Values().SortBy(genfuncs.OrderedLess[string])
+			assert.True(t, filtered.Equal(tt.want, genfuncs.Ordered[string]))
 		})
 	}
 }
@@ -228,7 +228,7 @@ func TestGMap_All(t *testing.T) {
 		{
 			name: "some",
 			args: args{
-				predicate: genfuncs.IsEqualOrdered("a"),
+				predicate: genfuncs.OrderedEqualTo("a"),
 				m:         m,
 			},
 			want: false,
@@ -236,7 +236,7 @@ func TestGMap_All(t *testing.T) {
 		{
 			name: "none",
 			args: args{
-				predicate: genfuncs.IsEqualOrdered("z"),
+				predicate: genfuncs.OrderedEqualTo("z"),
 				m:         m,
 			},
 			want: false,
@@ -279,7 +279,7 @@ func TestGMap_Any(t *testing.T) {
 		{
 			name: "some",
 			args: args{
-				predicate: genfuncs.IsEqualOrdered("a"),
+				predicate: genfuncs.OrderedEqualTo("a"),
 				m:         m,
 			},
 			want: true,
@@ -287,7 +287,7 @@ func TestGMap_Any(t *testing.T) {
 		{
 			name: "none",
 			args: args{
-				predicate: genfuncs.IsEqualOrdered("z"),
+				predicate: genfuncs.OrderedEqualTo("z"),
 				m:         m,
 			},
 			want: false,

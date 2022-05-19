@@ -66,7 +66,7 @@ func ExampleStringerToString() {
 
 func ExampleTransformArgs() {
 	var unixTime = func(t time.Time) int64 { return t.Unix() }
-	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.LessOrdered[int64])
+	var chronoOrder = genfuncs.TransformArgs(unixTime, genfuncs.OrderedLess[int64])
 	now := time.Now()
 	fmt.Println(chronoOrder(now, now.Add(time.Second)))
 	// Output: true

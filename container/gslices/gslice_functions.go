@@ -22,39 +22,38 @@ import (
 )
 
 // Associate returns a map containing key/values created by applying a function to elements of the slice.
-func Associate[T, V any, K comparable](slice container.GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) container.GMap[K, V] {
-	m := make(container.GMap[K, V])
+func Associate[T, V any, K comparable](slice container.GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V]) {
+	result = make(container.GMap[K, V])
 	slice.ForEach(func(_ int, t T) {
 		k, v := keyValueFor(t)
-		m[k] = v
+		result[k] = v
 	})
-	return m
+	return result
 }
 
 // AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the
 // valueSelector function applied to each element.
-func AssociateWith[T comparable, V any](slice container.GSlice[T], valueFor genfuncs.MapValueFor[T, V]) container.GMap[T, V] {
-	m := make(container.GMap[T, V])
+func AssociateWith[T comparable, V any](slice container.GSlice[T], valueFor genfuncs.MapValueFor[T, V]) (result container.GMap[T, V]) {
+	result = make(container.GMap[T, V])
 	slice.ForEach(func(_ int, t T) {
-		v := valueFor(t)
-		m[t] = v
+		result[t] = valueFor(t)
 	})
-	return m
+	return result
 }
 
 // Distinct returns a slice containing only distinct elements from the given slice.
-func Distinct[T comparable](slice container.GSlice[T]) container.GSlice[T] {
-	return ToSet(slice).Values()
+func Distinct[T comparable](slice container.GSlice[T]) (distinct container.GSlice[T]) {
+	distinct = ToSet(slice).Values()
+	return distinct
 }
 
 // FlatMap returns a slice of all elements from results of transform being invoked on each element of
 // original slice, and those resultant slices concatenated.
-func FlatMap[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, container.GSlice[R]]) container.GSlice[R] {
-	var results container.GSlice[R]
+func FlatMap[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, container.GSlice[R]]) (result container.GSlice[R]) {
 	slice.ForEach(func(_ int, t T) {
-		results = append(results, transform(t)...)
+		result = append(result, transform(t)...)
 	})
-	return results
+	return result
 }
 
 // Fold accumulates a value starting with initial value and applying operation from left to right to current
@@ -69,14 +68,13 @@ func Fold[T, R any](slice container.GSlice[T], initial R, operation genfuncs.BiF
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to
 // each element and returns a map where each group key is associated with a slice of corresponding elements.
-func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) container.GMap[K, container.GSlice[T]] {
-	m := make(container.GMap[K, container.GSlice[T]])
+func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) (result container.GMap[K, container.GSlice[T]]) {
+	result = make(container.GMap[K, container.GSlice[T]])
 	slice.ForEach(func(_ int, t T) {
 		k := keyFor(t)
-		group := m[k]
-		m[k] = append(group, t)
+		result[k] = append(result[k], t)
 	})
-	return m
+	return result
 }
 
 // Map returns a new container.GSlice containing the results of applying the given transform function to each element in the original slice.
@@ -89,6 +87,7 @@ func Map[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, R])
 }
 
 // ToSet creates a Set from the elements of the GSlice.
-func ToSet[T comparable](slice container.GSlice[T]) container.Set[T] {
-	return container.NewMapSet(slice...)
+func ToSet[T comparable](slice container.GSlice[T]) (set container.Set[T]) {
+	set = container.NewMapSet(slice...)
+	return set
 }

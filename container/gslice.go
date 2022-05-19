@@ -63,7 +63,7 @@ func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, in
 // Equal compares this GSlice to another, applying a comparison to each pair, if the lengths are equal and all the values
 // are then true is returned.
 func (s GSlice[T]) Equal(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) bool {
-	return s.Compare(s2, comparison) == genfuncs.OrderedEqual
+	return s.Compare(s2, comparison) == genfuncs.EqualTo
 }
 
 // Filter returns a slice containing only elements matching the given predicate.
@@ -137,7 +137,7 @@ func (s GSlice[T]) Random() T {
 	return s[random.Intn(s.Len())]
 }
 
-// SortBy copies a slice, sorts the copy applying the Order and returns it. This is not a pure function, the GSlice
+// SortBy copies a slice, sorts the copy applying the Ordered and returns it. This is not a pure function, the GSlice
 // is sorted in place, the returned slice is to allow for fluid calls in chains.
 func (s GSlice[T]) SortBy(lessThan genfuncs.BiFunction[T, T, bool]) GSlice[T] {
 	slices.SortStableFunc(s, lessThan)

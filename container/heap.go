@@ -32,17 +32,17 @@ type Heap[T any] struct {
 }
 
 // NewHeap return a heap ordered based on the compare and adds any values provided.
-func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) *Heap[T] {
-	h := &Heap[T]{
+func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) (heap *Heap[T]) {
+	heap = &Heap[T]{
 		compare: compare,
 		slice:   make(GSlice[T], 0, len(values)),
 	}
-	h.AddAll(values...)
-	return h
+	heap.AddAll(values...)
+	return heap
 }
 
 // Len returns current length of the heap.
-func (h *Heap[T]) Len() int { return h.slice.Len() }
+func (h *Heap[T]) Len() (length int) { length = h.slice.Len(); return length }
 
 // Add a value onto the heap.
 func (h *Heap[T]) Add(v T) {
@@ -61,7 +61,7 @@ func (h *Heap[T]) AddAll(values ...T) {
 }
 
 // Peek returns the next element without removing it.
-func (h *Heap[T]) Peek() T {
+func (h *Heap[T]) Peek() (value T) {
 	if h.Len() <= 0 {
 		panic(genfuncs.NoSuchElement)
 	}
@@ -71,21 +71,22 @@ func (h *Heap[T]) Peek() T {
 		h.down()
 		h.ordered = true
 	}
-	v := h.slice[n]
-	return v
+	value = h.slice[n]
+	return value
 }
 
 // Remove an item off the heap.
-func (h *Heap[T]) Remove() T {
-	v := h.Peek()
+func (h *Heap[T]) Remove() (value T) {
+	value = h.Peek()
 	h.slice = h.slice[0 : h.Len()-1]
 	h.ordered = false
-	return v
+	return value
 }
 
 // Values returns a slice of the values in the Heap in no particular order.
-func (h *Heap[T]) Values() GSlice[T] {
-	return h.slice
+func (h *Heap[T]) Values() (values GSlice[T]) {
+	values = h.slice
+	return values
 }
 
 func (h *Heap[T]) up(jj int) {
@@ -120,6 +121,6 @@ func (h *Heap[T]) down() {
 	}
 }
 
-func parent(i int) int { return (i - 1) / 2 }
-func left(i int) int   { return (i * 2) + 1 }
-func right(i int) int  { return left(i) + 1 }
+func parent(i int) (p int) { p = (i - 1) / 2; return p }
+func left(i int) (l int)   { l = (i * 2) + 1; return l }
+func right(i int) (r int)  { r = left(i) + 1; return r }

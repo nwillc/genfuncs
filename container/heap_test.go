@@ -26,7 +26,7 @@ import (
 )
 
 func TestHeapNew(t *testing.T) {
-	heap := container.NewHeap[string](genfuncs.LessOrdered[string])
+	heap := container.NewHeap[string](genfuncs.OrderedLess[string])
 	assert.NotNil(t, heap)
 	assert.Equal(t, 0, heap.Len())
 }
@@ -45,7 +45,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			name: "empty",
 			args: args{
 				slice:    nil,
-				lessThan: genfuncs.LessOrdered[int],
+				lessThan: genfuncs.OrderedLess[int],
 			},
 			want: nil,
 		},
@@ -53,7 +53,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			name: "min 1 2 3",
 			args: args{
 				slice:    []int{1, 2, 3},
-				lessThan: genfuncs.LessOrdered[int],
+				lessThan: genfuncs.OrderedLess[int],
 			},
 			want: []int{1, 2, 3},
 		},
@@ -61,7 +61,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			name: "min 3 4 2 1",
 			args: args{
 				slice:    []int{3, 4, 2, 1},
-				lessThan: genfuncs.LessOrdered[int],
+				lessThan: genfuncs.OrderedLess[int],
 			},
 			want: []int{1, 2, 3, 4},
 		},
@@ -69,7 +69,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			name: "min 3 4 1 2 1",
 			args: args{
 				slice:    []int{3, 4, 1, 2, 1},
-				lessThan: genfuncs.LessOrdered[int],
+				lessThan: genfuncs.OrderedLess[int],
 			},
 			want: []int{1, 1, 2, 3, 4},
 		},
@@ -77,7 +77,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			name: "max 1 2 3",
 			args: args{
 				slice:    []int{1, 2, 3},
-				lessThan: genfuncs.GreaterOrdered[int],
+				lessThan: genfuncs.OrderedGreater[int],
 			},
 			want: []int{3, 2, 1},
 		},
@@ -85,7 +85,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 			name: "max 3 1 2",
 			args: args{
 				slice:    []int{3, 1, 2},
-				lessThan: genfuncs.GreaterOrdered[int],
+				lessThan: genfuncs.OrderedGreater[int],
 			},
 			want: []int{3, 2, 1},
 		},
@@ -151,7 +151,7 @@ func TestRandomHeaps(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for pass := passes; pass >= 0; pass-- {
-				heap := container.NewHeap[int](genfuncs.LessOrdered[int])
+				heap := container.NewHeap[int](genfuncs.OrderedLess[int])
 				for i := 0; i < tt.args.count; i++ {
 					heap.Add(random.Int())
 				}
@@ -161,7 +161,7 @@ func TestRandomHeaps(t *testing.T) {
 					assert.LessOrEqual(t, start, next)
 					start = next
 				}
-				heap = container.NewHeap[int](genfuncs.GreaterOrdered[int])
+				heap = container.NewHeap[int](genfuncs.OrderedGreater[int])
 				for i := 0; i < tt.args.count; i++ {
 					heap.Add(random.Int())
 				}
@@ -178,7 +178,7 @@ func TestRandomHeaps(t *testing.T) {
 }
 
 func TestHeapInserting(t *testing.T) {
-	h := container.NewHeap[int](genfuncs.LessOrdered[int], 4, 2, 3, 1)
+	h := container.NewHeap[int](genfuncs.OrderedLess[int], 4, 2, 3, 1)
 	assert.Equal(t, 1, h.Remove())
 	assert.Equal(t, 2, h.Remove())
 	assert.Equal(t, 3, h.Peek())
@@ -193,6 +193,6 @@ func TestHeapInserting(t *testing.T) {
 
 func TestHeap_Values(t *testing.T) {
 	s := container.GSlice[int]{1, 2, 3}
-	h := container.NewHeap[int](genfuncs.LessOrdered[int], s...)
-	assert.Equal(t, genfuncs.OrderedEqual, s.Compare(h.Values(), genfuncs.Order[int]))
+	h := container.NewHeap[int](genfuncs.OrderedLess[int], s...)
+	assert.Equal(t, genfuncs.EqualTo, s.Compare(h.Values(), genfuncs.Ordered[int]))
 }

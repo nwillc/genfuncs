@@ -81,7 +81,7 @@ func ExampleDistinct() {
 
 func ExampleFlatMap() {
 	slicer := func(s string) container.GSlice[string] { return strings.Split(s, "") }
-	fmt.Println(gslices.FlatMap(words.SortBy(genfuncs.LessOrdered[string]), slicer))
+	fmt.Println(gslices.FlatMap(words.SortBy(genfuncs.OrderedLess[string]), slicer))
 	// Output: [h e l l o w o r l d]
 }
 

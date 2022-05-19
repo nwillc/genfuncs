@@ -121,7 +121,7 @@ func (l *List[T]) Get(index int) *ListElement[T] {
 			i--
 		}
 	}
-	panic("index in bounds but element not found")
+	panic("index in bounds but element not found?!")
 }
 
 // Len returns the number of values in the List.

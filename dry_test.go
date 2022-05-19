@@ -54,7 +54,7 @@ func TestEqualComparable(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.EqualOrder(tt.args.a, tt.args.b)
+			v := genfuncs.OrderedEqual(tt.args.a, tt.args.b)
 			assert.Equal(t, v, tt.want, v)
 		})
 	}
@@ -97,7 +97,7 @@ func TestGreaterThanOrdered(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.GreaterOrdered(tt.args.a, tt.args.b)
+			v := genfuncs.OrderedGreater(tt.args.a, tt.args.b)
 			assert.Equal(t, v, tt.want, v)
 		})
 	}
@@ -116,7 +116,7 @@ func TestIsGreaterThanOrdered(t *testing.T) {
 		{
 			name: "One greater that two",
 			args: args{
-				a: genfuncs.IsGreaterOrdered(2),
+				a: genfuncs.OrderedGreaterThan(2),
 				b: 1,
 			},
 			want: false,
@@ -124,7 +124,7 @@ func TestIsGreaterThanOrdered(t *testing.T) {
 		{
 			name: "one equal to one",
 			args: args{
-				a: genfuncs.IsGreaterOrdered(1),
+				a: genfuncs.OrderedGreaterThan(1),
 				b: 1,
 			},
 			want: false,
@@ -132,7 +132,7 @@ func TestIsGreaterThanOrdered(t *testing.T) {
 		{
 			name: "one greater than 0",
 			args: args{
-				a: genfuncs.IsGreaterOrdered(0),
+				a: genfuncs.OrderedGreaterThan(0),
 				b: 1,
 			},
 			want: true,
@@ -183,7 +183,7 @@ func TestLessThanOrdered(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.LessOrdered(tt.args.a, tt.args.b)
+			v := genfuncs.OrderedLess(tt.args.a, tt.args.b)
 			assert.Equal(t, v, tt.want, v)
 		})
 	}
@@ -202,7 +202,7 @@ func TestIsLessThanOrdered(t *testing.T) {
 		{
 			name: "one than two",
 			args: args{
-				a: genfuncs.IsLessOrdered(2),
+				a: genfuncs.OrderedLessThan(2),
 				b: 1,
 			},
 			want: true,
@@ -210,7 +210,7 @@ func TestIsLessThanOrdered(t *testing.T) {
 		{
 			name: "Equal",
 			args: args{
-				a: genfuncs.IsLessOrdered(1),
+				a: genfuncs.OrderedLessThan(1),
 				b: 1,
 			},
 			want: false,
@@ -218,7 +218,7 @@ func TestIsLessThanOrdered(t *testing.T) {
 		{
 			name: "one less than zero",
 			args: args{
-				a: genfuncs.IsLessOrdered(0),
+				a: genfuncs.OrderedLessThan(0),
 				b: 1,
 			},
 			want: false,
@@ -335,7 +335,7 @@ func TestMin(t *testing.T) {
 }
 
 func TestReverse(t *testing.T) {
-	reversed := genfuncs.GreaterOrdered[int]
+	reversed := genfuncs.OrderedGreater[int]
 	type args struct {
 		a int
 		b int
@@ -369,7 +369,7 @@ func TestReverse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := genfuncs.LessOrdered(tt.args.a, tt.args.b)
+			v := genfuncs.OrderedLess(tt.args.a, tt.args.b)
 			assert.Equal(t, tt.args.a < tt.args.b, v)
 			r := reversed(tt.args.a, tt.args.b)
 			assert.Equal(t, tt.args.b < tt.args.a, r)
@@ -418,7 +418,7 @@ func TestComparator(t *testing.T) {
 				a: 1,
 				b: 1,
 			},
-			want: genfuncs.OrderedEqual,
+			want: genfuncs.EqualTo,
 		},
 		{
 			name: "Less",
@@ -426,7 +426,7 @@ func TestComparator(t *testing.T) {
 				a: 0,
 				b: 1,
 			},
-			want: genfuncs.OrderedLess,
+			want: genfuncs.LessThan,
 		},
 		{
 			name: "Greater",
@@ -434,12 +434,12 @@ func TestComparator(t *testing.T) {
 				a: 2,
 				b: 1,
 			},
-			want: genfuncs.OrderedGreater,
+			want: genfuncs.GreaterThan,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, genfuncs.Order(tt.args.a, tt.args.b), "Order(%v, %v)", tt.args.a, tt.args.b)
+			assert.Equalf(t, tt.want, genfuncs.Ordered(tt.args.a, tt.args.b), "Ordered(%v, %v)", tt.args.a, tt.args.b)
 		})
 	}
 }

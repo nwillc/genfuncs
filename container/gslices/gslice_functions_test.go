@@ -260,7 +260,7 @@ func TestGroupBy(t *testing.T) {
 			assert.Equal(t, len(tt.want), resultsMap.Len())
 			for k, v := range tt.want {
 				assert.True(t, v.All(func(i int) bool {
-					return container.GSlice[int](resultsMap[k]).Any(genfuncs.IsEqualOrdered(i))
+					return container.GSlice[int](resultsMap[k]).Any(genfuncs.OrderedEqualTo(i))
 				}))
 			}
 		})

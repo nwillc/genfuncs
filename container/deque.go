@@ -27,10 +27,10 @@ type Deque[T any] struct {
 }
 
 // NewDeque creates a Deque containing any provided elements.
-func NewDeque[T any](t ...T) *Deque[T] {
-	d := &Deque[T]{list: NewList[T]()}
-	d.AddAll(t...)
-	return d
+func NewDeque[T any](t ...T) (degue *Deque[T]) {
+	degue = &Deque[T]{list: NewList[T]()}
+	degue.AddAll(t...)
+	return degue
 }
 
 // Add an element to the right of the Deque.
@@ -54,55 +54,63 @@ func (d *Deque[T]) AddRight(t T) {
 }
 
 // Len reports the length of the Deque.
-func (d *Deque[T]) Len() int {
-	return d.list.Len()
+func (d *Deque[T]) Len() (length int) {
+	length = d.list.Len()
+	return length
 }
 
 // Peek returns the left most element in the Deque without removing it.
-func (d *Deque[T]) Peek() T {
-	return d.PeekLeft()
+func (d *Deque[T]) Peek() (value T) {
+	value = d.PeekLeft()
+	return value
 }
 
 // PeekLeft returns the left most element in the Deque without removing it.
-func (d *Deque[T]) PeekLeft() T {
+func (d *Deque[T]) PeekLeft() (value T) {
 	if d.Len() == 0 {
 		panic(genfuncs.NoSuchElement)
 	}
-	return d.list.PeekLeft().Value
+	value = d.list.PeekLeft().Value
+	return value
 }
 
 // PeekRight returns the right most element in the Deque without removing it.
-func (d *Deque[T]) PeekRight() T {
+func (d *Deque[T]) PeekRight() (value T) {
 	if d.Len() == 0 {
 		panic(genfuncs.NoSuchElement)
 	}
-	return d.list.PeekRight().Value
+	value = d.list.PeekRight().Value
+	return value
 }
 
 // Remove and return the left most element in the Deque.
-func (d *Deque[T]) Remove() T {
-	return d.RemoveLeft()
+func (d *Deque[T]) Remove() (value T) {
+	value = d.RemoveLeft()
+	return value
 }
 
 // RemoveLeft and return the left most element in the Deque.
-func (d *Deque[T]) RemoveLeft() T {
+func (d *Deque[T]) RemoveLeft() (value T) {
 	if d.Len() == 0 {
 		panic(genfuncs.NoSuchElement)
 	}
 	e := d.list.PeekLeft()
-	return d.list.Remove(e)
+	value = d.list.Remove(e)
+	return value
 }
 
 // RemoveRight and return the right most element in the Deque.
-func (d *Deque[T]) RemoveRight() T {
+func (d *Deque[T]) RemoveRight() (value T) {
 	if d.Len() == 0 {
 		panic(genfuncs.NoSuchElement)
 	}
 	e := d.list.PeekRight()
-	return d.list.Remove(e)
+	value = d.list.Remove(e)
+	return value
 }
 
 // Values in the Deque returned in a new GSlice.
-func (d *Deque[T]) Values() GSlice[T] {
-	return d.list.Values()
+func (d *Deque[T]) Values() (values GSlice[T]) {
+	values = d.list.Values()
+	return values
 }

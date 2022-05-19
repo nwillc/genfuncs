@@ -88,7 +88,7 @@ func TestList_Values(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := container.NewList[int](tt.args.expect...)
-			assert.True(t, tt.args.expect.Equal(l.Values(), genfuncs.Order[int]))
+			assert.True(t, tt.args.expect.Equal(l.Values(), genfuncs.Ordered[int]))
 		})
 	}
 }
@@ -177,7 +177,7 @@ func TestList_SortBy(t *testing.T) {
 			name: "empty",
 			args: args{
 				list:  container.NewList[int](),
-				order: genfuncs.LessOrdered[int],
+				order: genfuncs.OrderedLess[int],
 			},
 			want: container.GSlice[int]{},
 		},
@@ -185,7 +185,7 @@ func TestList_SortBy(t *testing.T) {
 			name: "single",
 			args: args{
 				list:  container.NewList[int](1),
-				order: genfuncs.LessOrdered[int],
+				order: genfuncs.OrderedLess[int],
 			},
 			want: container.GSlice[int]{1},
 		},
@@ -193,7 +193,7 @@ func TestList_SortBy(t *testing.T) {
 			name: "sort ascending",
 			args: args{
 				list:  container.NewList[int](2, 1, 7, 3),
-				order: genfuncs.LessOrdered[int],
+				order: genfuncs.OrderedLess[int],
 			},
 			want: container.GSlice[int]{1, 2, 3, 7},
 		},
@@ -201,7 +201,7 @@ func TestList_SortBy(t *testing.T) {
 			name: "sort descending",
 			args: args{
 				list:  container.NewList[int](1, 7, 3, 9),
-				order: genfuncs.GreaterOrdered[int],
+				order: genfuncs.OrderedGreater[int],
 			},
 			want: container.GSlice[int]{9, 7, 3, 1},
 		},
@@ -210,7 +210,7 @@ func TestList_SortBy(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.list.SortBy(tt.args.order)
 			values := tt.args.list.Values()
-			assert.True(t, tt.want.Equal(values, genfuncs.Order[int]))
+			assert.True(t, tt.want.Equal(values, genfuncs.Ordered[int]))
 		})
 	}
 }

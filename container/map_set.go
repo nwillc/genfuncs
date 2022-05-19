@@ -27,10 +27,10 @@ type MapSet[T comparable] struct {
 }
 
 // NewMapSet returns a new Set containing given values.
-func NewMapSet[T comparable](t ...T) Set[T] {
-	s := &MapSet[T]{set: make(map[T]struct{})}
-	s.AddAll(t...)
-	return s
+func NewMapSet[T comparable](t ...T) (set Set[T]) {
+	set = &MapSet[T]{set: make(map[T]struct{})}
+	set.AddAll(t...)
+	return set
 }
 
 // Add element to MapSet.
@@ -46,14 +46,15 @@ func (h *MapSet[T]) AddAll(t ...T) {
 }
 
 // Contains returns true if MapSet contains element.
-func (h *MapSet[T]) Contains(t T) bool {
-	_, ok := h.set[t]
+func (h *MapSet[T]) Contains(t T) (ok bool) {
+	_, ok = h.set[t]
 	return ok
 }
 
 // Len returns the length of the MapSet.
-func (h *MapSet[T]) Len() int {
-	return h.set.Len()
+func (h *MapSet[T]) Len() (length int) {
+	length = h.set.Len()
+	return length
 }
 
 // Remove an element from the MapSet.
@@ -62,6 +63,7 @@ func (h *MapSet[T]) Remove(t T) {
 }
 
 // Values returns the elements in the MapSet as a GSlice.
-func (h *MapSet[T]) Values() GSlice[T] {
-	return h.set.Keys()
+func (h *MapSet[T]) Values() (values GSlice[T]) {
+	values = h.set.Keys()
+	return values
 }

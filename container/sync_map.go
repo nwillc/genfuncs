@@ -29,14 +29,15 @@ type SyncMap[K any, V any] struct {
 }
 
 // NewSyncMap creates a new SyncMap instance.
-func NewSyncMap[K any, V any]() *SyncMap[K, V] {
-	return &SyncMap[K, V]{}
+func NewSyncMap[K any, V any]() (syncMap *SyncMap[K, V]) {
+	syncMap = &SyncMap[K, V]{}
+	return syncMap
 }
 
 // Contains returns true if the Map contains the given key.
-func (s *SyncMap[K, V]) Contains(key K) bool {
-	_, ok := s.m.Load(key)
-	return ok
+func (s *SyncMap[K, V]) Contains(key K) (contains bool) {
+	_, contains = s.m.Load(key)
+	return contains
 }
 
 // Delete an entry from the Map.
@@ -56,47 +57,52 @@ func (s *SyncMap[K, V]) ForEach(f func(key K, value V)) {
 // Get the value for the key. The sync.Map any type to cast to the appropriate type. The returned
 // ok value will be false if the map is not contained in the Map.
 func (s *SyncMap[K, V]) Get(key K) (value V, ok bool) {
-	var vv V
-	v, ok := s.m.Load(key)
+	var v any
+	v, ok = s.m.Load(key)
 	if ok {
-		vv = v.(V)
+		value = v.(V)
 	}
-	return vv, ok
+	return value, ok
 }
 
 // GetAndDelete returns the value from the SyncMap corresponding to the key, returning it, and deletes it.
 func (s *SyncMap[K, V]) GetAndDelete(key K) (value V, ok bool) {
-	var vv V
-	v, ok := s.m.LoadAndDelete(key)
+	var v any
+	v, ok = s.m.LoadAndDelete(key)
 	if ok {
-		vv = v.(V)
+		value = v.(V)
 	}
-	return vv, ok
+	return value, ok
 }
 
 // GetOrPut returns the existing value for the key if present. Otherwise, it puts and returns the given value.
 // The ok result is true if the value was present, false if put.
 func (s *SyncMap[K, V]) GetOrPut(key K, value V) (actual V, ok bool) {
-	v, ok := s.m.LoadOrStore(key, value)
-	return v.(V), ok
+	var v any
+	v, ok = s.m.LoadOrStore(key, value)
+	if ok {
+		actual = v.(V)
+	} else {
+		actual = value
+	}
+	return actual, ok
 }
 
 // Keys returns the keys in the Map by traversing it and casting the sync.Map's any to the appropriate
 // type.
-func (s *SyncMap[K, V]) Keys() GSlice[K] {
-	var gs GSlice[K]
+func (s *SyncMap[K, V]) Keys() (keys GSlice[K]) {
 	s.m.Range(func(k any, _ any) bool {
-		gs = append(gs, k.(K))
+		keys = append(keys, k.(K))
 		return true
 	})
-	return gs
+	return keys
 }
 
 // Len returns the element count. This requires a traversal of the Map.
-func (s *SyncMap[K, V]) Len() int {
-	count := 0
-	s.m.Range(func(_ any, _ any) bool { count++; return true })
-	return count
+func (s *SyncMap[K, V]) Len() (length int) {
+	length = 0
+	s.m.Range(func(_ any, _ any) bool { length++; return true })
+	return length
 }
 
 // Put a key value pair into the Map.
@@ -105,11 +111,10 @@ func (s *SyncMap[K, V]) Put(key K, value V) {
 }
 
 // Values returns the values in the Map, The sync.Map any values is cast to the Map's type.
-func (s *SyncMap[K, V]) Values() GSlice[V] {
-	var gs GSlice[V]
+func (s *SyncMap[K, V]) Values() (values GSlice[V]) {
 	s.m.Range(func(_ any, v any) bool {
-		gs = append(gs, v.(V))
+		values = append(values, v.(V))
 		return true
 	})
-	return gs
+	return values
 }

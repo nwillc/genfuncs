@@ -34,7 +34,7 @@ func TestHeapFunctionExamples(t *testing.T) {
 }
 
 func ExampleNewHeap() {
-	heap := container.NewHeap[int](genfuncs.LessOrdered[int], 3, 1, 4, 2)
+	heap := container.NewHeap[int](genfuncs.OrderedLess[int], 3, 1, 4, 2)
 	for heap.Len() > 0 {
 		fmt.Print(heap.Remove())
 	}
