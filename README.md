@@ -51,7 +51,7 @@ import "github.com/nwillc/genfuncs"
 - [func Max[T constraints.Ordered](v ...T) (max T)](<#func-max>)
 - [func Min[T constraints.Ordered](v ...T) (min T)](<#func-min>)
 - [func Ordered[T constraints.Ordered](a, b T) (order int)](<#func-ordered>)
-- [func OrderedEqual[O constraints.Ordered](a, b O) (orderedEqualToo bool)](<#func-orderedequal>)
+- [func OrderedEqual[O constraints.Ordered](a, b O) (orderedEqualTo bool)](<#func-orderedequal>)
 - [func OrderedGreater[O constraints.Ordered](a, b O) (orderedGreaterThan bool)](<#func-orderedgreater>)
 - [func OrderedLess[O constraints.Ordered](a, b O) (orderedLess bool)](<#func-orderedless>)
 - [type BiFunction](<#type-bifunction>)
@@ -180,7 +180,7 @@ Ordered performs old school \-1/0/1 comparison of constraints\.Ordered arguments
 ## func [OrderedEqual](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L39>)
 
 ```go
-func OrderedEqual[O constraints.Ordered](a, b O) (orderedEqualToo bool)
+func OrderedEqual[O constraints.Ordered](a, b O) (orderedEqualTo bool)
 ```
 
 OrderedEqual returns true jf a is ordered equal to b\.
@@ -1637,7 +1637,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.13.4"
+const Version = "v0.14.0"
 ```
 
 
