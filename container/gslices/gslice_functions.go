@@ -23,11 +23,12 @@ import (
 
 // Associate returns a map containing key/values created by applying a function to elements of the slice.
 func Associate[T, V any, K comparable](slice container.GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V]) {
-	result = make(container.GMap[K, V])
-	slice.ForEach(func(_ int, t T) {
-		k, v := keyValueFor(t)
+	length := len(slice)
+	result = make(container.GMap[K, V], length)
+	for i := 0; i < length; i++ {
+		k, v := keyValueFor(slice[i])
 		result[k] = v
-	})
+	}
 	return result
 }
 
@@ -50,39 +51,48 @@ func Distinct[T comparable](slice container.GSlice[T]) (distinct container.GSlic
 // FlatMap returns a slice of all elements from results of transform being invoked on each element of
 // original slice, and those resultant slices concatenated.
 func FlatMap[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, container.GSlice[R]]) (result container.GSlice[R]) {
-	slice.ForEach(func(_ int, t T) {
-		result = append(result, transform(t)...)
-	})
+	length := len(slice)
+	for i := 0; i < length; i++ {
+		result = append(result, transform(slice[i])...)
+	}
 	return result
 }
 
 // Fold accumulates a value starting with initial value and applying operation from left to right to current
 // accumulated value and each element.
-func Fold[T, R any](slice container.GSlice[T], initial R, operation genfuncs.BiFunction[R, T, R]) R {
-	r := initial
-	slice.ForEach(func(_ int, t T) {
-		r = operation(r, t)
-	})
-	return r
+func Fold[T, R any](slice container.GSlice[T], initial R, operation genfuncs.BiFunction[R, T, R]) (result R) {
+	length := len(slice)
+	result = initial
+	for i := 0; i < length; i++ {
+		result = operation(result, slice[i])
+	}
+	return result
 }
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to
 // each element and returns a map where each group key is associated with a slice of corresponding elements.
 func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) (result container.GMap[K, container.GSlice[T]]) {
-	result = make(container.GMap[K, container.GSlice[T]])
-	slice.ForEach(func(_ int, t T) {
-		k := keyFor(t)
-		result[k] = append(result[k], t)
-	})
+	length := len(slice)
+	result = make(container.GMap[K, container.GSlice[T]], length)
+	var t T
+	var k K
+	var v container.GSlice[T]
+	for i := 0; i < length; i++ {
+		t = slice[i]
+		k = keyFor(t)
+		v = result[k]
+		result[k] = append(v, t)
+	}
 	return result
 }
 
 // Map returns a new container.GSlice containing the results of applying the given transform function to each element in the original slice.
 func Map[T, R any](slice container.GSlice[T], transform genfuncs.Function[T, R]) container.GSlice[R] {
-	var results = make(container.GSlice[R], slice.Len())
-	slice.ForEach(func(i int, t T) {
-		results[i] = transform(t)
-	})
+	length := len(slice)
+	var results = make(container.GSlice[R], length)
+	for i := 0; i < length; i++ {
+		results[i] = transform(slice[i])
+	}
 	return results
 }
 
