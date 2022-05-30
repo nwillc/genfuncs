@@ -35,10 +35,13 @@ func Associate[T, V any, K comparable](slice container.GSlice[T], keyValueFor ge
 // AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the
 // valueSelector function applied to each element.
 func AssociateWith[T comparable, V any](slice container.GSlice[T], valueFor genfuncs.MapValueFor[T, V]) (result container.GMap[T, V]) {
-	result = make(container.GMap[T, V])
-	slice.ForEach(func(_ int, t T) {
+	length := len(slice)
+	result = make(container.GMap[T, V], length)
+	var t T
+	for i := 0; i < length; i++ {
+		t = slice[i]
 		result[t] = valueFor(t)
-	})
+	}
 	return result
 }
 

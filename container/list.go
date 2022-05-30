@@ -110,13 +110,12 @@ func (l *List[T]) ForEach(action func(value T)) {
 
 // IsSorted returns true if the List is sorted by order.
 func (l *List[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool) {
-	e1 := l.PeekLeft()
-	for i := 1; i < l.Len(); i++ {
-		e2 := e1.Next()
-		if order(e2.Value, e1.Value) {
+	var e2 *ListElement[T]
+	for e1 := l.PeekLeft(); e1 != nil; e1 = e1.Next() {
+		e2 = e1.Next()
+		if e2 != nil && order(e2.Value, e1.Value) {
 			return ok
 		}
-		e1 = e2
 	}
 	ok = true
 	return ok
@@ -165,10 +164,10 @@ func (l *List[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (result *List[T]
 func (l *List[T]) Values() (values GSlice[T]) {
 	values = make(GSlice[T], l.Len())
 	i := 0
-	l.ForEach(func(value T) {
-		values[i] = value
+	for e := l.PeekLeft(); e != nil; e = e.Next() {
+		values[i] = e.Value
 		i++
-	})
+	}
 	return values
 }
 
@@ -198,14 +197,15 @@ func (l *List[T]) remove(e *ListElement[T]) {
 }
 
 // bubbleSort implements a Bubble Sort on List. Because List employs next/prev pointers arbitrary indexing in costly and
-// this is the fastest sort.
+// bubble sort is the fastest sort.
 func (l *List[T]) bubbleSort(order genfuncs.BiFunction[T, T, bool]) {
+	var e1, e2 *ListElement[T]
 	end := l.Len()
 	for end > 1 {
-		e1 := l.PeekLeft()
+		e1 = l.PeekLeft()
 		newEnd := 0
 		for i := 1; i < end; i++ {
-			e2 := e1.Next()
+			e2 = e1.Next()
 			if order(e2.Value, e1.Value) {
 				e2.Swap(e1)
 				newEnd = i

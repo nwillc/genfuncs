@@ -68,18 +68,21 @@ func (s GSlice[T]) Equal(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]
 
 // Filter returns a slice containing only elements matching the given predicate.
 func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T] {
+	length := len(s)
 	var results []T
-	s.ForEach(func(_ int, t T) {
+	var t T
+	for i := 0; i < length; i++ {
+		t = s[i]
 		if predicate(t) {
 			results = append(results, t)
 		}
-	})
+	}
 	return results
 }
 
 // Find returns the first element matching the given predicate and true, or false when no such element was found.
 func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
-	length := s.Len()
+	length := len(s)
 	for i := 0; i < length; i++ {
 		if predicate(s[i]) {
 			return s[i], true
@@ -90,15 +93,16 @@ func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
 }
 
 // FindLast returns the last element matching the given predicate and true, or false when no such element was found.
-func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (T, bool) {
-	var last T
-	var found = false
-	s.ForEach(func(_ int, t T) {
+func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (last T, found bool) {
+	var t T
+	for i := len(s) - 1; i > -1; i-- {
+		t = s[i]
 		if predicate(t) {
 			found = true
 			last = t
+			return last, found
 		}
-	})
+	}
 	return last, found
 }
 
@@ -114,15 +118,16 @@ func (s GSlice[T]) ForEach(action func(i int, t T)) {
 // JoinToString creates a string from all the elements using the stringer on each, separating them using separator, and
 // using the given prefix and postfix.
 func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string {
+	length := len(s)
 	var sb strings.Builder
 	sb.WriteString(prefix)
-	last := len(s) - 1
-	s.ForEach(func(i int, t T) {
-		sb.WriteString(stringer(t))
+	last := length - 1
+	for i := 0; i < length; i++ {
+		sb.WriteString(stringer(s[i]))
 		if i != last {
 			sb.WriteString(separator)
 		}
-	})
+	}
 	sb.WriteString(postfix)
 	return sb.String()
 }
