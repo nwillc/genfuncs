@@ -278,3 +278,71 @@ func TestList_ForEach(t *testing.T) {
 		})
 	}
 }
+
+func TestList_IsSorted(t *testing.T) {
+	type args struct {
+		values container.GSlice[string]
+		order  genfuncs.BiFunction[string, string, bool]
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "empty",
+			args: args{
+				values: container.GSlice[string]{},
+				order:  genfuncs.OrderedLess[string],
+			},
+			want: true,
+		},
+		{
+			name: "single",
+			args: args{
+				values: container.GSlice[string]{"a"},
+				order:  genfuncs.OrderedLess[string],
+			},
+			want: true,
+		},
+		{
+			name: "sorted ascending",
+			args: args{
+				values: container.GSlice[string]{"a", "b"},
+				order:  genfuncs.OrderedLess[string],
+			},
+			want: true,
+		},
+		{
+			name: "sorted descending",
+			args: args{
+				values: container.GSlice[string]{"b", "a"},
+				order:  genfuncs.OrderedGreater[string],
+			},
+			want: true,
+		},
+		{
+			name: "not sorted ascending",
+			args: args{
+				values: container.GSlice[string]{"b", "a"},
+				order:  genfuncs.OrderedLess[string],
+			},
+			want: false,
+		},
+		{
+			name: "not sorted descending",
+			args: args{
+				values: container.GSlice[string]{"a", "b"},
+				order:  genfuncs.OrderedGreater[string],
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := container.NewList[string]()
+			list.AddAll(tt.args.values...)
+			assert.Equal(t, tt.want, list.IsSorted(tt.args.order))
+		})
+	}
+}
