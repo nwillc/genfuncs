@@ -42,7 +42,6 @@ func TestList_AddRight(t *testing.T) {
 	assert.Equal(t, 2, l.Len())
 	assert.Equal(t, "1", l.PeekLeft().Value)
 	assert.Equal(t, "2", l.PeekRight().Value)
-
 }
 
 func TestList_AddLeft(t *testing.T) {
@@ -231,6 +230,51 @@ func TestList_RandomSorts(t *testing.T) {
 				numbers = numbers.SortBy(genfuncs.OrderedGreater[int])
 				assert.True(t, numbers.IsSorted(genfuncs.OrderedGreater[int]))
 			}
+		})
+	}
+}
+
+func TestList_ForEach(t *testing.T) {
+	type args struct {
+		values container.GSlice[string]
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "empty",
+			args: args{
+				values: container.GSlice[string]{},
+			},
+			want: "",
+		},
+		{
+			name: "single",
+			args: args{
+				values: container.GSlice[string]{"a"},
+			},
+			want: "a",
+		},
+		{
+			name: "multiple",
+			args: args{
+				values: container.GSlice[string]{"a", "b", "cd"},
+			},
+			want: "abcd",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := container.NewList[string]()
+			list.AddAll(tt.args.values...)
+			str := ""
+			list.ForEach(func(s string) {
+				str = str + s
+			})
+			str2 := tt.args.values.JoinToString(func(s string) string { return s }, "", "", "")
+			assert.Equal(t, str2, str)
 		})
 	}
 }
