@@ -72,6 +72,14 @@ func (r *Result[T]) String() string {
 	return "error: " + r.err.Error()
 }
 
+// Then calls action on Result if it's Ok() and returns its Result, if not Ok() the original result is returned.
+func (r *Result[T]) Then(action func(t T) *Result[T]) *Result[T] {
+	if r.Ok() {
+		return action(r.value)
+	}
+	return r
+}
+
 // ValueOr returns the value of the Result if Ok(), or the value v if not.
 func (r *Result[T]) ValueOr(v T) T {
 	if r.Ok() {
