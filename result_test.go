@@ -51,46 +51,73 @@ func TestResult(t *testing.T) {
 }
 
 func TestResult_Error(t *testing.T) {
-	type fields struct {
-		value int
-		err   error
+	type args struct {
+		result *genfuncs.Result[int]
 	}
 	tests := []struct {
 		name    string
-		fields  fields
+		args    args
 		wantErr bool
 	}{
 		{
 			name: "no error",
-			fields: fields{
-				value: 0,
-				err:   nil,
+			args: args{
+				result: genfuncs.NewResult(1),
 			},
 		},
 		{
 			name: "error",
-			fields: fields{
-				value: 0,
-				err:   fmt.Errorf("foo"),
+			args: args{
+				result: genfuncs.NewError[int](fmt.Errorf("foo")),
 			},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var r *genfuncs.Result[int]
-			if tt.fields.err != nil {
-				r = genfuncs.NewError[int](tt.fields.err)
-			} else {
-				r = genfuncs.NewResult(tt.fields.value)
-			}
-
 			if tt.wantErr {
-				assert.False(t, r.Ok())
-				assert.NotNil(t, r.Error())
+				assert.False(t, tt.args.result.Ok())
+				assert.NotNil(t, tt.args.result.Error())
 			} else {
-				assert.True(t, r.Ok())
-				assert.Nil(t, r.Error())
+				assert.True(t, tt.args.result.Ok())
+				assert.Nil(t, tt.args.result.Error())
+			}
+		})
+	}
+}
+
+func TestResult_OnSuccess(t *testing.T) {
+	flag := -1
+	action := func(i int) { flag = i }
+	type args struct {
+		result *genfuncs.Result[int]
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "error",
+			args: args{
+				result: genfuncs.NewError[int](fmt.Errorf("")),
+			},
+		},
+		{
+			name: "10",
+			args: args{
+				result: genfuncs.NewResult(10),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			action(0)
+			assert.Equal(t, 0, flag)
+			tt.args.result.OnSuccess(action)
+			if tt.args.result.Ok() {
+				assert.Equal(t, flag, tt.args.result.ValueOrPanic())
+			} else {
+				assert.Equal(t, flag, 0)
 			}
 		})
 	}
