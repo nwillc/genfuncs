@@ -76,6 +76,17 @@ import "github.com/nwillc/genfuncs"
 - [type MapKeyFor](<#type-mapkeyfor>)
 - [type MapKeyValueFor](<#type-mapkeyvaluefor>)
 - [type MapValueFor](<#type-mapvaluefor>)
+- [type Result](<#type-result>)
+  - [func NewError[T any](err error) *Result[T]](<#func-newerror>)
+  - [func NewResult[T any](t T) *Result[T]](<#func-newresult>)
+  - [func (r *Result[T]) Error() error](<#func-resultt-error>)
+  - [func (r *Result[T]) Ok() bool](<#func-resultt-ok>)
+  - [func (r *Result[T]) OnFailure(action func(e error)) *Result[T]](<#func-resultt-onfailure>)
+  - [func (r *Result[T]) OnSuccess(action func(t T)) *Result[T]](<#func-resultt-onsuccess>)
+  - [func (r *Result[T]) String() string](<#func-resultt-string>)
+  - [func (r *Result[T]) Then(action func(t T) *Result[T]) *Result[T]](<#func-resultt-then>)
+  - [func (r *Result[T]) ValueOr(v T) T](<#func-resultt-valueor>)
+  - [func (r *Result[T]) ValueOrPanic() T](<#func-resultt-valueorpanic>)
 - [type ToString](<#type-tostring>)
   - [func StringerToString[T fmt.Stringer]\(\) (fn ToString[T])](<#func-stringertostring>)
 
@@ -328,6 +339,96 @@ MapValueFor given a comparable key will return a value for it\.
 ```go
 type MapValueFor[K comparable, T any] func(K) T
 ```
+
+## type [Result](<https://github.com/nwillc/genfuncs/blob/master/result.go#L25-L28>)
+
+Result is an implementation of the Maybe pattern\. This is mostly for experimentation as it is a poor fit with Go's traditional idiomatic error handling\.
+
+```go
+type Result[T any] struct {
+    // contains filtered or unexported fields
+}
+```
+
+### func [NewError](<https://github.com/nwillc/genfuncs/blob/master/result.go#L36>)
+
+```go
+func NewError[T any](err error) *Result[T]
+```
+
+NewError for an error\.
+
+### func [NewResult](<https://github.com/nwillc/genfuncs/blob/master/result.go#L31>)
+
+```go
+func NewResult[T any](t T) *Result[T]
+```
+
+NewResult for a value\.
+
+### func \(\*Result\[T\]\) [Error](<https://github.com/nwillc/genfuncs/blob/master/result.go#L41>)
+
+```go
+func (r *Result[T]) Error() error
+```
+
+Error of the Result\, nil if Ok\(\)\.
+
+### func \(\*Result\[T\]\) [Ok](<https://github.com/nwillc/genfuncs/blob/master/result.go#L46>)
+
+```go
+func (r *Result[T]) Ok() bool
+```
+
+Ok returns the status of Result\, is it ok\, or an error\.
+
+### func \(\*Result\[T\]\) [OnFailure](<https://github.com/nwillc/genfuncs/blob/master/result.go#L51>)
+
+```go
+func (r *Result[T]) OnFailure(action func(e error)) *Result[T]
+```
+
+OnFailure performs the action is Result is not Ok\(\)\.
+
+### func \(\*Result\[T\]\) [OnSuccess](<https://github.com/nwillc/genfuncs/blob/master/result.go#L59>)
+
+```go
+func (r *Result[T]) OnSuccess(action func(t T)) *Result[T]
+```
+
+OnSuccess performs action if Result is Ok\(\)\.
+
+### func \(\*Result\[T\]\) [String](<https://github.com/nwillc/genfuncs/blob/master/result.go#L67>)
+
+```go
+func (r *Result[T]) String() string
+```
+
+String returns a string representation of Result\, either the value or error\.
+
+### func \(\*Result\[T\]\) [Then](<https://github.com/nwillc/genfuncs/blob/master/result.go#L76>)
+
+```go
+func (r *Result[T]) Then(action func(t T) *Result[T]) *Result[T]
+```
+
+Then calls action on Result if it's Ok\(\) and returns its Result\, if not Ok\(\) the original result is returned\.
+
+### func \(\*Result\[T\]\) [ValueOr](<https://github.com/nwillc/genfuncs/blob/master/result.go#L84>)
+
+```go
+func (r *Result[T]) ValueOr(v T) T
+```
+
+ValueOr returns the value of the Result if Ok\(\)\, or the value v if not\.
+
+### func \(\*Result\[T\]\) [ValueOrPanic](<https://github.com/nwillc/genfuncs/blob/master/result.go#L92>)
+
+```go
+func (r *Result[T]) ValueOrPanic() T
+```
+
+ValueOrPanic returns the value of the Result if Ok\(\) or if not\, panics with the error\.
 
 ## type [ToString](<https://github.com/nwillc/genfuncs/blob/master/functions.go#L36>)
 
