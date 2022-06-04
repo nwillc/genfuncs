@@ -49,3 +49,49 @@ func TestResult(t *testing.T) {
 	})
 	assert.Equal(t, 100, r.ValueOrPanic())
 }
+
+func TestResult_Error(t *testing.T) {
+	type fields struct {
+		value int
+		err   error
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "no error",
+			fields: fields{
+				value: 0,
+				err:   nil,
+			},
+		},
+		{
+			name: "error",
+			fields: fields{
+				value: 0,
+				err:   fmt.Errorf("foo"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var r *genfuncs.Result[int]
+			if tt.fields.err != nil {
+				r = genfuncs.NewError[int](tt.fields.err)
+			} else {
+				r = genfuncs.NewResult(tt.fields.value)
+			}
+
+			if tt.wantErr {
+				assert.False(t, r.Ok())
+				assert.NotNil(t, r.Error())
+			} else {
+				assert.True(t, r.Ok())
+				assert.Nil(t, r.Error())
+			}
+		})
+	}
+}
