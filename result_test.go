@@ -185,3 +185,37 @@ func TestResult_Then(t *testing.T) {
 		})
 	}
 }
+
+func TestResult_ValueOr(t *testing.T) {
+	type args struct {
+		result *genfuncs.Result[int]
+		value  int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "10",
+			args: args{
+				result: genfuncs.NewResult(10),
+				value:  100,
+			},
+			want: 10,
+		},
+		{
+			name: "error",
+			args: args{
+				result: genfuncs.NewError[int](fmt.Errorf("foo")),
+				value:  100,
+			},
+			want: 100,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.args.result.ValueOr(tt.args.value))
+		})
+	}
+}
