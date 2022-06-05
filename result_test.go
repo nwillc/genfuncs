@@ -122,3 +122,34 @@ func TestResult_OnSuccess(t *testing.T) {
 		})
 	}
 }
+
+func TestResult_String(t *testing.T) {
+	type args struct {
+		result *genfuncs.Result[int]
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "value",
+			args: args{
+				result: genfuncs.NewResult(10),
+			},
+			want: "10",
+		},
+		{
+			name: "error",
+			args: args{
+				result: genfuncs.NewError[int](fmt.Errorf("no value")),
+			},
+			want: "error: no value",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.args.result.String())
+		})
+	}
+}
