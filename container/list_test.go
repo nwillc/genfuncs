@@ -346,3 +346,65 @@ func TestList_IsSorted(t *testing.T) {
 		})
 	}
 }
+
+func TestListElement_Swap(t *testing.T) {
+	type args struct {
+		e1 *container.ListElement[int]
+		e2 *container.ListElement[int]
+	}
+	tests := []struct {
+		name   string
+		args   args
+		wantE1 *container.ListElement[int]
+		wantE2 *container.ListElement[int]
+	}{
+		{
+			name: "simple",
+			args: args{
+				e1: &container.ListElement[int]{Value: 1},
+				e2: &container.ListElement[int]{Value: 2},
+			},
+			wantE1: &container.ListElement[int]{Value: 2},
+			wantE2: &container.ListElement[int]{Value: 1},
+		},
+		{
+			name: "both nils",
+			args: args{},
+		},
+		{
+			name: "e1 nil",
+			args: args{
+				e2: &container.ListElement[int]{Value: 2},
+			},
+			wantE2: &container.ListElement[int]{Value: 2},
+		},
+		{
+			name: "e2 nil",
+			args: args{
+				e1: &container.ListElement[int]{Value: 2},
+			},
+			wantE1: &container.ListElement[int]{Value: 2},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.args.e1.Swap(tt.args.e2)
+			if tt.wantE1 != nil && tt.wantE2 != nil {
+				assert.Equal(t, tt.wantE1.Value, tt.args.e1.Value)
+				return
+			}
+			if tt.wantE1 == nil {
+				assert.Nil(t, tt.args.e1)
+				if tt.wantE2 != nil {
+					assert.Equal(t, tt.wantE2.Value, tt.args.e2.Value)
+				}
+			}
+			if tt.wantE2 == nil {
+				assert.Nil(t, tt.args.e2)
+				if tt.wantE1 != nil {
+					assert.Equal(t, tt.wantE1.Value, tt.args.e1.Value)
+				}
+			}
+		})
+	}
+}
