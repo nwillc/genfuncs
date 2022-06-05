@@ -153,3 +153,35 @@ func TestResult_String(t *testing.T) {
 		})
 	}
 }
+
+func TestResult_Then(t *testing.T) {
+	type args struct {
+		value *genfuncs.Result[string]
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "simple",
+			args: args{
+				value: genfuncs.NewResult("foo"),
+			},
+			want: "foosimple",
+		},
+		{
+			name: "error",
+			args: args{
+				value: genfuncs.NewError[string](fmt.Errorf("foo")),
+			},
+			want: "error: foo",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := tt.args.value.Then(func(s string) *genfuncs.Result[string] { return genfuncs.NewResult(s + tt.name) })
+			assert.Equal(t, tt.want, v.String())
+		})
+	}
+}
