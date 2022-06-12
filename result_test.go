@@ -36,18 +36,18 @@ func TestResult(t *testing.T) {
 		})
 
 	assert.Panics(t, func() {
-		r.ValueOrPanic()
+		r.MustGet()
 	})
 
-	assert.Equal(t, 10, r.ValueOr(10))
+	assert.Equal(t, 10, r.OrElse(10))
 
 	r = genfuncs.NewResult(10)
-	assert.Equal(t, 10, r.ValueOrPanic())
+	assert.Equal(t, 10, r.MustGet())
 
-	r = r.Then(func(i int) *genfuncs.Result[int] {
+	r = r.Map(func(i int) *genfuncs.Result[int] {
 		return genfuncs.NewResult(i * 10)
 	})
-	assert.Equal(t, 100, r.ValueOrPanic())
+	assert.Equal(t, 100, r.MustGet())
 }
 
 func TestResult_Error(t *testing.T) {
@@ -115,7 +115,7 @@ func TestResult_OnSuccess(t *testing.T) {
 			assert.Equal(t, 0, flag)
 			tt.args.result.OnSuccess(action)
 			if tt.args.result.Ok() {
-				assert.Equal(t, flag, tt.args.result.ValueOrPanic())
+				assert.Equal(t, flag, tt.args.result.MustGet())
 			} else {
 				assert.Equal(t, flag, 0)
 			}
@@ -180,7 +180,7 @@ func TestResult_Then(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := tt.args.value.Then(func(s string) *genfuncs.Result[string] { return genfuncs.NewResult(s + tt.name) })
+			v := tt.args.value.Map(func(s string) *genfuncs.Result[string] { return genfuncs.NewResult(s + tt.name) })
 			assert.Equal(t, tt.want, v.String())
 		})
 	}
@@ -215,7 +215,41 @@ func TestResult_ValueOr(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.args.result.ValueOr(tt.args.value))
+			assert.Equal(t, tt.want, tt.args.result.OrElse(tt.args.value))
+		})
+	}
+}
+
+func TestNewResultFromTuple(t *testing.T) {
+	type args struct {
+		fn func() (int, error)
+	}
+	tests := []struct {
+		name string
+		args args
+		want *genfuncs.Result[int]
+	}{
+		{
+			name: "ok",
+			args: args{
+				fn: func() (int, error) { return 1, nil },
+			},
+			want: genfuncs.NewResult(1),
+		},
+		{
+			name: "error",
+			args: args{
+				fn: func() (int, error) { return 0, fmt.Errorf("") },
+			},
+			want: genfuncs.NewError[int](fmt.Errorf("")),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := genfuncs.NewResultFromTuple(tt.args.fn())
+			assert.Equal(t, tt.want.Ok(), result.Ok())
+			assert.Equal(t, tt.want.Error(), result.Error())
+			assert.Equal(t, tt.want.OrEmpty(), result.OrEmpty())
 		})
 	}
 }

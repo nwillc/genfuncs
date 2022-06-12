@@ -32,6 +32,11 @@ func NewResult[T any](t T) *Result[T] {
 	return &Result[T]{value: t}
 }
 
+// NewResultFromTuple creates a Result from a value, error tuple.
+func NewResultFromTuple[T any](t T, err error) *Result[T] {
+	return &Result[T]{value: t, err: err}
+}
+
 // NewError for an error.
 func NewError[T any](err error) *Result[T] {
 	return &Result[T]{err: err}
@@ -72,24 +77,29 @@ func (r *Result[T]) String() string {
 	return "error: " + r.err.Error()
 }
 
-// Then calls action on Result if it's Ok() and returns its Result, if not Ok() the original result is returned.
-func (r *Result[T]) Then(action func(t T) *Result[T]) *Result[T] {
+// Map calls action on Result if it's Ok() and returns its Result, if not Ok() the original result is returned.
+func (r *Result[T]) Map(action func(t T) *Result[T]) *Result[T] {
 	if r.Ok() {
 		return action(r.value)
 	}
 	return r
 }
 
-// ValueOr returns the value of the Result if Ok(), or the value v if not.
-func (r *Result[T]) ValueOr(v T) T {
+// OrElse returns the value of the Result if Ok(), or the value v if not.
+func (r *Result[T]) OrElse(v T) T {
 	if r.Ok() {
 		return r.value
 	}
 	return v
 }
 
-// ValueOrPanic returns the value of the Result if Ok() or if not, panics with the error.
-func (r *Result[T]) ValueOrPanic() T {
+// OrEmpty will return the value of the Result or the empty value if Error.
+func (r *Result[T]) OrEmpty() T {
+	return r.value
+}
+
+// MustGet returns the value of the Result if Ok() or if not, panics with the error.
+func (r *Result[T]) MustGet() T {
 	if r.Ok() {
 		return r.value
 	}
