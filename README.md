@@ -79,9 +79,8 @@ import "github.com/nwillc/genfuncs"
 - [type Result](<#type-result>)
   - [func NewError[T any](err error) *Result[T]](<#func-newerror>)
   - [func NewResult[T any](t T) *Result[T]](<#func-newresult>)
-  - [func NewResultFromTuple[T any](t T, err error) *Result[T]](<#func-newresultfromtuple>)
+  - [func NewResultError[T any](t T, err error) *Result[T]](<#func-newresulterror>)
   - [func (r *Result[T]) Error() error](<#func-resultt-error>)
-  - [func (r *Result[T]) Map(action func(t T) *Result[T]) *Result[T]](<#func-resultt-map>)
   - [func (r *Result[T]) MustGet() T](<#func-resultt-mustget>)
   - [func (r *Result[T]) Ok() bool](<#func-resultt-ok>)
   - [func (r *Result[T]) OnFailure(action func(e error)) *Result[T]](<#func-resultt-onfailure>)
@@ -342,7 +341,7 @@ MapValueFor given a comparable key will return a value for it\.
 type MapValueFor[K comparable, T any] func(K) T
 ```
 
-## type [Result](<https://github.com/nwillc/genfuncs/blob/master/result.go#L25-L28>)
+## type [Result](<https://github.com/nwillc/genfuncs/blob/master/result.go#L26-L29>)
 
 Result is an implementation of the Maybe pattern\. This is mostly for experimentation as it is a poor fit with Go's traditional idiomatic error handling\.
 
@@ -352,7 +351,7 @@ type Result[T any] struct {
 }
 ```
 
-### func [NewError](<https://github.com/nwillc/genfuncs/blob/master/result.go#L41>)
+### func [NewError](<https://github.com/nwillc/genfuncs/blob/master/result.go#L46>)
 
 ```go
 func NewError[T any](err error) *Result[T]
@@ -360,7 +359,7 @@ func NewError[T any](err error) *Result[T]
 
 NewError for an error\.
 
-### func [NewResult](<https://github.com/nwillc/genfuncs/blob/master/result.go#L31>)
+### func [NewResult](<https://github.com/nwillc/genfuncs/blob/master/result.go#L36>)
 
 ```go
 func NewResult[T any](t T) *Result[T]
@@ -368,15 +367,15 @@ func NewResult[T any](t T) *Result[T]
 
 NewResult for a value\.
 
-### func [NewResultFromTuple](<https://github.com/nwillc/genfuncs/blob/master/result.go#L36>)
+### func [NewResultError](<https://github.com/nwillc/genfuncs/blob/master/result.go#L41>)
 
 ```go
-func NewResultFromTuple[T any](t T, err error) *Result[T]
+func NewResultError[T any](t T, err error) *Result[T]
 ```
 
-NewResultFromTuple creates a Result from a value\, error tuple\.
+NewResultError creates a Result from a value\, error tuple\.
 
-### func \(\*Result\[T\]\) [Error](<https://github.com/nwillc/genfuncs/blob/master/result.go#L46>)
+### func \(\*Result\[T\]\) [Error](<https://github.com/nwillc/genfuncs/blob/master/result.go#L55>)
 
 ```go
 func (r *Result[T]) Error() error
@@ -384,15 +383,7 @@ func (r *Result[T]) Error() error
 
 Error of the Result\, nil if Ok\(\)\.
 
-### func \(\*Result\[T\]\) [Map](<https://github.com/nwillc/genfuncs/blob/master/result.go#L81>)
-
-```go
-func (r *Result[T]) Map(action func(t T) *Result[T]) *Result[T]
-```
-
-Map calls action on Result if it's Ok\(\) and returns its Result\, if not Ok\(\) the original result is returned\.
-
-### func \(\*Result\[T\]\) [MustGet](<https://github.com/nwillc/genfuncs/blob/master/result.go#L102>)
+### func \(\*Result\[T\]\) [MustGet](<https://github.com/nwillc/genfuncs/blob/master/result.go#L103>)
 
 ```go
 func (r *Result[T]) MustGet() T
@@ -400,7 +391,7 @@ func (r *Result[T]) MustGet() T
 
 MustGet returns the value of the Result if Ok\(\) or if not\, panics with the error\.
 
-### func \(\*Result\[T\]\) [Ok](<https://github.com/nwillc/genfuncs/blob/master/result.go#L51>)
+### func \(\*Result\[T\]\) [Ok](<https://github.com/nwillc/genfuncs/blob/master/result.go#L60>)
 
 ```go
 func (r *Result[T]) Ok() bool
@@ -408,7 +399,7 @@ func (r *Result[T]) Ok() bool
 
 Ok returns the status of Result\, is it ok\, or an error\.
 
-### func \(\*Result\[T\]\) [OnFailure](<https://github.com/nwillc/genfuncs/blob/master/result.go#L56>)
+### func \(\*Result\[T\]\) [OnFailure](<https://github.com/nwillc/genfuncs/blob/master/result.go#L65>)
 
 ```go
 func (r *Result[T]) OnFailure(action func(e error)) *Result[T]
@@ -416,7 +407,7 @@ func (r *Result[T]) OnFailure(action func(e error)) *Result[T]
 
 OnFailure performs the action is Result is not Ok\(\)\.
 
-### func \(\*Result\[T\]\) [OnSuccess](<https://github.com/nwillc/genfuncs/blob/master/result.go#L64>)
+### func \(\*Result\[T\]\) [OnSuccess](<https://github.com/nwillc/genfuncs/blob/master/result.go#L73>)
 
 ```go
 func (r *Result[T]) OnSuccess(action func(t T)) *Result[T]
@@ -424,7 +415,7 @@ func (r *Result[T]) OnSuccess(action func(t T)) *Result[T]
 
 OnSuccess performs action if Result is Ok\(\)\.
 
-### func \(\*Result\[T\]\) [OrElse](<https://github.com/nwillc/genfuncs/blob/master/result.go#L89>)
+### func \(\*Result\[T\]\) [OrElse](<https://github.com/nwillc/genfuncs/blob/master/result.go#L90>)
 
 ```go
 func (r *Result[T]) OrElse(v T) T
@@ -432,7 +423,7 @@ func (r *Result[T]) OrElse(v T) T
 
 OrElse returns the value of the Result if Ok\(\)\, or the value v if not\.
 
-### func \(\*Result\[T\]\) [OrEmpty](<https://github.com/nwillc/genfuncs/blob/master/result.go#L97>)
+### func \(\*Result\[T\]\) [OrEmpty](<https://github.com/nwillc/genfuncs/blob/master/result.go#L98>)
 
 ```go
 func (r *Result[T]) OrEmpty() T
@@ -440,7 +431,7 @@ func (r *Result[T]) OrEmpty() T
 
 OrEmpty will return the value of the Result or the empty value if Error\.
 
-### func \(\*Result\[T\]\) [String](<https://github.com/nwillc/genfuncs/blob/master/result.go#L72>)
+### func \(\*Result\[T\]\) [String](<https://github.com/nwillc/genfuncs/blob/master/result.go#L81>)
 
 ```go
 func (r *Result[T]) String() string
@@ -1435,6 +1426,34 @@ func (s *SyncMap[K, V]) Values() (values GSlice[V])
 
 Values returns the values in the Map\, The sync\.Map any values is cast to the Map's type\.
 
+# result
+
+```go
+import "github.com/nwillc/genfuncs/result"
+```
+
+## Index
+
+- [func Map[T, R any](t *genfuncs.Result[T], transform genfuncs.Function[T, R]) (r *genfuncs.Result[R])](<#func-map>)
+- [func MapError[T, R any](t *genfuncs.Result[T]) (r *genfuncs.Result[R])](<#func-maperror>)
+
+
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/result/result_functions.go#L24>)
+
+```go
+func Map[T, R any](t *genfuncs.Result[T], transform genfuncs.Function[T, R]) (r *genfuncs.Result[R])
+```
+
+Map one Result type to another employing a transform\.
+
+## func [MapError](<https://github.com/nwillc/genfuncs/blob/master/result/result_functions.go#L34>)
+
+```go
+func MapError[T, R any](t *genfuncs.Result[T]) (r *genfuncs.Result[R])
+```
+
+MapError Result of one type to another\.
+
 # gmaps
 
 ```go
@@ -1776,7 +1795,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.15.0"
+const Version = "v0.15.1"
 ```
 
 
