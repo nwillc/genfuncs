@@ -68,7 +68,7 @@ func (h *Heap[T]) Peek() (value T) {
 	n := h.Len() - 1
 	if n > 0 && !h.ordered {
 		h.slice.Swap(0, n)
-		h.down()
+		h.down(0)
 		h.ordered = true
 	}
 	value = h.slice[n]
@@ -89,35 +89,34 @@ func (h *Heap[T]) Values() (values GSlice[T]) {
 	return values
 }
 
-func (h *Heap[T]) up(jj int) {
+func (h *Heap[T]) up(i int) {
 	for {
-		i := parent(jj)
-		if i == jj || !h.compare(h.slice[jj], h.slice[i]) {
+		iParent := parent(i)
+		if i < 1 || iParent == i || !h.compare(h.slice[i], h.slice[iParent]) {
 			break
 		}
-		h.slice.Swap(i, jj)
-		jj = i
+		h.slice.Swap(iParent, i)
+		i = iParent
 	}
 }
 
-func (h *Heap[T]) down() {
-	n := h.Len() - 1
-	i1 := 0
+func (h *Heap[T]) down(i int) {
+	length := h.Len() - 1
 	for {
-		j1 := left(i1)
-		if j1 >= n || j1 < 0 {
+		l := left(i)
+		if l < 0 || l >= length {
 			break
 		}
-		j := j1
-		j2 := right(i1)
-		if j2 < n && h.compare(h.slice[j2], h.slice[j1]) {
-			j = j2
+		j := l
+		r := right(i)
+		if r < length && h.compare(h.slice[r], h.slice[l]) {
+			j = r
 		}
-		if !h.compare(h.slice[j], h.slice[i1]) {
+		if !h.compare(h.slice[j], h.slice[i]) {
 			break
 		}
-		h.slice.Swap(i1, j)
-		i1 = j
+		h.slice.Swap(i, j)
+		i = j
 	}
 }
 

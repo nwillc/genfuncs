@@ -18,6 +18,7 @@ package genfuncs
 
 import "fmt"
 
+// Result implements fmt.Stringer.
 var _ fmt.Stringer = (*Result[int])(nil)
 
 // Result is an implementation of the Maybe pattern. This is mostly for experimentation as it is a poor fit with Go's
@@ -27,13 +28,17 @@ type Result[T any] struct {
 	err   error
 }
 
+/*
+  Factories
+*/
+
 // NewResult for a value.
 func NewResult[T any](t T) *Result[T] {
 	return &Result[T]{value: t}
 }
 
-// NewResultFromTuple creates a Result from a value, error tuple.
-func NewResultFromTuple[T any](t T, err error) *Result[T] {
+// NewResultError creates a Result from a value, error tuple.
+func NewResultError[T any](t T, err error) *Result[T] {
 	return &Result[T]{value: t, err: err}
 }
 
@@ -41,6 +46,10 @@ func NewResultFromTuple[T any](t T, err error) *Result[T] {
 func NewError[T any](err error) *Result[T] {
 	return &Result[T]{err: err}
 }
+
+/*
+ Methods
+*/
 
 // Error of the Result, nil if Ok().
 func (r *Result[T]) Error() error {
@@ -75,14 +84,6 @@ func (r *Result[T]) String() string {
 	}
 
 	return "error: " + r.err.Error()
-}
-
-// Map calls action on Result if it's Ok() and returns its Result, if not Ok() the original result is returned.
-func (r *Result[T]) Map(action func(t T) *Result[T]) *Result[T] {
-	if r.Ok() {
-		return action(r.value)
-	}
-	return r
 }
 
 // OrElse returns the value of the Result if Ok(), or the value v if not.

@@ -19,6 +19,7 @@ package genfuncs_test
 import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/result"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -43,11 +44,6 @@ func TestResult(t *testing.T) {
 
 	r = genfuncs.NewResult(10)
 	assert.Equal(t, 10, r.MustGet())
-
-	r = r.Map(func(i int) *genfuncs.Result[int] {
-		return genfuncs.NewResult(i * 10)
-	})
-	assert.Equal(t, 100, r.MustGet())
 }
 
 func TestResult_Error(t *testing.T) {
@@ -180,7 +176,7 @@ func TestResult_Then(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := tt.args.value.Map(func(s string) *genfuncs.Result[string] { return genfuncs.NewResult(s + tt.name) })
+			v := result.Map(tt.args.value, func(s string) string { return s + tt.name })
 			assert.Equal(t, tt.want, v.String())
 		})
 	}
@@ -220,7 +216,7 @@ func TestResult_ValueOr(t *testing.T) {
 	}
 }
 
-func TestNewResultFromTuple(t *testing.T) {
+func TestNewResultError(t *testing.T) {
 	type args struct {
 		fn func() (int, error)
 	}
@@ -246,7 +242,7 @@ func TestNewResultFromTuple(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := genfuncs.NewResultFromTuple(tt.args.fn())
+			result := genfuncs.NewResultError(tt.args.fn())
 			assert.Equal(t, tt.want.Ok(), result.Ok())
 			assert.Equal(t, tt.want.Error(), result.Error())
 			assert.Equal(t, tt.want.OrEmpty(), result.OrEmpty())
