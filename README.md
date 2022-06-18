@@ -12,16 +12,17 @@
 
 Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
 in particular when working with containers like heap, list, map, queue, set, slice, etc. Many of the functions are
-based on Kotlin's Sequence and Map. Attempts were also made to introduce more polymorphism into Go's containers.
-This package, while very usable, is primarily a proof-of-concept since it is likely Go will provide similar before
-long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
+based on Kotlin's Sequence and Map. Some functional patterns like Result and Promises are presents. Attempts were also 
+made to introduce more polymorphism into Go's containers. This package, while very usable, is primarily a 
+proof-of-concept since it is likely Go will provide similar before long. In fact, golang.org/x/exp/slices 
+and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
 
 ## Code Style
 
 The coding style is not always idiomatic, in particular:
 
  - All functions have named return values and those variable are used in the return statements.
- - Some places where the `range` build-in could be used instead use explicit indexing.
+ - Some places where the `range` build-in could have been used instead use explicit indexing.
 
 Both of these, while less idiomatic, were done because they measurably improve performance.
 
@@ -76,6 +77,11 @@ import "github.com/nwillc/genfuncs"
 - [type MapKeyFor](<#type-mapkeyfor>)
 - [type MapKeyValueFor](<#type-mapkeyvaluefor>)
 - [type MapValueFor](<#type-mapvaluefor>)
+- [type Promise](<#type-promise>)
+  - [func NewPromise[T any](action func() *Result[T]) *Promise[T]](<#func-newpromise>)
+  - [func NewPromiseFromResult[T any](result *Result[T]) *Promise[T]](<#func-newpromisefromresult>)
+  - [func (p *Promise[T]) Await() *Result[T]](<#func-promiset-await>)
+  - [func (p *Promise[T]) Catch(err func(error)) *Promise[T]](<#func-promiset-catch>)
 - [type Result](<#type-result>)
   - [func NewError[T any](err error) *Result[T]](<#func-newerror>)
   - [func NewResult[T any](t T) *Result[T]](<#func-newresult>)
@@ -107,6 +113,15 @@ var (
     F32IsZero  = OrderedEqualTo(float32(0.0))
     F64IsZero  = OrderedEqualTo(0.0)
     IIsZero    = OrderedEqualTo(0)
+)
+```
+
+```go
+var (
+    // PromiseNoActionErrorMsg indicates a Promise was created for no action.
+    PromiseNoActionErrorMsg = "promise requested with no action"
+    // PromisePanicErrorMsg indicates the action of a Promise caused a panic.
+    PromisePanicErrorMsg = "promise action panic"
 )
 ```
 
@@ -340,6 +355,48 @@ MapValueFor given a comparable key will return a value for it\.
 ```go
 type MapValueFor[K comparable, T any] func(K) T
 ```
+
+## type [Promise](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L25-L30>)
+
+Promise provides asynchronous Result of an action\.
+
+```go
+type Promise[T any] struct {
+    // contains filtered or unexported fields
+}
+```
+
+### func [NewPromise](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L40>)
+
+```go
+func NewPromise[T any](action func() *Result[T]) *Promise[T]
+```
+
+NewPromise creates a Promise for an action\.
+
+### func [NewPromiseFromResult](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L60>)
+
+```go
+func NewPromiseFromResult[T any](result *Result[T]) *Promise[T]
+```
+
+NewPromiseFromResult returns a completed Promise with the specified result\.
+
+### func \(\*Promise\[T\]\) [Await](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L68>)
+
+```go
+func (p *Promise[T]) Await() *Result[T]
+```
+
+Await the completion of a Promise\.
+
+### func \(\*Promise\[T\]\) [Catch](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L74>)
+
+```go
+func (p *Promise[T]) Catch(err func(error)) *Promise[T]
+```
+
+Catch returns a new Promise that adds an error handler to a Promise\.
 
 ## type [Result](<https://github.com/nwillc/genfuncs/blob/master/result.go#L26-L29>)
 
@@ -1426,6 +1483,34 @@ func (s *SyncMap[K, V]) Values() (values GSlice[V])
 
 Values returns the values in the Map\, The sync\.Map any values is cast to the Map's type\.
 
+# promise
+
+```go
+import "github.com/nwillc/genfuncs/promise"
+```
+
+## Index
+
+- [func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GSlice[T]]](<#func-all>)
+- [func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *genfuncs.Result[B]]) *genfuncs.Promise[B]](<#func-map>)
+
+
+## func [All](<https://github.com/nwillc/genfuncs/blob/master/promise/promise_functions.go#L43>)
+
+```go
+func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GSlice[T]]
+```
+
+All accepts promises and collects their results\, returning a container\.GSlice of the results in correlating order\, or if \*any\* genfuncs\.Promise fails then All returns its error and immediately returns\.
+
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/promise/promise_functions.go#L26>)
+
+```go
+func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *genfuncs.Result[B]]) *genfuncs.Promise[B]
+```
+
+Map will Await aPromise and then return a new Promise which then maps its result\.
+
 # result
 
 ```go
@@ -1795,7 +1880,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.15.1"
+const Version = "v0.16.0"
 ```
 
 
