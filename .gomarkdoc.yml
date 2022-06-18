@@ -14,16 +14,17 @@ header: |+
   
   Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
   in particular when working with containers like heap, list, map, queue, set, slice, etc. Many of the functions are
-  based on Kotlin's Sequence and Map. Attempts were also made to introduce more polymorphism into Go's containers.
-  This package, while very usable, is primarily a proof-of-concept since it is likely Go will provide similar before
-  long. In fact, golang.org/x/exp/slices and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
+  based on Kotlin's Sequence and Map. Some functional patterns like Result and Promises are presents. Attempts were also 
+  made to introduce more polymorphism into Go's containers. This package, while very usable, is primarily a 
+  proof-of-concept since it is likely Go will provide similar before long. In fact, golang.org/x/exp/slices 
+  and golang.org/x/exp/maps offer some similar functions and I incorporate them here.
 
   ## Code Style
 
   The coding style is not always idiomatic, in particular:
 
    - All functions have named return values and those variable are used in the return statements.
-   - Some places where the `range` build-in could be used instead use explicit indexing.
+   - Some places where the `range` build-in could have been used instead use explicit indexing.
 
   Both of these, while less idiomatic, were done because they measurably improve performance.
   
