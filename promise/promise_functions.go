@@ -17,10 +17,13 @@
 package promise
 
 import (
+	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 	"github.com/nwillc/genfuncs/result"
 )
+
+var PromiseAnyNoPromisesErrorMsg = "no any of none"
 
 // Map will Await aPromise and then return a new Promise which then maps its result.
 func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *genfuncs.Result[B]]) *genfuncs.Promise[B] {
@@ -72,5 +75,38 @@ func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GS
 			}
 		}
 		return genfuncs.NewResult(results)
+	})
+}
+
+func Any[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[T] {
+	count := len(promises)
+	if count == 0 {
+		return genfuncs.NewPromiseFromResult(genfuncs.NewError[T](fmt.Errorf(PromiseAnyNoPromisesErrorMsg)))
+	}
+	return genfuncs.NewPromise(func() *genfuncs.Result[T] {
+		resultChan := make(chan promiseResult[T], count)
+
+		for i := 0; i < count; i++ {
+			index := i
+			_ = Map[T, T](promises[i], func(value T) *genfuncs.Result[T] {
+				r := genfuncs.NewResult(value)
+				resultChan <- promiseResult[T]{result: r, index: index}
+				return r
+			})
+			_ = promises[i].Catch(func(err error) {
+				r := genfuncs.NewError[T](err)
+				resultChan <- promiseResult[T]{result: r, index: index}
+			})
+		}
+
+		for i := 0; i < count; i++ {
+			select {
+			case r := <-resultChan:
+				if r.result.Ok() {
+					return r.result
+				}
+			}
+		}
+		return genfuncs.NewError[T](fmt.Errorf("none"))
 	})
 }
