@@ -8,7 +8,7 @@
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 [![Releases](https://img.shields.io/github/tag/nwillc/genfuncs.svg)](https://github.com/nwillc/genfuncs/tags)
 
-# Genfuncs
+# Genfuncs Package
 
 Genfuncs implements various functions utilizing Go's Generics to help avoid writing boilerplate code,
 in particular when working with containers like heap, list, map, queue, set, slice, etc. Many of the functions are
@@ -50,6 +50,8 @@ go get github.com/nwillc/genfuncs
 - [genfuncs/container](<#container>)
 - [genfuncs/container/gmaps](<#gmaps>)
 - [genfuncs/container/gslices](<#gslices>)
+- [genfuncs/promises](<#promises>)
+- [genfuncs/results](<#results>)
 
 # genfuncs
 
