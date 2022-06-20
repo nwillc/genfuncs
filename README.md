@@ -1483,19 +1483,30 @@ func (s *SyncMap[K, V]) Values() (values GSlice[V])
 
 Values returns the values in the Map\, The sync\.Map any values is cast to the Map's type\.
 
-# promise
+# promises
 
 ```go
-import "github.com/nwillc/genfuncs/promise"
+import "github.com/nwillc/genfuncs/promises"
 ```
 
 ## Index
 
+- [Variables](<#variables>)
 - [func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GSlice[T]]](<#func-all>)
+- [func Any[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[T]](<#func-any>)
 - [func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *genfuncs.Result[B]]) *genfuncs.Promise[B]](<#func-map>)
 
 
-## func [All](<https://github.com/nwillc/genfuncs/blob/master/promise/promise_functions.go#L43>)
+## Variables
+
+```go
+var (
+    PromiseAnyNoPromisesErrorMsg = "no any of none"
+    PromiseNoneFulfilled         = "no promises fulfilled"
+)
+```
+
+## func [All](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L49>)
 
 ```go
 func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GSlice[T]]
@@ -1503,7 +1514,15 @@ func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GS
 
 All accepts promises and collects their results\, returning a container\.GSlice of the results in correlating order\, or if \*any\* genfuncs\.Promise fails then All returns its error and immediately returns\.
 
-## func [Map](<https://github.com/nwillc/genfuncs/blob/master/promise/promise_functions.go#L26>)
+## func [Any](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L85>)
+
+```go
+func Any[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[T]
+```
+
+Any returns a Promise that will return the first Promise fulfilled\, or an error if none were\.
+
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L32>)
 
 ```go
 func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *genfuncs.Result[B]]) *genfuncs.Promise[B]
@@ -1511,27 +1530,27 @@ func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *gen
 
 Map will Await aPromise and then return a new Promise which then maps its result\.
 
-# result
+# results
 
 ```go
-import "github.com/nwillc/genfuncs/result"
+import "github.com/nwillc/genfuncs/results"
 ```
 
 ## Index
 
-- [func Map[T, R any](t *genfuncs.Result[T], transform genfuncs.Function[T, R]) (r *genfuncs.Result[R])](<#func-map>)
+- [func Map[T, R any](t *genfuncs.Result[T], transform genfuncs.Function[T, *genfuncs.Result[R]]) (r *genfuncs.Result[R])](<#func-map>)
 - [func MapError[T, R any](t *genfuncs.Result[T]) (r *genfuncs.Result[R])](<#func-maperror>)
 
 
-## func [Map](<https://github.com/nwillc/genfuncs/blob/master/result/result_functions.go#L24>)
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/results/result_functions.go#L24>)
 
 ```go
-func Map[T, R any](t *genfuncs.Result[T], transform genfuncs.Function[T, R]) (r *genfuncs.Result[R])
+func Map[T, R any](t *genfuncs.Result[T], transform genfuncs.Function[T, *genfuncs.Result[R]]) (r *genfuncs.Result[R])
 ```
 
 Map one Result type to another employing a transform\.
 
-## func [MapError](<https://github.com/nwillc/genfuncs/blob/master/result/result_functions.go#L34>)
+## func [MapError](<https://github.com/nwillc/genfuncs/blob/master/results/result_functions.go#L34>)
 
 ```go
 func MapError[T, R any](t *genfuncs.Result[T]) (r *genfuncs.Result[R])
@@ -1880,7 +1899,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.16.0"
+const Version = "v0.17.0"
 ```
 
 
