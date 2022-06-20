@@ -25,7 +25,7 @@ import (
 )
 
 func TestMap(t *testing.T) {
-	transform := func(i int) string { return fmt.Sprintf("%d", i) }
+	transform := func(i int) *genfuncs.Result[string] { return genfuncs.NewResult(fmt.Sprintf("%d", i)) }
 	type args struct {
 		t *genfuncs.Result[int]
 	}

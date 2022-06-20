@@ -21,9 +21,9 @@ import (
 )
 
 // Map one Result type to another employing a transform.
-func Map[T, R any](t *genfuncs.Result[T], transform genfuncs.Function[T, R]) (r *genfuncs.Result[R]) {
+func Map[T, R any](t *genfuncs.Result[T], transform genfuncs.Function[T, *genfuncs.Result[R]]) (r *genfuncs.Result[R]) {
 	if t.Ok() {
-		r = genfuncs.NewResult[R](transform(t.OrEmpty()))
+		r = transform(t.OrEmpty())
 	} else {
 		r = genfuncs.NewError[R](t.Error())
 	}
