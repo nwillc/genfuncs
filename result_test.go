@@ -176,7 +176,7 @@ func TestResult_Then(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := result.Map(tt.args.value, func(s string) string { return s + tt.name })
+			v := result.Map(tt.args.value, func(s string) *genfuncs.Result[string] { return genfuncs.NewResult(s + tt.name) })
 			assert.Equal(t, tt.want, v.String())
 		})
 	}
