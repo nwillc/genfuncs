@@ -14,12 +14,12 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package result_test
+package results_test
 
 import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
-	"github.com/nwillc/genfuncs/result"
+	"github.com/nwillc/genfuncs/results"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -51,7 +51,7 @@ func TestMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotR := result.Map(tt.args.t, transform)
+			gotR := results.Map(tt.args.t, transform)
 			assert.Equal(t, tt.wantR.Ok(), gotR.Ok())
 			assert.Equal(t, tt.wantR.Error(), gotR.Error())
 			assert.Equal(t, tt.wantR.OrEmpty(), gotR.OrEmpty())
@@ -61,6 +61,6 @@ func TestMap(t *testing.T) {
 
 func TestMapError(t *testing.T) {
 	iErr := genfuncs.NewError[int](fmt.Errorf("foo"))
-	sErr := result.MapError[int, string](iErr)
+	sErr := results.MapError[int, string](iErr)
 	assert.Equal(t, sErr.Error().Error(), "foo")
 }

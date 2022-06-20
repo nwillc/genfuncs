@@ -14,7 +14,7 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package result
+package results
 
 import (
 	"github.com/nwillc/genfuncs"

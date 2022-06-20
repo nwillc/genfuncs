@@ -14,23 +14,26 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package promise
+package promises
 
 import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
-	"github.com/nwillc/genfuncs/result"
+	"github.com/nwillc/genfuncs/results"
 )
 
-var PromiseAnyNoPromisesErrorMsg = "no any of none"
+var (
+	PromiseAnyNoPromisesErrorMsg = "no any of none"
+	PromiseNoneFulfilled         = "no promises fulfilled"
+)
 
 // Map will Await aPromise and then return a new Promise which then maps its result.
 func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *genfuncs.Result[B]]) *genfuncs.Promise[B] {
 	return genfuncs.NewPromise(func() *genfuncs.Result[B] {
 		result1 := aPromise.Await()
 		if !result1.Ok() {
-			return result.MapError[A, B](result1)
+			return results.MapError[A, B](result1)
 		}
 		return then(result1.OrEmpty())
 	})
@@ -78,6 +81,7 @@ func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GS
 	})
 }
 
+// Any returns a Promise that will return the first Promise fulfilled, or an error if none were.
 func Any[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[T] {
 	count := len(promises)
 	if count == 0 {
@@ -107,6 +111,6 @@ func Any[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[T] {
 				}
 			}
 		}
-		return genfuncs.NewError[T](fmt.Errorf("none"))
+		return genfuncs.NewError[T](fmt.Errorf(PromiseNoneFulfilled))
 	})
 }

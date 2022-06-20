@@ -14,13 +14,13 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package promise_test
+package promises_test
 
 import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
-	"github.com/nwillc/genfuncs/promise"
+	"github.com/nwillc/genfuncs/promises"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -76,7 +76,7 @@ func TestMap(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p1 := genfuncs.NewPromise[int](tt.args.f1)
-			p2 := promise.Map(p1, tt.args.f2)
+			p2 := promises.Map(p1, tt.args.f2)
 			result := p2.Await()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !result.Ok() {
@@ -140,7 +140,7 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			all := promise.All(tt.args.promises...)
+			all := promises.All(tt.args.promises...)
 			result := all.Await()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if tt.wantOk {
@@ -165,7 +165,7 @@ func TestAny(t *testing.T) {
 			args: args{
 				promises: []*genfuncs.Promise[string]{},
 			},
-			want:   promise.PromiseAnyNoPromisesErrorMsg,
+			want:   promises.PromiseAnyNoPromisesErrorMsg,
 			wantOk: false,
 		},
 		{
@@ -185,7 +185,7 @@ func TestAny(t *testing.T) {
 					genfuncs.NewPromise(func() *genfuncs.Result[string] { return genfuncs.NewError[string](genfuncs.NoSuchElement) }),
 				},
 			},
-			want:   "none",
+			want:   promises.PromiseNoneFulfilled,
 			wantOk: false,
 		},
 		{
@@ -202,7 +202,7 @@ func TestAny(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			one := promise.Any(tt.args.promises...)
+			one := promises.Any(tt.args.promises...)
 			result := one.Await()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !tt.wantOk {
