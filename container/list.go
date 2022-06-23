@@ -23,14 +23,26 @@ import (
 var (
 	// List implements Container.
 	_ Container[int] = (*List[int])(nil)
+	_ Iterable[int]  = (*List[int])(nil)
+	_ Iterator[int]  = (*listIterator[int])(nil)
 )
 
-// ListElement is an element of List.
-type ListElement[T any] struct {
-	next, prev *ListElement[T]
-	list       *List[T]
-	Value      T
-}
+type (
+	// ListElement is an element of List.
+	ListElement[T any] struct {
+		next, prev *ListElement[T]
+		list       *List[T]
+		Value      T
+	}
+	// List is a doubly linked list, inspired by list.List but reworked to be generic. List implements Container.
+	List[T any] struct {
+		root ListElement[T]
+		len  int
+	}
+	listIterator[T any] struct {
+		ListElement *ListElement[T]
+	}
+)
 
 // Next returns the next list element or nil.
 func (e *ListElement[T]) Next() (next *ListElement[T]) {
@@ -56,12 +68,6 @@ func (e *ListElement[T]) Swap(e2 *ListElement[T]) {
 		return
 	}
 	e.Value, e2.Value = e2.Value, e.Value
-}
-
-// List is a doubly linked list, inspired by list.List but reworked to be generic. List implements Container.
-type List[T any] struct {
-	root ListElement[T]
-	len  int
 }
 
 // NewList instantiates a new List containing any values provided.
@@ -119,6 +125,10 @@ func (l *List[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool) {
 	}
 	ok = true
 	return ok
+}
+
+func (l *List[T]) Iterator() Iterator[T] {
+	return NewListIterator[T](l)
 }
 
 // Len returns the number of values in the List.
@@ -214,4 +224,21 @@ func (l *List[T]) bubbleSort(order genfuncs.BiFunction[T, T, bool]) {
 		}
 		end = newEnd
 	}
+}
+
+func NewListIterator[T any](list *List[T]) Iterator[T] {
+	return &listIterator[T]{ListElement: list.PeekLeft()}
+}
+
+func (l *listIterator[T]) HasNext() bool {
+	return l.ListElement != nil
+}
+
+func (l *listIterator[T]) Next() (value T) {
+	if !l.HasNext() {
+		panic(genfuncs.NoSuchElement)
+	}
+	value = l.ListElement.Value
+	l.ListElement = l.ListElement.Next()
+	return value
 }

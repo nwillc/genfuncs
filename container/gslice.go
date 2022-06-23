@@ -26,11 +26,19 @@ import (
 
 var (
 	_      HasValues[int] = (*GSlice[int])(nil)
+	_      Iterable[int]  = (*GSlice[int])(nil)
+	_      Iterator[int]  = (*sliceIterator[int])(nil)
 	random                = rand.New(rand.NewSource(time.Now().Unix()))
 )
 
 // GSlice is a generic type corresponding to a standard Go slice that implements HasValues.
-type GSlice[T any] []T
+type (
+	GSlice[T any]        []T
+	sliceIterator[T any] struct {
+		slice []T
+		index int
+	}
+)
 
 // All returns true if all elements of slice match the predicate.
 func (s GSlice[T]) All(predicate genfuncs.Function[T, bool]) bool {
@@ -115,6 +123,10 @@ func (s GSlice[T]) ForEach(action func(i int, t T)) {
 	}
 }
 
+func (s GSlice[T]) Iterator() Iterator[T] {
+	return NewSliceIterator[T](s)
+}
+
 // JoinToString creates a string from all the elements using the stringer on each, separating them using separator, and
 // using the given prefix and postfix.
 func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string {
@@ -166,4 +178,24 @@ func (s GSlice[T]) Swap(i, j int) {
 func (s GSlice[T]) Values() (values GSlice[T]) {
 	values = s
 	return values
+}
+
+func NewSliceIterator[T any](slice []T) Iterator[T] {
+	return &sliceIterator[T]{slice: slice}
+}
+
+func NewValuesIterator[T any](values ...T) Iterator[T] {
+	return NewSliceIterator(values)
+}
+func (s *sliceIterator[T]) HasNext() bool {
+	return s.index < len(s.slice)
+}
+
+func (s *sliceIterator[T]) Next() (value T) {
+	if !s.HasNext() {
+		panic(genfuncs.NoSuchElement)
+	}
+	value = s.slice[s.index]
+	s.index++
+	return value
 }

@@ -22,10 +22,20 @@ import (
 )
 
 // GMap implements the Map interface.
-var _ Map[int, int] = (GMap[int, int])(nil)
+var (
+	_ Map[int, int]    = (GMap[int, int])(nil)
+	_ Iterable[string] = (GMap[int, string])(nil)
+	_ Iterator[string] = (*gmapIterator[int, string])(nil)
+)
 
 // GMap is a generic type employing the standard Go map and implementation Map.
-type GMap[K comparable, V any] map[K]V
+type (
+	GMap[K comparable, V any]         map[K]V
+	gmapIterator[K comparable, V any] struct {
+		gmap     GMap[K, V]
+		iterator Iterator[K]
+	}
+)
 
 // All returns true if all values in GMap satisfy the predicate.
 func (m GMap[K, V]) All(predicate genfuncs.Function[V, bool]) (ok bool) {
@@ -108,6 +118,10 @@ func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) (value V) {
 	return value
 }
 
+func (m GMap[K, V]) Iterator() Iterator[V] {
+	return &gmapIterator[K, V]{gmap: m, iterator: m.Keys().Iterator()}
+}
+
 // Keys return a GSlice containing the keys of the GMap.
 func (m GMap[K, V]) Keys() (keys GSlice[K]) {
 	keys = maps.Keys(m)
@@ -129,4 +143,16 @@ func (m GMap[K, V]) Put(key K, value V) {
 func (m GMap[K, V]) Values() (values GSlice[V]) {
 	values = maps.Values(m)
 	return values
+}
+
+func (g gmapIterator[K, V]) HasNext() bool {
+	return g.iterator.HasNext()
+}
+
+func (g gmapIterator[K, V]) Next() V {
+	if !g.HasNext() {
+		panic(genfuncs.NoSuchElement)
+	}
+	k := g.iterator.Next()
+	return g.gmap[k]
 }

@@ -408,3 +408,17 @@ func TestListElement_Swap(t *testing.T) {
 		})
 	}
 }
+
+func Test_listIterator_Next(t *testing.T) {
+	values := []int{1, 2, 3}
+	list := container.NewList[int]()
+	list.AddAll(values...)
+	i := list.Iterator()
+
+	index := 0
+	for i.HasNext() {
+		assert.Equal(t, values[index], i.Next())
+		index++
+	}
+	assert.Equal(t, index, len(values))
+}

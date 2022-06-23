@@ -19,6 +19,7 @@ package gslices
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/iterables"
 )
 
 // Associate returns a map containing key/values created by applying a function to elements of the slice.
@@ -64,12 +65,7 @@ func FlatMap[T, R any](slice container.GSlice[T], transform genfuncs.Function[T,
 // Fold accumulates a value starting with initial value and applying operation from left to right to current
 // accumulated value and each element.
 func Fold[T, R any](slice container.GSlice[T], initial R, operation genfuncs.BiFunction[R, T, R]) (result R) {
-	length := len(slice)
-	result = initial
-	for i := 0; i < length; i++ {
-		result = operation(result, slice[i])
-	}
-	return result
+	return iterables.Fold[T, R](slice, initial, operation)
 }
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to

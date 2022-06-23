@@ -354,3 +354,18 @@ func TestGMap_Put(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, v, 0)
 }
+
+func TestGMap_Iterator(t *testing.T) {
+	m := container.GMap[int, string]{1: "1", 2: "2"}
+	want := container.GSlice[string]{"1", "2"}
+	i := m.Iterator()
+	index := 0
+	for i.HasNext() {
+		v := i.Next()
+		assert.True(t, want.Any(func(s string) bool {
+			return s == v
+		}))
+		index++
+	}
+	assert.Equal(t, m.Len(), index)
+}

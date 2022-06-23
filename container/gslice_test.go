@@ -692,3 +692,15 @@ func TestGSlice_Equal(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceIterator_Next(t *testing.T) {
+	values := []int{1, 2, 3}
+	i := container.NewValuesIterator(values...)
+
+	index := 0
+	for i.HasNext() {
+		assert.Equal(t, values[index], i.Next())
+		index++
+	}
+	assert.Equal(t, index, len(values))
+}

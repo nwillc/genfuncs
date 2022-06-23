@@ -35,6 +35,10 @@ var (
 	IIsZero    = OrderedEqualTo(0)
 )
 
+func Empty[T any]() (empty T) {
+	return empty
+}
+
 // OrderedEqual returns true jf a is ordered equal to b.
 func OrderedEqual[O constraints.Ordered](a, b O) (orderedEqualTo bool) {
 	orderedEqualTo = Ordered(a, b) == EqualTo
