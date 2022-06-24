@@ -31,124 +31,6 @@ type PersonName struct {
 	Last  string
 }
 
-func TestAssociate(t *testing.T) {
-	var firstLast genfuncs.MapKeyValueFor[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
-	type args struct {
-		slice     []PersonName
-		transform genfuncs.MapKeyValueFor[PersonName, string, string]
-	}
-	tests := []struct {
-		name     string
-		args     args
-		wantSize int
-		contains []string
-	}{
-		{
-			name: "Empty",
-			args: args{
-				slice:     []PersonName{},
-				transform: firstLast,
-			},
-			wantSize: 0,
-		},
-		{
-			name: "Two Unique",
-			args: args{
-				slice: []PersonName{
-					{
-						First: "fred",
-						Last:  "flintstone",
-					},
-					{
-						First: "barney",
-						Last:  "rubble",
-					},
-				},
-				transform: firstLast,
-			},
-			wantSize: 2,
-			contains: []string{"fred", "baarney"},
-		},
-		{
-			name: "Duplicate",
-			args: args{
-				slice: []PersonName{
-					{
-						First: "fred",
-						Last:  "flintstone",
-					},
-					{
-						First: "fred",
-						Last:  "astaire",
-					},
-				},
-				transform: firstLast,
-			},
-			wantSize: 1,
-			contains: []string{"fred"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			fNameMap := gslices.Associate(tt.args.slice, tt.args.transform)
-			assert.Equal(t, tt.wantSize, fNameMap.Len())
-			for k := range fNameMap {
-				_, ok := fNameMap[k]
-				assert.True(t, ok)
-			}
-		})
-	}
-}
-
-func TestAssociateWith(t *testing.T) {
-	var valueSelector genfuncs.MapValueFor[int, int] = func(i int) int { return i * 2 }
-	type args struct {
-		slice     []int
-		transform genfuncs.MapValueFor[int, int]
-	}
-	tests := []struct {
-		name     string
-		args     args
-		wantSize int
-	}{
-		{
-			name: "Empty",
-			args: args{
-				slice:     []int{},
-				transform: valueSelector,
-			},
-			wantSize: 0,
-		},
-		{
-			name: "Three Unique",
-			args: args{
-				slice:     []int{1, 2, 3},
-				transform: valueSelector,
-			},
-			wantSize: 3,
-		},
-		{
-			name: "Duplicate",
-			args: args{
-				slice:     []int{1, 2, 2},
-				transform: valueSelector,
-			},
-			wantSize: 2,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			resultMap := gslices.AssociateWith(tt.args.slice, tt.args.transform)
-			assert.Equal(t, tt.wantSize, resultMap.Len())
-			for _, k := range tt.args.slice {
-				v, ok := resultMap[k]
-				assert.True(t, ok, "did not find key:", k)
-				assert.Equal(t, k*2, v)
-			}
-		})
-	}
-}
-
 func TestDistinct(t *testing.T) {
 	type args struct {
 		slice []int
@@ -222,12 +104,6 @@ func TestFlatMap(t *testing.T) {
 			assert.ElementsMatch(t, tt.want, got)
 		})
 	}
-}
-
-func TestFold(t *testing.T) {
-	si := []int{1, 2, 3}
-	sum := gslices.Fold(si, 10, func(r int, i int) int { return r + i })
-	assert.Equal(t, 16, sum)
 }
 
 func TestGroupBy(t *testing.T) {

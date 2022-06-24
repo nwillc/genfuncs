@@ -21,6 +21,7 @@ import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 	"github.com/nwillc/genfuncs/container/gslices"
+	"github.com/nwillc/genfuncs/container/iterables"
 	"os"
 	"strings"
 	"testing"
@@ -36,7 +37,6 @@ func TestFunctionExamples(t *testing.T) {
 	ExampleAssociateWith()
 	ExampleDistinct()
 	ExampleFlatMap()
-	ExampleFold()
 	ExampleGroupBy()
 	ExampleMap()
 }
@@ -46,8 +46,8 @@ func ExampleAssociate() {
 		parts := strings.Split(n, " ")
 		return parts[1], n
 	}
-	names := []string{"fred flintstone", "barney rubble"}
-	nameMap := gslices.Associate(names, byLastName)
+	names := container.GSlice[string]{"fred flintstone", "barney rubble"}
+	nameMap := iterables.Associate[string](names, byLastName)
 	fmt.Println(nameMap["rubble"])
 	// Output: barney rubble
 }
@@ -59,8 +59,8 @@ func ExampleAssociateWith() {
 		}
 		return "ODD"
 	}
-	numbers := []int{1, 2, 3, 4}
-	odsEvensMap := gslices.AssociateWith(numbers, oddEven)
+	numbers := container.GSlice[int]{1, 2, 3, 4}
+	odsEvensMap := iterables.AssociateWith[int](numbers, oddEven)
 	fmt.Println(odsEvensMap[2])
 	fmt.Println(odsEvensMap[3])
 	// Output:
@@ -85,12 +85,12 @@ func ExampleFlatMap() {
 	// Output: [h e l l o w o r l d]
 }
 
-func ExampleFold() {
-	numbers := []int{1, 2, 3, 4, 5}
-	sum := func(a int, b int) int { return a + b }
-	fmt.Println(gslices.Fold(numbers, 0, sum))
-	// Output: 15
-}
+// func ExampleFold() {
+// 	numbers := []int{1, 2, 3, 4, 5}
+// 	sum := func(a int, b int) int { return a + b }
+// 	fmt.Println(gslices.Fold(numbers, 0, sum))
+// 	// Output: 15
+// }
 
 func ExampleGroupBy() {
 	oddEven := func(i int) string {

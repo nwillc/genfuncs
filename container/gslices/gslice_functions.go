@@ -19,32 +19,7 @@ package gslices
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
-	"github.com/nwillc/genfuncs/container/iterables"
 )
-
-// Associate returns a map containing key/values created by applying a function to elements of the slice.
-func Associate[T, V any, K comparable](slice container.GSlice[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V]) {
-	length := len(slice)
-	result = make(container.GMap[K, V], length)
-	for i := 0; i < length; i++ {
-		k, v := keyValueFor(slice[i])
-		result[k] = v
-	}
-	return result
-}
-
-// AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the
-// valueSelector function applied to each element.
-func AssociateWith[T comparable, V any](slice container.GSlice[T], valueFor genfuncs.MapValueFor[T, V]) (result container.GMap[T, V]) {
-	length := len(slice)
-	result = make(container.GMap[T, V], length)
-	var t T
-	for i := 0; i < length; i++ {
-		t = slice[i]
-		result[t] = valueFor(t)
-	}
-	return result
-}
 
 // Distinct returns a slice containing only distinct elements from the given slice.
 func Distinct[T comparable](slice container.GSlice[T]) (distinct container.GSlice[T]) {
@@ -60,12 +35,6 @@ func FlatMap[T, R any](slice container.GSlice[T], transform genfuncs.Function[T,
 		result = append(result, transform(slice[i])...)
 	}
 	return result
-}
-
-// Fold accumulates a value starting with initial value and applying operation from left to right to current
-// accumulated value and each element.
-func Fold[T, R any](slice container.GSlice[T], initial R, operation genfuncs.BiFunction[R, T, R]) (result R) {
-	return iterables.Fold[T, R](slice, initial, operation)
 }
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to
