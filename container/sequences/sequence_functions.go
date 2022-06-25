@@ -48,8 +48,8 @@ func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, b
 
 // Associate returns a map containing key/values created by applying a function to each value of the container.Iterator
 // returned by the container.Sequence.
-func Associate[T, V any, K comparable](iterable container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V]) {
-	iterator := iterable.Iterator()
+func Associate[T, V any, K comparable](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V]) {
+	iterator := sequence.Iterator()
 	result = make(container.GMap[K, V])
 	for iterator.HasNext() {
 		k, v := keyValueFor(iterator.Next())
@@ -60,8 +60,8 @@ func Associate[T, V any, K comparable](iterable container.Sequence[T], keyValueF
 
 // AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the
 // valueSelector function applied to each element.
-func AssociateWith[K comparable, V any](iterable container.Sequence[K], valueFor genfuncs.MapValueFor[K, V]) (result container.GMap[K, V]) {
-	iterator := iterable.Iterator()
+func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor genfuncs.MapValueFor[K, V]) (result container.GMap[K, V]) {
+	iterator := sequence.Iterator()
 	result = make(container.GMap[K, V])
 	var t K
 	for iterator.HasNext() {
@@ -79,8 +79,8 @@ func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Functi
 
 // Fold accumulates a value starting with an initial value and applying operation to each value of the container.Iterator
 // returned by the container.Sequence.
-func Fold[T, R any](iterable container.Sequence[T], initial R, operation genfuncs.BiFunction[R, T, R]) (result R) {
-	iterator := iterable.Iterator()
+func Fold[T, R any](sequence container.Sequence[T], initial R, operation genfuncs.BiFunction[R, T, R]) (result R) {
+	iterator := sequence.Iterator()
 	result = initial
 	for iterator.HasNext() {
 		result = operation(result, iterator.Next())
@@ -88,8 +88,8 @@ func Fold[T, R any](iterable container.Sequence[T], initial R, operation genfunc
 	return result
 }
 
-func Map[T, R any](iterable container.Sequence[T], transform genfuncs.Function[T, R]) container.Sequence[R] {
-	return container.NewIteratorSequence[R](transformIterator[T, R]{iterator: iterable.Iterator(), transform: transform})
+func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, R]) container.Sequence[R] {
+	return container.NewIteratorSequence[R](transformIterator[T, R]{iterator: sequence.Iterator(), transform: transform})
 }
 
 func SequenceOf[T any](values ...T) (sequence container.Sequence[T]) {
