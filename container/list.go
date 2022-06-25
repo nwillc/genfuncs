@@ -23,7 +23,7 @@ import (
 var (
 	// List implements Container.
 	_ Container[int] = (*List[int])(nil)
-	_ Iterable[int]  = (*List[int])(nil)
+	_ Sequence[int]  = (*List[int])(nil)
 	_ Iterator[int]  = (*listIterator[int])(nil)
 )
 
@@ -70,8 +70,8 @@ func (e *ListElement[T]) Swap(e2 *ListElement[T]) {
 	e.Value, e2.Value = e2.Value, e.Value
 }
 
-// NewList instantiates a new List containing any values provided.
-func NewList[T any](values ...T) (l *List[T]) {
+// ListOf instantiates a new List containing any values provided.
+func ListOf[T any](values ...T) (l *List[T]) {
 	l = new(List[T])
 	l.root.next = &l.root
 	l.root.prev = &l.root

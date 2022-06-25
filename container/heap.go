@@ -31,8 +31,8 @@ type Heap[T any] struct {
 	ordered bool
 }
 
-// NewHeap return a heap ordered based on the compare and adds any values provided.
-func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) (heap *Heap[T]) {
+// HeapOf return a heap ordered based on the compare and adds any values provided.
+func HeapOf[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) (heap *Heap[T]) {
 	heap = &Heap[T]{
 		compare: compare,
 		slice:   make(GSlice[T], 0, len(values)),

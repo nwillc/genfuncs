@@ -26,7 +26,7 @@ import (
 
 var (
 	_      HasValues[int] = (*GSlice[int])(nil)
-	_      Iterable[int]  = (*GSlice[int])(nil)
+	_      Sequence[int]  = (*GSlice[int])(nil)
 	_      Iterator[int]  = (*sliceIterator[int])(nil)
 	random                = rand.New(rand.NewSource(time.Now().Unix()))
 )

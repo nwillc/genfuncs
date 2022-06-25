@@ -24,7 +24,7 @@ import (
 // GMap implements the Map interface.
 var (
 	_ Map[int, int]    = (GMap[int, int])(nil)
-	_ Iterable[string] = (GMap[int, string])(nil)
+	_ Sequence[string] = (GMap[int, string])(nil)
 	_ Iterator[string] = (*gmapIterator[int, string])(nil)
 )
 

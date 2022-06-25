@@ -21,7 +21,7 @@ import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 	"github.com/nwillc/genfuncs/container/gslices"
-	"github.com/nwillc/genfuncs/container/iterables"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"os"
 	"strings"
 	"testing"
@@ -47,7 +47,7 @@ func ExampleAssociate() {
 		return parts[1], n
 	}
 	names := container.GSlice[string]{"fred flintstone", "barney rubble"}
-	nameMap := iterables.Associate[string](names, byLastName)
+	nameMap := sequences.Associate[string](names, byLastName)
 	fmt.Println(nameMap["rubble"])
 	// Output: barney rubble
 }
@@ -60,7 +60,7 @@ func ExampleAssociateWith() {
 		return "ODD"
 	}
 	numbers := container.GSlice[int]{1, 2, 3, 4}
-	odsEvensMap := iterables.AssociateWith[int](numbers, oddEven)
+	odsEvensMap := sequences.AssociateWith[int](numbers, oddEven)
 	fmt.Println(odsEvensMap[2])
 	fmt.Println(odsEvensMap[3])
 	// Output:

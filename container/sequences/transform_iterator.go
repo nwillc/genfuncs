@@ -14,30 +14,24 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package container_test
+package sequences
 
 import (
-	"fmt"
-	"os"
-	"testing"
-
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 )
 
-func TestHeapFunctionExamples(t *testing.T) {
-	if _, ok := os.LookupEnv("RUN_EXAMPLES"); !ok {
-		t.Skip("skipping: RUN_EXAMPLES not set")
-	}
-	// Heap
-	ExampleNewHeap()
+var _ container.Iterator[int] = (*transformIterator[string, int])(nil)
+
+type transformIterator[T, R any] struct {
+	iterator  container.Iterator[T]
+	transform genfuncs.Function[T, R]
 }
 
-func ExampleNewHeap() {
-	heap := container.HeapOf[int](genfuncs.OrderedLess[int], 3, 1, 4, 2)
-	for heap.Len() > 0 {
-		fmt.Print(heap.Remove())
-	}
-	fmt.Println()
-	// Output: 1234
+func (t transformIterator[T, R]) HasNext() bool {
+	return t.iterator.HasNext()
+}
+
+func (t transformIterator[T, R]) Next() R {
+	return t.transform(t.iterator.Next())
 }

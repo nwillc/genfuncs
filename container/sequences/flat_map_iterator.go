@@ -14,24 +14,44 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package iterables
+package sequences
 
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 )
 
-var _ container.Iterator[int] = (*transformIterator[string, int])(nil)
+var _ container.Iterator[int] = (*flatMapIterator[string, int])(nil)
 
-type transformIterator[T, R any] struct {
-	iterator  container.Iterator[T]
-	transform genfuncs.Function[T, R]
+type flatMapIterator[T, R any] struct {
+	outer     container.Iterator[T]
+	inner     container.Iterator[R]
+	transform func(t T) container.Sequence[R]
+	hasData   bool
 }
 
-func (t transformIterator[T, R]) HasNext() bool {
-	return t.iterator.HasNext()
+func newFlatMapIterator[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, container.Sequence[R]]) container.Iterator[R] {
+	return &flatMapIterator[T, R]{outer: sequence.Iterator(), transform: transform}
 }
 
-func (t transformIterator[T, R]) Next() R {
-	return t.transform(t.iterator.Next())
+func (f *flatMapIterator[T, R]) HasNext() bool {
+	if f.hasData && f.inner.HasNext() {
+		return true
+	}
+	f.hasData = false
+	for f.outer.HasNext() {
+		f.inner = f.transform(f.outer.Next()).Iterator()
+		if f.inner.HasNext() {
+			f.hasData = true
+			return true
+		}
+	}
+	return false
+}
+
+func (f *flatMapIterator[T, R]) Next() R {
+	if !f.HasNext() {
+		panic(genfuncs.NoSuchElement)
+	}
+	return f.inner.Next()
 }

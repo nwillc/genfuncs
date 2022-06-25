@@ -16,11 +16,27 @@
 
 package container
 
-type Iterator[T any] interface {
-	HasNext() bool
-	Next() T
+var (
+	_ Sequence[int] = (*iteratorSequence[int])(nil)
+)
+
+type (
+	Iterator[T any] interface {
+		HasNext() bool
+		Next() T
+	}
+	Sequence[T any] interface {
+		Iterator() Iterator[T]
+	}
+	iteratorSequence[T any] struct {
+		iterator Iterator[T]
+	}
+)
+
+func NewIteratorSequence[T any](iterator Iterator[T]) Sequence[T] {
+	return &iteratorSequence[T]{iterator: iterator}
 }
 
-type Iterable[T any] interface {
-	Iterator() Iterator[T]
+func (i iteratorSequence[T]) Iterator() Iterator[T] {
+	return i.iterator
 }

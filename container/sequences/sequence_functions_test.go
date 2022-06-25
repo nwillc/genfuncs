@@ -14,13 +14,13 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package iterables_test
+package sequences_test
 
 import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
-	"github.com/nwillc/genfuncs/container/iterables"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
@@ -31,14 +31,100 @@ type PersonName struct {
 	Last  string
 }
 
+func TestAll(t *testing.T) {
+	type args struct {
+		sequence  container.Sequence[string]
+		predicate genfuncs.Function[string, bool]
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "Empty",
+			args: args{
+				sequence:  sequences.SequenceOf[string](),
+				predicate: func(s string) bool { return s == "a" },
+			},
+			want: true,
+		},
+		{
+			name: "Some Not All",
+			args: args{
+				sequence:  sequences.SequenceOf("b", "c"),
+				predicate: func(s string) bool { return s == "b" },
+			},
+			want: false,
+		},
+		{
+			name: "All",
+			args: args{
+				sequence:  sequences.SequenceOf("b", "a", "c"),
+				predicate: func(s string) bool { return len(s) == 1 },
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sequences.All(tt.args.sequence, tt.args.predicate)
+			assert.Equal(t, got, tt.want)
+		})
+	}
+}
+
+func TestAny(t *testing.T) {
+	type args struct {
+		sequence  container.Sequence[string]
+		predicate genfuncs.Function[string, bool]
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "Empty",
+			args: args{
+				sequence:  sequences.SequenceOf[string](),
+				predicate: func(s string) bool { return s == "a" },
+			},
+			want: false,
+		},
+		{
+			name: "Not Found",
+			args: args{
+				sequence:  sequences.SequenceOf("b", "c"),
+				predicate: func(s string) bool { return s == "a" },
+			},
+			want: false,
+		},
+		{
+			name: "Found",
+			args: args{
+				sequence:  sequences.SequenceOf("b", "a", "c"),
+				predicate: func(s string) bool { return s == "a" },
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sequences.Any(tt.args.sequence, tt.args.predicate)
+			assert.Equal(t, got, tt.want)
+		})
+	}
+}
+
 func TestFold(t *testing.T) {
 	sum := 0
 	si := container.GSlice[int]{1, 2, 3}
-	sum = iterables.Fold[int, int](si, 10, func(r int, i int) int { return r + i })
+	sum = sequences.Fold[int, int](si, 10, func(r int, i int) int { return r + i })
 	assert.Equal(t, 16, sum)
 
 	mi := container.GMap[int, int]{1: 1, 2: 2, 3: 3}
-	sum = iterables.Fold[int, int](mi, 10, func(r int, i int) int { return r + i })
+	sum = sequences.Fold[int, int](mi, 10, func(r int, i int) int { return r + i })
 	assert.Equal(t, 16, sum)
 }
 
@@ -46,7 +132,7 @@ func TestMap(t *testing.T) {
 	v := container.GSlice[int]{1, 2, 3}
 	want := container.GSlice[string]{"1", "2", "3"}
 
-	got := iterables.Map[int, string](v, func(i int) string { return fmt.Sprint(i) })
+	got := sequences.Map[int, string](v, func(i int) string { return fmt.Sprint(i) }).Iterator()
 
 	index := 0
 	for got.HasNext() {
@@ -59,7 +145,7 @@ func TestMap(t *testing.T) {
 func TestAssociate(t *testing.T) {
 	var firstLast genfuncs.MapKeyValueFor[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
 	type args struct {
-		iterable  container.Iterable[PersonName]
+		sequence  container.Sequence[PersonName]
 		transform genfuncs.MapKeyValueFor[PersonName, string, string]
 	}
 	tests := []struct {
@@ -71,7 +157,7 @@ func TestAssociate(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				iterable:  container.NewList[PersonName](),
+				sequence:  sequences.SequenceOf[PersonName](),
 				transform: firstLast,
 			},
 			wantSize: 0,
@@ -79,7 +165,7 @@ func TestAssociate(t *testing.T) {
 		{
 			name: "Two Unique",
 			args: args{
-				iterable: container.GMap[string, PersonName]{
+				sequence: container.GMap[string, PersonName]{
 					"fred": {
 						First: "fred",
 						Last:  "flintstone",
@@ -97,7 +183,7 @@ func TestAssociate(t *testing.T) {
 		{
 			name: "Duplicate",
 			args: args{
-				iterable: container.GSlice[PersonName]{
+				sequence: container.GSlice[PersonName]{
 					{
 						First: "fred",
 						Last:  "flintstone",
@@ -112,10 +198,19 @@ func TestAssociate(t *testing.T) {
 			wantSize: 1,
 			contains: []string{"fred"},
 		},
+		{
+			name: "list one",
+			args: args{
+				sequence:  container.ListOf(PersonName{First: "Donald", Last: "Duck"}),
+				transform: firstLast,
+			},
+			wantSize: 1,
+			contains: []string{"Donald"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fNameMap := iterables.Associate(tt.args.iterable, tt.args.transform)
+			fNameMap := sequences.Associate(tt.args.sequence, tt.args.transform)
 			assert.Equal(t, tt.wantSize, fNameMap.Len())
 			for k := range fNameMap {
 				_, ok := fNameMap[k]
@@ -128,7 +223,7 @@ func TestAssociate(t *testing.T) {
 func TestAssociateWith(t *testing.T) {
 	var valueSelector genfuncs.MapValueFor[int, int] = func(i int) int { return i * 2 }
 	type args struct {
-		slice     container.Iterable[int]
+		slice     container.Sequence[int]
 		transform genfuncs.MapValueFor[int, int]
 	}
 	tests := []struct {
@@ -139,7 +234,7 @@ func TestAssociateWith(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				slice:     container.NewList[int](),
+				slice:     container.ListOf[int](),
 				transform: valueSelector,
 			},
 			wantSize: 0,
@@ -163,7 +258,7 @@ func TestAssociateWith(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultMap := iterables.AssociateWith(tt.args.slice, tt.args.transform)
+			resultMap := sequences.AssociateWith(tt.args.slice, tt.args.transform)
 			assert.Equal(t, tt.wantSize, resultMap.Len())
 			for k := range resultMap {
 				_, ok := resultMap[k]
@@ -174,10 +269,10 @@ func TestAssociateWith(t *testing.T) {
 }
 
 func TestFlatMap(t *testing.T) {
-	var trans = func(i int) container.Iterable[string] { return container.GSlice[string]{"#", strconv.Itoa(i)} }
+	var trans = func(i int) container.Sequence[string] { return container.GSlice[string]{"#", strconv.Itoa(i)} }
 	type args struct {
-		slice     container.Iterable[int]
-		transform func(int) container.Iterable[string]
+		slice     container.Sequence[int]
+		transform func(int) container.Sequence[string]
 	}
 	tests := []struct {
 		name string
@@ -195,7 +290,7 @@ func TestFlatMap(t *testing.T) {
 		{
 			name: "List",
 			args: args{
-				slice:     container.NewList[int](1, 2, 3),
+				slice:     container.ListOf[int](1, 2, 3),
 				transform: trans,
 			},
 			want: []string{"#", "1", "#", "2", "#", "3"},
@@ -203,12 +298,21 @@ func TestFlatMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := iterables.FlatMap[int, string](tt.args.slice, tt.args.transform)
+			got := sequences.FlatMap[int, string](tt.args.slice, tt.args.transform).Iterator()
 			index := 0
 			for got.HasNext() {
 				assert.Equal(t, got.Next(), tt.want[index])
 				index++
 			}
 		})
+	}
+}
+
+func TestSequenceOf(t *testing.T) {
+	values := []int{1, 2, 3}
+	iterator := sequences.SequenceOf(values...).Iterator()
+	for _, v := range values {
+		assert.True(t, iterator.HasNext())
+		assert.Equal(t, v, iterator.Next())
 	}
 }
