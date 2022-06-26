@@ -342,7 +342,7 @@ func TestGMap_Delete(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, v, 0)
 	m.Delete("0")
-	v, ok = m.Get("0")
+	_, ok = m.Get("0")
 	assert.False(t, ok)
 }
 
