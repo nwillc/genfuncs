@@ -594,8 +594,6 @@ import "github.com/nwillc/genfuncs/container"
   - [func (m GMap[K, V]) Put(key K, value V)](<#func-gmapk-v-put>)
   - [func (m GMap[K, V]) Values() (values GSlice[V])](<#func-gmapk-v-values>)
 - [type GSlice](<#type-gslice>)
-  - [func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) int](<#func-gslicet-compare>)
-  - [func (s GSlice[T]) Equal(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) bool](<#func-gslicet-equal>)
   - [func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T]](<#func-gslicet-filter>)
   - [func (s GSlice[T]) ForEach(action func(i int, t T))](<#func-gslicet-foreach>)
   - [func (s GSlice[T]) Iterator() Iterator[T]](<#func-gslicet-iterator>)
@@ -624,7 +622,6 @@ import "github.com/nwillc/genfuncs/container"
   - [func (l *List[T]) AddLeft(value T) (e *ListElement[T])](<#func-listt-addleft>)
   - [func (l *List[T]) AddRight(v T) (e *ListElement[T])](<#func-listt-addright>)
   - [func (l *List[T]) ForEach(action func(value T))](<#func-listt-foreach>)
-  - [func (l *List[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool)](<#func-listt-issorted>)
   - [func (l *List[T]) Iterator() Iterator[T]](<#func-listt-iterator>)
   - [func (l *List[T]) Len() (length int)](<#func-listt-len>)
   - [func (l *List[T]) PeekLeft() (e *ListElement[T])](<#func-listt-peekleft>)
@@ -872,13 +869,15 @@ func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) (value V)
 
 GetOrElse returns the value at the given key if it exists or returns the result of defaultValue\.
 
-### func \(GMap\[K\, V\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L121>)
+### func \(GMap\[K\, V\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L122>)
 
 ```go
 func (m GMap[K, V]) Iterator() Iterator[V]
 ```
 
-### func \(GMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L126>)
+Iterator creates an iterator for the values in the GMap\.
+
+### func \(GMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L127>)
 
 ```go
 func (m GMap[K, V]) Keys() (keys GSlice[K])
@@ -886,7 +885,7 @@ func (m GMap[K, V]) Keys() (keys GSlice[K])
 
 Keys return a GSlice containing the keys of the GMap\.
 
-### func \(GMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L132>)
+### func \(GMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L133>)
 
 ```go
 func (m GMap[K, V]) Len() (length int)
@@ -894,7 +893,7 @@ func (m GMap[K, V]) Len() (length int)
 
 Len is the number of elements in the GMap\.
 
-### func \(GMap\[K\, V\]\) [Put](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L138>)
+### func \(GMap\[K\, V\]\) [Put](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L139>)
 
 ```go
 func (m GMap[K, V]) Put(key K, value V)
@@ -902,7 +901,7 @@ func (m GMap[K, V]) Put(key K, value V)
 
 Put a key and value in the Map\.
 
-### func \(GMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L143>)
+### func \(GMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gmap.go#L144>)
 
 ```go
 func (m GMap[K, V]) Values() (values GSlice[V])
@@ -918,23 +917,7 @@ GSlice is a generic type corresponding to a standard Go slice that implements Ha
 type GSlice[T any] []T
 ```
 
-### func \(GSlice\[T\]\) [Compare](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L44>)
-
-```go
-func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) int
-```
-
-Compare one GSlice to another\, applying a comparison to each pair of corresponding entries\. Compare returns 0 if all the pair's match\, \-1 if this GSlice is less\, or 1 if it is greater\.
-
-### func \(GSlice\[T\]\) [Equal](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L50>)
-
-```go
-func (s GSlice[T]) Equal(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) bool
-```
-
-Equal compares this GSlice to another\, applying a comparison to each pair\, if the lengths are equal and all the values are then true is returned\.
-
-### func \(GSlice\[T\]\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L55>)
+### func \(GSlice\[T\]\) [Filter](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L43>)
 
 ```go
 func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T]
@@ -942,7 +925,7 @@ func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T]
 
 Filter returns a slice containing only elements matching the given predicate\.
 
-### func \(GSlice\[T\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L70>)
+### func \(GSlice\[T\]\) [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L58>)
 
 ```go
 func (s GSlice[T]) ForEach(action func(i int, t T))
@@ -950,7 +933,7 @@ func (s GSlice[T]) ForEach(action func(i int, t T))
 
 ForEach element of the GSlice invoke given function with the element\. Syntactic sugar for a range that intends to traverse all the elements\, i\.e\. no exiting midway through\.
 
-### func \(GSlice\[T\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L78>)
+### func \(GSlice\[T\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L66>)
 
 ```go
 func (s GSlice[T]) Iterator() Iterator[T]
@@ -958,7 +941,7 @@ func (s GSlice[T]) Iterator() Iterator[T]
 
 Iterator returns an Iterator that will iterate over the GSlice\.
 
-### func \(GSlice\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L83>)
+### func \(GSlice\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L71>)
 
 ```go
 func (s GSlice[T]) Len() int
@@ -966,7 +949,7 @@ func (s GSlice[T]) Len() int
 
 Len is the number of elements in the GSlice\.
 
-### func \(GSlice\[T\]\) [Random](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L88>)
+### func \(GSlice\[T\]\) [Random](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L76>)
 
 ```go
 func (s GSlice[T]) Random() (t T)
@@ -974,7 +957,7 @@ func (s GSlice[T]) Random() (t T)
 
 Random returns a random element of the GSlice\.
 
-### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L95>)
+### func \(GSlice\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L83>)
 
 ```go
 func (s GSlice[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (sorted GSlice[T])
@@ -982,7 +965,7 @@ func (s GSlice[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (sorted GSlice[
 
 SortBy copies a slice\, sorts the copy applying the Ordered and returns it\. This is not a pure function\, the GSlice is sorted in place\, the returned slice is to allow for fluid calls in chains\.
 
-### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L102>)
+### func \(GSlice\[T\]\) [Swap](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L90>)
 
 ```go
 func (s GSlice[T]) Swap(i, j int)
@@ -990,7 +973,7 @@ func (s GSlice[T]) Swap(i, j int)
 
 Swap two values in the slice\.
 
-### func \(GSlice\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L107>)
+### func \(GSlice\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L95>)
 
 ```go
 func (s GSlice[T]) Values() (values GSlice[T])
@@ -1028,6 +1011,36 @@ func HeapOf[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) (heap *
 ```
 
 HeapOf return a heap ordered based on the compare and adds any values provided\.
+
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container"
+)
+
+func main() {
+	heap := container.HeapOf[int](genfuncs.OrderedLess[int], 3, 1, 4, 2)
+	for heap.Len() > 0 {
+		fmt.Print(heap.Remove())
+	}
+	fmt.Println()
+}
+```
+
+#### Output
+
+```
+1234
+```
+
+</p>
+</details>
 
 ### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L48>)
 
@@ -1086,19 +1099,19 @@ type Iterator[T any] interface {
 }
 ```
 
-### func [NewListIterator](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L229>)
+### func [NewListIterator](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L217>)
 
 ```go
 func NewListIterator[T any](list *List[T]) Iterator[T]
 ```
 
-### func [NewSliceIterator](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L112>)
+### func [NewSliceIterator](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L100>)
 
 ```go
 func NewSliceIterator[T any](slice []T) Iterator[T]
 ```
 
-### func [NewValuesIterator](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L116>)
+### func [NewValuesIterator](<https://github.com/nwillc/genfuncs/blob/master/container/gslice.go#L104>)
 
 ```go
 func NewValuesIterator[T any](values ...T) Iterator[T]
@@ -1162,21 +1175,15 @@ func (l *List[T]) ForEach(action func(value T))
 
 ForEach invokes the action for each value in the list\.
 
-### func \(\*List\[T\]\) [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L118>)
-
-```go
-func (l *List[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool)
-```
-
-IsSorted returns true if the List is sorted by order\.
-
-### func \(\*List\[T\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L130>)
+### func \(\*List\[T\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L118>)
 
 ```go
 func (l *List[T]) Iterator() Iterator[T]
 ```
 
-### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L135>)
+Iterator creates an Iterator for the List\.
+
+### func \(\*List\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L123>)
 
 ```go
 func (l *List[T]) Len() (length int)
@@ -1184,7 +1191,7 @@ func (l *List[T]) Len() (length int)
 
 Len returns the number of values in the List\.
 
-### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L141>)
+### func \(\*List\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L129>)
 
 ```go
 func (l *List[T]) PeekLeft() (e *ListElement[T])
@@ -1192,7 +1199,7 @@ func (l *List[T]) PeekLeft() (e *ListElement[T])
 
 PeekLeft returns the leftmost value in the List or nil if empty\.
 
-### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L149>)
+### func \(\*List\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L137>)
 
 ```go
 func (l *List[T]) PeekRight() (e *ListElement[T])
@@ -1200,7 +1207,7 @@ func (l *List[T]) PeekRight() (e *ListElement[T])
 
 PeekRight returns the rightmost value in the List or nil if empty\.
 
-### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L157>)
+### func \(\*List\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L145>)
 
 ```go
 func (l *List[T]) Remove(e *ListElement[T]) (t T)
@@ -1208,7 +1215,7 @@ func (l *List[T]) Remove(e *ListElement[T]) (t T)
 
 Remove removes a given value from the List\.
 
-### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L167>)
+### func \(\*List\[T\]\) [SortBy](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L155>)
 
 ```go
 func (l *List[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (result *List[T])
@@ -1216,7 +1223,7 @@ func (l *List[T]) SortBy(order genfuncs.BiFunction[T, T, bool]) (result *List[T]
 
 SortBy sorts the List by the order of the order function\. This is not a pure function\, the List is sorted\, the List returned is to allow for fluid call chains\. List does not provide efficient indexed access so a Bubble sort is employed\.
 
-### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L174>)
+### func \(\*List\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/list.go#L162>)
 
 ```go
 func (l *List[T]) Values() (values GSlice[T])
@@ -1785,13 +1792,15 @@ import "github.com/nwillc/genfuncs/container/sequences"
 - [func SequenceOf[T any](values ...T) (sequence container.Sequence[T])](<#func-sequenceof>)
 
 
-## func [All](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L25>)
+## func [All](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L26>)
 
 ```go
 func All[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool)
 ```
 
-## func [Any](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L38>)
+All returns true if all elements in the sequence match the predicate\.
+
+## func [Any](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L39>)
 
 ```go
 func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool)
@@ -1799,7 +1808,7 @@ func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, b
 
 Any returns true if any element of the sequence matches the predicate\.
 
-## func [Associate](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L52>)
+## func [Associate](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L53>)
 
 ```go
 func Associate[T, V any, K comparable](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V])
@@ -1807,7 +1816,39 @@ func Associate[T, V any, K comparable](sequence container.Sequence[T], keyValueF
 
 Associate returns a map containing key/values created by applying a function to each value of the container\.Iterator returned by the container\.Sequence\.
 
-## func [AssociateWith](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L64>)
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/sequences"
+	"strings"
+)
+
+func main() {
+	byLastName := func(n string) (string, string) {
+		parts := strings.Split(n, " ")
+		return parts[1], n
+	}
+	names := sequences.SequenceOf[string]("fred flintstone", "barney rubble")
+	nameMap := sequences.Associate[string](names, byLastName)
+	fmt.Println(nameMap["rubble"])
+}
+```
+
+#### Output
+
+```
+barney rubble
+```
+
+</p>
+</details>
+
+## func [AssociateWith](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L65>)
 
 ```go
 func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor genfuncs.MapValueFor[K, V]) (result container.GMap[K, V])
@@ -1815,13 +1856,50 @@ func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor
 
 AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the valueSelector function applied to each element\.
 
-## func [Compare](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L75>)
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/sequences"
+)
+
+func main() {
+	oddEven := func(i int) string {
+		if i%2 == 0 {
+			return "EVEN"
+		}
+		return "ODD"
+	}
+	numbers := sequences.SequenceOf[int](1, 2, 3, 4)
+	odsEvensMap := sequences.AssociateWith[int](numbers, oddEven)
+	fmt.Println(odsEvensMap[2])
+	fmt.Println(odsEvensMap[3])
+}
+```
+
+#### Output
+
+```
+EVEN
+ODD
+```
+
+</p>
+</details>
+
+## func [Compare](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L77>)
 
 ```go
 func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int) int
 ```
 
-## func [Find](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L94>)
+Compare two sequences with a comparator returning less/equal/greater \(\-1/0/1\) and return comparison of the two\.
+
+## func [Find](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L96>)
 
 ```go
 func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]
@@ -1829,7 +1907,7 @@ func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, 
 
 Find returns the first element matching the given predicate\, or Result error of NoSuchElement if not found\.
 
-## func [FindLast](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L107>)
+## func [FindLast](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L109>)
 
 ```go
 func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]
@@ -1837,7 +1915,7 @@ func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function
 
 FindLast returns the last element matching the given predicate\, or Result error of NoSuchElement if not found\.
 
-## func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L122>)
+## func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L124>)
 
 ```go
 func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, container.Sequence[R]]) (result container.Sequence[R])
@@ -1845,7 +1923,7 @@ func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Functi
 
 FlatMap returns a sequence of all elements from results of transform being invoked on each element of original sequence\, and those resultant slices concatenated\.
 
-## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L128>)
+## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L130>)
 
 ```go
 func Fold[T, R any](sequence container.Sequence[T], initial R, operation genfuncs.BiFunction[R, T, R]) (result R)
@@ -1853,7 +1931,7 @@ func Fold[T, R any](sequence container.Sequence[T], initial R, operation genfunc
 
 Fold accumulates a value starting with an initial value and applying operation to each value of the container\.Iterator returned by the container\.Sequence\.
 
-## func [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L138>)
+## func [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L140>)
 
 ```go
 func ForEach[T any](sequence container.Sequence[T], action func(t T))
@@ -1861,7 +1939,7 @@ func ForEach[T any](sequence container.Sequence[T], action func(t T))
 
 ForEach calls action for each element of a Sequence\.
 
-## func [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L146>)
+## func [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L148>)
 
 ```go
 func IsSorted[T any](sequence container.Sequence[T], order genfuncs.BiFunction[T, T, bool]) (ok bool)
@@ -1869,7 +1947,7 @@ func IsSorted[T any](sequence container.Sequence[T], order genfuncs.BiFunction[T
 
 IsSorted returns true if the GSlice is sorted by order\.
 
-## func [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L168-L174>)
+## func [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L170-L176>)
 
 ```go
 func JoinToString[T any](sequence container.Sequence[T], stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string
@@ -1877,17 +1955,21 @@ func JoinToString[T any](sequence container.Sequence[T], stringer genfuncs.ToStr
 
 JoinToString creates a string from all the elements of a Sequence using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
 
-## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L191>)
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L194>)
 
 ```go
 func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, R]) container.Sequence[R]
 ```
 
-## func [SequenceOf](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L195>)
+Map elements in a Sequence to a new Sequence having applied the transform to them\.
+
+## func [SequenceOf](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L199>)
 
 ```go
 func SequenceOf[T any](values ...T) (sequence container.Sequence[T])
 ```
+
+SequenceOf creates a sequence from the provided values\.
 
 # version
 
@@ -1906,6 +1988,30 @@ Version number for official releases\.
 
 ```go
 const Version = "v0.17.0"
+```
+
+# tests
+
+```go
+import "github.com/nwillc/genfuncs/internal/tests"
+```
+
+## Index
+
+- [Constants](<#constants>)
+- [func MaybeRunExamples(t *testing.T)](<#func-mayberunexamples>)
+
+
+## Constants
+
+```go
+const RunExamples = "RUN_EXAMPLES"
+```
+
+## func [MaybeRunExamples](<https://github.com/nwillc/genfuncs/blob/master/internal/tests/example_toggle.go#L26>)
+
+```go
+func MaybeRunExamples(t *testing.T)
 ```
 
 
