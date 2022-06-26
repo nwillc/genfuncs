@@ -39,18 +39,6 @@ type (
 	}
 )
 
-// Compare one GSlice to another, applying a comparison to each pair of corresponding entries. Compare returns 0
-// if all the pair's match, -1 if this GSlice is less, or 1 if it is greater.
-func (s GSlice[T]) Compare(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) int {
-	return slices.CompareFunc(s, s2, comparison)
-}
-
-// Equal compares this GSlice to another, applying a comparison to each pair, if the lengths are equal and all the values
-// are then true is returned.
-func (s GSlice[T]) Equal(s2 GSlice[T], comparison genfuncs.BiFunction[T, T, int]) bool {
-	return s.Compare(s2, comparison) == genfuncs.EqualTo
-}
-
 // Filter returns a slice containing only elements matching the given predicate.
 func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T] {
 	length := len(s)

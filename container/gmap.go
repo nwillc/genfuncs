@@ -118,6 +118,7 @@ func (m GMap[K, V]) GetOrElse(k K, defaultValue func() V) (value V) {
 	return value
 }
 
+// Iterator creates an iterator for the values in the GMap.
 func (m GMap[K, V]) Iterator() Iterator[V] {
 	return &gmapIterator[K, V]{gmap: m, iterator: m.Keys().Iterator()}
 }

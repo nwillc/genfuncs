@@ -115,7 +115,7 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.args.slice.Filter(tt.args.predicate)
-			assert.True(t, result.Equal(tt.want, genfuncs.Ordered[int]))
+			assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](result, tt.want, genfuncs.Ordered[int]))
 		})
 	}
 }
@@ -271,49 +271,6 @@ func TestRandom(t *testing.T) {
 	}
 }
 
-func TestCompare(t *testing.T) {
-	type args struct {
-		a container.GSlice[string]
-		b container.GSlice[string]
-	}
-	tests := []struct {
-		name     string
-		args     args
-		want     int
-		wanPanic bool
-	}{
-		{
-			name: "Mismatched length greater",
-			args: args{
-				a: []string{"a"},
-				b: []string{},
-			},
-			want: genfuncs.GreaterThan,
-		},
-		{
-			name: "Matched",
-			args: args{
-				a: []string{"a", "b"},
-				b: []string{"a", "b"},
-			},
-			want: genfuncs.EqualTo,
-		},
-		{
-			name: "Mismatched less",
-			args: args{
-				a: []string{"a", "b"},
-				b: []string{"a", "c"},
-			},
-			want: genfuncs.LessThan,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.want, test.args.a.Compare(test.args.b, genfuncs.Ordered[string]))
-		})
-	}
-}
-
 func TestSlice_ForEach(t *testing.T) {
 	tests := []struct {
 		name string
@@ -383,7 +340,7 @@ func TestGSlice_Values(t *testing.T) {
 	s := container.GSlice[int]{1, 2, 3, 4}
 	v := s.Values()
 
-	assert.True(t, s.Equal(v, genfuncs.Ordered[int]))
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](s, v, genfuncs.Ordered[int]))
 }
 
 func TestGSlice_Equal(t *testing.T) {
@@ -423,7 +380,7 @@ func TestGSlice_Equal(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.s1.Equal(tt.args.s2, genfuncs.Ordered[int]))
+			assert.Equal(t, tt.want, sequences.Compare[int](tt.s1, tt.args.s2, genfuncs.Ordered[int]) == genfuncs.EqualTo)
 		})
 	}
 }

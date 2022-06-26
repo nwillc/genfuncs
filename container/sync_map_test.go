@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -39,7 +40,7 @@ func TestSyncMap_ForEach(t *testing.T) {
 		all = append(all, fmt.Sprintf("%d.%s", k, v))
 	})
 	all = all.SortBy(genfuncs.OrderedLess[string])
-	assert.True(t, container.GSlice[string]{"1.1", "2.2", "3.3"}.Equal(all, genfuncs.Ordered[string]))
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[string](container.GSlice[string]{"1.1", "2.2", "3.3"}, all, genfuncs.Ordered[string]))
 }
 
 func TestSyncMap_Len(t *testing.T) {
@@ -48,12 +49,12 @@ func TestSyncMap_Len(t *testing.T) {
 
 func TestSyncMap_Values(t *testing.T) {
 	values := testSyncMap.Values().SortBy(genfuncs.OrderedLess[string])
-	assert.True(t, container.GSlice[string]{"1", "2", "3"}.Equal(values, genfuncs.Ordered[string]))
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[string](container.GSlice[string]{"1", "2", "3"}, values, genfuncs.Ordered[string]))
 }
 
 func TestSyncMap_Keys(t *testing.T) {
 	values := testSyncMap.Keys().SortBy(genfuncs.OrderedLess[int])
-	assert.True(t, container.GSlice[int]{1, 2, 3}.Equal(values, genfuncs.Ordered[int]))
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](container.GSlice[int]{1, 2, 3}, values, genfuncs.Ordered[int]))
 }
 
 func TestSyncMap_Get(t *testing.T) {

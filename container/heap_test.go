@@ -19,6 +19,7 @@ package container_test
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
@@ -194,5 +195,5 @@ func TestHeapInserting(t *testing.T) {
 func TestHeap_Values(t *testing.T) {
 	s := container.GSlice[int]{1, 2, 3}
 	h := container.HeapOf[int](genfuncs.OrderedLess[int], s...)
-	assert.Equal(t, genfuncs.EqualTo, s.Compare(h.Values(), genfuncs.Ordered[int]))
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](s, h.Values(), genfuncs.Ordered[int]))
 }

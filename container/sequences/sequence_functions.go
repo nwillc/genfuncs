@@ -22,6 +22,7 @@ import (
 	"strings"
 )
 
+// All returns true if all elements in the sequence match the predicate.
 func All[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool) {
 	result = true
 	iterator := sequence.Iterator()
@@ -72,6 +73,7 @@ func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor
 	return result
 }
 
+// Compare two sequences with a comparator returning less/equal/greater (-1/0/1) and return comparison of the two.
 func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int) int {
 	i1 := s1.Iterator()
 	i2 := s2.Iterator()
@@ -188,10 +190,12 @@ func JoinToString[T any](
 	return sb.String()
 }
 
+// Map elements in a Sequence to a new Sequence having applied the transform to them.
 func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, R]) container.Sequence[R] {
 	return container.NewIteratorSequence[R](transformIterator[T, R]{iterator: sequence.Iterator(), transform: transform})
 }
 
+// SequenceOf creates a sequence from the provided values.
 func SequenceOf[T any](values ...T) (sequence container.Sequence[T]) {
 	var slice container.GSlice[T] = values
 	return slice

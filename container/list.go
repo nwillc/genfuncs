@@ -114,19 +114,7 @@ func (l *List[T]) ForEach(action func(value T)) {
 	}
 }
 
-// IsSorted returns true if the List is sorted by order.
-func (l *List[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool) {
-	var e2 *ListElement[T]
-	for e1 := l.PeekLeft(); e1 != nil; e1 = e1.Next() {
-		e2 = e1.Next()
-		if e2 != nil && order(e2.Value, e1.Value) {
-			return ok
-		}
-	}
-	ok = true
-	return ok
-}
-
+// Iterator creates an Iterator for the List.
 func (l *List[T]) Iterator() Iterator[T] {
 	return NewListIterator[T](l)
 }

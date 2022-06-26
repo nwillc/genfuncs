@@ -90,7 +90,7 @@ func TestList_Values(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := container.ListOf[int](tt.args.expect...)
-			assert.True(t, tt.args.expect.Equal(l.Values(), genfuncs.Ordered[int]))
+			assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](tt.args.expect, l.Values(), genfuncs.Ordered[int]))
 		})
 	}
 }
@@ -154,7 +154,7 @@ func TestList_SortBy(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.list.SortBy(tt.args.order)
 			values := tt.args.list.Values()
-			assert.True(t, tt.want.Equal(values, genfuncs.Ordered[int]))
+			assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](tt.want, values, genfuncs.Ordered[int]))
 		})
 	}
 }
@@ -224,12 +224,12 @@ func TestList_RandomSorts(t *testing.T) {
 					numbers.Add(random.Int() % 10)
 				}
 				numbers.SortBy(genfuncs.OrderedLess[int])
-				assert.True(t, numbers.IsSorted(genfuncs.OrderedLess[int]))
+				assert.True(t, sequences.IsSorted[int](numbers, genfuncs.OrderedLess[int]))
 				for i := 0; i < count; i++ {
 					numbers.Add(random.Int())
 				}
 				numbers = numbers.SortBy(genfuncs.OrderedGreater[int])
-				assert.True(t, numbers.IsSorted(genfuncs.OrderedGreater[int]))
+				assert.True(t, sequences.IsSorted[int](numbers, genfuncs.OrderedGreater[int]))
 			}
 		})
 	}
@@ -276,74 +276,6 @@ func TestList_ForEach(t *testing.T) {
 			})
 			str2 := sequences.JoinToString[string](tt.args.values, func(s string) string { return s }, "", "", "")
 			assert.Equal(t, str2, str)
-		})
-	}
-}
-
-func TestList_IsSorted(t *testing.T) {
-	type args struct {
-		values container.GSlice[string]
-		order  genfuncs.BiFunction[string, string, bool]
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "empty",
-			args: args{
-				values: container.GSlice[string]{},
-				order:  genfuncs.OrderedLess[string],
-			},
-			want: true,
-		},
-		{
-			name: "single",
-			args: args{
-				values: container.GSlice[string]{"a"},
-				order:  genfuncs.OrderedLess[string],
-			},
-			want: true,
-		},
-		{
-			name: "sorted ascending",
-			args: args{
-				values: container.GSlice[string]{"a", "b"},
-				order:  genfuncs.OrderedLess[string],
-			},
-			want: true,
-		},
-		{
-			name: "sorted descending",
-			args: args{
-				values: container.GSlice[string]{"b", "a"},
-				order:  genfuncs.OrderedGreater[string],
-			},
-			want: true,
-		},
-		{
-			name: "not sorted ascending",
-			args: args{
-				values: container.GSlice[string]{"b", "a"},
-				order:  genfuncs.OrderedLess[string],
-			},
-			want: false,
-		},
-		{
-			name: "not sorted descending",
-			args: args{
-				values: container.GSlice[string]{"a", "b"},
-				order:  genfuncs.OrderedGreater[string],
-			},
-			want: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			list := container.ListOf[string]()
-			list.AddAll(tt.args.values...)
-			assert.Equal(t, tt.want, list.IsSorted(tt.args.order))
 		})
 	}
 }

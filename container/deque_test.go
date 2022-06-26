@@ -18,6 +18,7 @@ package container_test
 
 import (
 	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"testing"
 
 	"github.com/nwillc/genfuncs/container"
@@ -193,7 +194,7 @@ func TestDeque_AddLeft(t *testing.T) {
 func TestDeque_Values(t *testing.T) {
 	s := container.GSlice[int]{1, 2, 3}
 	d := container.DequeOf[int](s...)
-	assert.True(t, s.Equal(d.Values(), genfuncs.Ordered[int]))
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](s, d.Values(), genfuncs.Ordered[int]))
 }
 
 func TestDeque_AddRight(t *testing.T) {
