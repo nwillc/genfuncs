@@ -101,13 +101,15 @@ func TestPromise_Catch(t *testing.T) {
 	errorAdd := func(err error) { errorCount++ }
 
 	type args struct {
-		f1 *genfuncs.Result[int]
+		aPanic bool
+		f1     *genfuncs.Result[int]
 	}
 	tests := []struct {
 		name       string
 		args       args
 		wantOk     bool
 		errorCount int
+		errorMsg   string
 	}{
 		{
 			name: "no error",
@@ -124,18 +126,34 @@ func TestPromise_Catch(t *testing.T) {
 			},
 			wantOk:     false,
 			errorCount: 1,
+			errorMsg:   genfuncs.NoSuchElement.Error(),
+		},
+		{
+			name: "panic",
+			args: args{
+				aPanic: true,
+			},
+			wantOk:     false,
+			errorCount: 1,
+			errorMsg:   genfuncs.PromisePanicErrorMsg,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errorCount = 0
 			p1 := genfuncs.NewPromise(func() *genfuncs.Result[int] {
+				if tt.args.aPanic {
+					panic(tt.name)
+				}
 				return tt.args.f1
 			})
 			p2 := p1.Catch(errorAdd)
 			result := p2.Await()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			assert.Equal(t, tt.errorCount, errorCount)
+			if !tt.wantOk {
+				assert.Contains(t, result.Error().Error(), tt.errorMsg)
+			}
 		})
 	}
 }
