@@ -370,3 +370,12 @@ func TestGMap_Iterator(t *testing.T) {
 	}
 	assert.Equal(t, m.Len(), index)
 }
+
+func Test_gmapIterator_NoHasNext(t *testing.T) {
+	m := container.GMap[int, string]{}
+	iterator := m.Iterator()
+	assert.False(t, iterator.HasNext())
+	assert.Panics(t, func() {
+		_ = iterator.Next()
+	})
+}

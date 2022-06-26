@@ -355,3 +355,12 @@ func Test_listIterator_Next(t *testing.T) {
 	}
 	assert.Equal(t, index, len(values))
 }
+
+func Test_listIterator_NoHasNext(t *testing.T) {
+	l := container.ListOf[int]()
+	iterator := l.Iterator()
+	assert.False(t, iterator.HasNext())
+	assert.Panics(t, func() {
+		_ = iterator.Next()
+	})
+}

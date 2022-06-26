@@ -396,3 +396,12 @@ func TestSliceIterator_Next(t *testing.T) {
 	}
 	assert.Equal(t, index, len(values))
 }
+
+func Test_sliceIterator_NoHasNext(t *testing.T) {
+	s := container.GSlice[int]{}
+	iterator := s.Iterator()
+	assert.False(t, iterator.HasNext())
+	assert.Panics(t, func() {
+		_ = iterator.Next()
+	})
+}
