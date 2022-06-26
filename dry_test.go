@@ -443,3 +443,17 @@ func TestComparator(t *testing.T) {
 		})
 	}
 }
+
+func TestEmpty(t *testing.T) {
+	var emptyInt int
+	assert.Equal(t, emptyInt, genfuncs.Empty[int]())
+	var emptyString string
+	assert.Equal(t, emptyString, genfuncs.Empty[string]())
+	type something struct {
+		key   int
+		value string
+		flag  bool
+	}
+	var emptySomething something
+	assert.Equal(t, emptySomething, genfuncs.Empty[something]())
+}
