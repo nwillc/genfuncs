@@ -72,7 +72,7 @@ func TestFutureAwait(t *testing.T) {
 			wantErrorMsg: genfuncs.NoSuchElement.Error(),
 		},
 		{
-			name: "action panic",
+			name: "action panic message",
 			args: args{
 				action: func() *genfuncs.Result[int] {
 					panic("sky is falling")
@@ -80,6 +80,16 @@ func TestFutureAwait(t *testing.T) {
 			},
 			wantOk:       false,
 			wantErrorMsg: genfuncs.PromisePanicErrorMsg,
+		},
+		{
+			name: "action panic error",
+			args: args{
+				action: func() *genfuncs.Result[int] {
+					panic(genfuncs.NoSuchElement)
+				},
+			},
+			wantOk:       false,
+			wantErrorMsg: genfuncs.NoSuchElement.Error(),
 		},
 	}
 	for _, tt := range tests {
