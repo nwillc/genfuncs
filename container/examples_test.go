@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
-	"os"
+	"github.com/nwillc/genfuncs/internal/tests"
 	"testing"
 )
 
@@ -29,9 +29,7 @@ var wordPositions = container.GMap[string, int]{"hello": 1, "world": 2}
 var words container.GSlice[string] = []string{"hello", "world"}
 
 func TestFunctionExamples(t *testing.T) {
-	if _, ok := os.LookupEnv("RUN_EXAMPLES"); !ok {
-		t.Skip("skipping: RUN_EXAMPLES not set")
-	}
+	tests.MaybeRunExamples(t)
 	ExampleGMap_Contains()
 	ExampleGMap_Keys()
 	ExampleGMap_Values()

@@ -14,28 +14,18 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package container_test
+package tests
 
 import (
-	"fmt"
-	"github.com/nwillc/genfuncs/internal/tests"
+	"os"
 	"testing"
-
-	"github.com/nwillc/genfuncs"
-	"github.com/nwillc/genfuncs/container"
 )
 
-func TestHeapFunctionExamples(t *testing.T) {
-	tests.MaybeRunExamples(t)
-	// Heap
-	ExampleHeapOf()
-}
+const RunExamples = "RUN_EXAMPLES"
 
-func ExampleHeapOf() {
-	heap := container.HeapOf[int](genfuncs.OrderedLess[int], 3, 1, 4, 2)
-	for heap.Len() > 0 {
-		fmt.Print(heap.Remove())
+func MaybeRunExamples(t *testing.T) {
+	t.Helper()
+	if _, ok := os.LookupEnv(RunExamples); !ok {
+		t.Skip("skipping, environment variable not set:", RunExamples)
 	}
-	fmt.Println()
-	// Output: 1234
 }

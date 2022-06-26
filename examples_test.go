@@ -18,7 +18,7 @@ package genfuncs_test
 
 import (
 	"fmt"
-	"os"
+	"github.com/nwillc/genfuncs/internal/tests"
 	"testing"
 	"time"
 
@@ -26,9 +26,7 @@ import (
 )
 
 func TestFunctionExamples(t *testing.T) {
-	if _, ok := os.LookupEnv("RUN_EXAMPLES"); !ok {
-		t.Skip("skipping: RUN_EXAMPLES not set")
-	}
+	tests.MaybeRunExamples(t)
 	// Functions
 	ExampleMax()
 	ExampleMin()

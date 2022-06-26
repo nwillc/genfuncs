@@ -14,28 +14,45 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package container_test
+package sequences_test
 
 import (
 	"fmt"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/nwillc/genfuncs/internal/tests"
+	"strings"
 	"testing"
-
-	"github.com/nwillc/genfuncs"
-	"github.com/nwillc/genfuncs/container"
 )
 
-func TestHeapFunctionExamples(t *testing.T) {
+func TestFunctionExamples(t *testing.T) {
 	tests.MaybeRunExamples(t)
-	// Heap
-	ExampleHeapOf()
+	ExampleAssociate()
+	ExampleAssociateWith()
 }
 
-func ExampleHeapOf() {
-	heap := container.HeapOf[int](genfuncs.OrderedLess[int], 3, 1, 4, 2)
-	for heap.Len() > 0 {
-		fmt.Print(heap.Remove())
+func ExampleAssociate() {
+	byLastName := func(n string) (string, string) {
+		parts := strings.Split(n, " ")
+		return parts[1], n
 	}
-	fmt.Println()
-	// Output: 1234
+	names := sequences.SequenceOf[string]("fred flintstone", "barney rubble")
+	nameMap := sequences.Associate[string](names, byLastName)
+	fmt.Println(nameMap["rubble"])
+	// Output: barney rubble
+}
+
+func ExampleAssociateWith() {
+	oddEven := func(i int) string {
+		if i%2 == 0 {
+			return "EVEN"
+		}
+		return "ODD"
+	}
+	numbers := sequences.SequenceOf[int](1, 2, 3, 4)
+	odsEvensMap := sequences.AssociateWith[int](numbers, oddEven)
+	fmt.Println(odsEvensMap[2])
+	fmt.Println(odsEvensMap[3])
+	// Output:
+	// EVEN
+	// ODD
 }

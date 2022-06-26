@@ -21,8 +21,7 @@ import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
 	"github.com/nwillc/genfuncs/container/gslices"
-	"github.com/nwillc/genfuncs/container/sequences"
-	"os"
+	"github.com/nwillc/genfuncs/internal/tests"
 	"strings"
 	"testing"
 )
@@ -30,42 +29,11 @@ import (
 var words container.GSlice[string] = []string{"hello", "world"}
 
 func TestFunctionExamples(t *testing.T) {
-	if _, ok := os.LookupEnv("RUN_EXAMPLES"); !ok {
-		t.Skip("skipping: RUN_EXAMPLES not set")
-	}
-	ExampleAssociate()
-	ExampleAssociateWith()
+	tests.MaybeRunExamples(t)
 	ExampleDistinct()
 	ExampleFlatMap()
 	ExampleGroupBy()
 	ExampleMap()
-}
-
-func ExampleAssociate() {
-	byLastName := func(n string) (string, string) {
-		parts := strings.Split(n, " ")
-		return parts[1], n
-	}
-	names := container.GSlice[string]{"fred flintstone", "barney rubble"}
-	nameMap := sequences.Associate[string](names, byLastName)
-	fmt.Println(nameMap["rubble"])
-	// Output: barney rubble
-}
-
-func ExampleAssociateWith() {
-	oddEven := func(i int) string {
-		if i%2 == 0 {
-			return "EVEN"
-		}
-		return "ODD"
-	}
-	numbers := container.GSlice[int]{1, 2, 3, 4}
-	odsEvensMap := sequences.AssociateWith[int](numbers, oddEven)
-	fmt.Println(odsEvensMap[2])
-	fmt.Println(odsEvensMap[3])
-	// Output:
-	// EVEN
-	// ODD
 }
 
 func ExampleDistinct() {
@@ -84,13 +52,6 @@ func ExampleFlatMap() {
 	fmt.Println(gslices.FlatMap(words.SortBy(genfuncs.OrderedLess[string]), slicer))
 	// Output: [h e l l o w o r l d]
 }
-
-// func ExampleFold() {
-// 	numbers := []int{1, 2, 3, 4, 5}
-// 	sum := func(a int, b int) int { return a + b }
-// 	fmt.Println(gslices.Fold(numbers, 0, sum))
-// 	// Output: 15
-// }
 
 func ExampleGroupBy() {
 	oddEven := func(i int) string {
