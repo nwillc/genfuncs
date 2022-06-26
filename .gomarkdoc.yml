@@ -52,8 +52,10 @@ header: |+
   - [genfuncs/container](<#container>)
   - [genfuncs/container/gmaps](<#gmaps>)
   - [genfuncs/container/gslices](<#gslices>)
+  - [genfuncs/container/sequences](<#sequences>)
   - [genfuncs/promises](<#promises>)
   - [genfuncs/results](<#results>)
+
 
 repository:
   url: https://github.com/nwillc/genfuncs
