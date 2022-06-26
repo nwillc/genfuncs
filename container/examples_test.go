@@ -35,12 +35,7 @@ func TestFunctionExamples(t *testing.T) {
 	ExampleGMap_Contains()
 	ExampleGMap_Keys()
 	ExampleGMap_Values()
-	ExampleGSlice_All()
-	ExampleGSlice_Any()
 	ExampleGSlice_Filter()
-	ExampleGSlice_Find()
-	ExampleGSlice_FindLast()
-	ExampleGSlice_JoinToString()
 	ExampleGSlice_SortBy()
 	ExampleGSlice_Swap()
 }
@@ -65,22 +60,6 @@ func ExampleGMap_Values() {
 	// 2
 }
 
-func ExampleGSlice_All() {
-	var numbers container.GSlice[int] = []int{1, 2, 3, 4}
-	fmt.Println(numbers.All(isGreaterThanZero))
-	// Output: true
-}
-
-func ExampleGSlice_Any() {
-	var fruits container.GSlice[string] = []string{"apple", "banana", "grape"}
-	isPear := genfuncs.OrderedEqualTo("pear")
-	fmt.Println(fruits.Any(isPear))
-	fmt.Println(fruits.Any(genfuncs.Not(isPear)))
-	// Output:
-	// false
-	// true
-}
-
 func ExampleGSlice_Filter() {
 	var values container.GSlice[int] = []int{1, -2, 2, -3}
 	values.Filter(isGreaterThanZero).ForEach(func(_, i int) {
@@ -89,29 +68,6 @@ func ExampleGSlice_Filter() {
 	// Unordered Output:
 	// 1
 	// 2
-}
-
-func ExampleGSlice_Find() {
-	var values container.GSlice[int] = []int{-1, -2, 2, -3}
-	fmt.Println(values.Find(isGreaterThanZero))
-	// Output: 2 true
-}
-
-func ExampleGSlice_FindLast() {
-	var values container.GSlice[int] = []int{-1, -2, 2, 3}
-	fmt.Println(values.FindLast(isGreaterThanZero))
-	// Output: 3 true
-}
-
-func ExampleGSlice_JoinToString() {
-	var toString genfuncs.ToString[string] = func(s string) string { return s }
-	fmt.Println(words.SortBy(genfuncs.OrderedLess[string]).JoinToString(
-		toString,
-		" ",
-		"> ",
-		" <",
-	))
-	// Output: > hello world <
 }
 
 func ExampleGSlice_SortBy() {

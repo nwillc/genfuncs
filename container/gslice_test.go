@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
@@ -39,92 +40,6 @@ type PersonName struct {
 
 func (p PersonName) String() string {
 	return p.First + " " + p.Last
-}
-
-func TestAll(t *testing.T) {
-	type args struct {
-		slice     []string
-		predicate genfuncs.Function[string, bool]
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "Empty",
-			args: args{
-				slice:     []string{},
-				predicate: func(s string) bool { return s == "a" },
-			},
-			want: true,
-		},
-		{
-			name: "Some Not All",
-			args: args{
-				slice:     []string{"b", "c"},
-				predicate: func(s string) bool { return s == "b" },
-			},
-			want: false,
-		},
-		{
-			name: "All",
-			args: args{
-				slice:     []string{"b", "a", "c"},
-				predicate: func(s string) bool { return len(s) == 1 },
-			},
-			want: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := container.GSlice[string](tt.args.slice).All(tt.args.predicate)
-			assert.Equal(t, got, tt.want)
-		})
-	}
-}
-
-func TestAny(t *testing.T) {
-	type args struct {
-		slice     container.GSlice[string]
-		predicate genfuncs.Function[string, bool]
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "Empty",
-			args: args{
-				slice:     []string{},
-				predicate: func(s string) bool { return s == "a" },
-			},
-			want: false,
-		},
-		{
-			name: "Not Found",
-			args: args{
-				slice:     []string{"b", "c"},
-				predicate: func(s string) bool { return s == "a" },
-			},
-			want: false,
-		},
-		{
-			name: "Found",
-			args: args{
-				slice:     []string{"b", "a", "c"},
-				predicate: func(s string) bool { return s == "a" },
-			},
-			want: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := tt.args.slice.Any(tt.args.predicate)
-			assert.Equal(t, got, tt.want)
-		})
-	}
 }
 
 func TestContains(t *testing.T) {
@@ -164,7 +79,7 @@ func TestContains(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.args.slice.Any(genfuncs.OrderedEqualTo(tt.args.element))
+			got := sequences.Any[string](tt.args.slice, genfuncs.OrderedEqualTo(tt.args.element))
 			assert.Equal(t, got, tt.want)
 		})
 	}
@@ -201,185 +116,6 @@ func TestFilter(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.args.slice.Filter(tt.args.predicate)
 			assert.True(t, result.Equal(tt.want, genfuncs.Ordered[int]))
-		})
-	}
-}
-
-func TestFind(t *testing.T) {
-	type args struct {
-		slice     container.GSlice[float32]
-		predicate genfuncs.Function[float32, bool]
-	}
-	tests := []struct {
-		name      string
-		args      args
-		want      float32
-		wantFound bool
-	}{
-		{
-			name: "Empty",
-			args: args{
-				slice:     []float32{},
-				predicate: func(f float32) bool { return false },
-			},
-			wantFound: false,
-		},
-		{
-			name: "Not Found",
-			args: args{
-				slice:     []float32{1.0, 2.0, 3.0},
-				predicate: func(f float32) bool { return false },
-			},
-			wantFound: false,
-		},
-		{
-			name: "Found",
-			args: args{
-				slice:     []float32{1.0, 2.0, 3.0},
-				predicate: func(f float32) bool { return f > 1.0 },
-			},
-			want:      2.0,
-			wantFound: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, ok := tt.args.slice.Find(tt.args.predicate)
-			if !tt.wantFound {
-				assert.False(t, ok)
-				return
-			}
-			assert.True(t, ok)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestFindLast(t *testing.T) {
-	type args struct {
-		slice     container.GSlice[float32]
-		predicate genfuncs.Function[float32, bool]
-	}
-	tests := []struct {
-		name      string
-		args      args
-		want      float32
-		wantFound bool
-	}{
-		{
-			name: "Empty",
-			args: args{
-				slice:     []float32{},
-				predicate: func(f float32) bool { return false },
-			},
-			wantFound: false,
-		},
-		{
-			name: "Not Found",
-			args: args{
-				slice:     []float32{1.0, 2.0, 3.0},
-				predicate: func(f float32) bool { return f < 0.0 },
-			},
-			wantFound: false,
-		},
-		{
-			name: "Found",
-			args: args{
-				slice:     []float32{1.0, 2.0, 3.0},
-				predicate: func(f float32) bool { return f > 1.0 },
-			},
-			want:      3.0,
-			wantFound: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, ok := tt.args.slice.FindLast(tt.args.predicate)
-			if !tt.wantFound {
-				assert.False(t, ok)
-				return
-			}
-			assert.True(t, ok)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestJoinToString(t *testing.T) {
-	personStringer := genfuncs.StringerToString[PersonName]()
-	type args struct {
-		slice     container.GSlice[PersonName]
-		separator string
-		prefix    string
-		postfix   string
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{
-			name: "Empty",
-			args: args{
-				slice:     []PersonName{},
-				separator: "",
-			},
-			want: "",
-		},
-		{
-			name: "One",
-			args: args{
-				slice: []PersonName{
-					{
-						First: "fred",
-						Last:  "flintstone",
-					},
-				},
-				separator: ", ",
-			},
-			want: "fred flintstone",
-		},
-		{
-			name: "Two",
-			args: args{
-				slice: []PersonName{
-					{
-						First: "fred",
-						Last:  "flintstone",
-					},
-					{
-						First: "barney",
-						Last:  "rubble",
-					},
-				},
-				separator: ", ",
-			},
-			want: "fred flintstone, barney rubble",
-		},
-		{
-			name: "Two With Prefix Postfix",
-			args: args{
-				slice: []PersonName{
-					{
-						First: "fred",
-						Last:  "flintstone",
-					},
-					{
-						First: "barney",
-						Last:  "rubble",
-					},
-				},
-				separator: ", ",
-				prefix:    "[",
-				postfix:   "]",
-			},
-			want: "[fred flintstone, barney rubble]",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := tt.args.slice.JoinToString(personStringer, tt.args.separator, tt.args.prefix, tt.args.postfix)
-			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -453,7 +189,7 @@ func TestSortBy(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.slice.SortBy(tt.args.comparator)
-			assert.True(t, tt.args.slice.IsSorted(tt.args.comparator))
+			assert.True(t, sequences.IsSorted[string](tt.args.slice, tt.args.comparator))
 		})
 	}
 }
@@ -530,9 +266,8 @@ func TestRandom(t *testing.T) {
 	var s container.GSlice[int] = []int{1, 2, 3}
 
 	for c := 0; c < 2*s.Len(); c++ {
-		i := s.Random()
-		p := genfuncs.OrderedEqualTo(i)
-		assert.True(t, s.Any(p))
+		p := genfuncs.OrderedEqualTo(s.Random())
+		assert.True(t, sequences.Any[int](s, p))
 	}
 }
 

@@ -19,6 +19,7 @@ package container_test
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
@@ -362,7 +363,7 @@ func TestGMap_Iterator(t *testing.T) {
 	index := 0
 	for i.HasNext() {
 		v := i.Next()
-		assert.True(t, want.Any(func(s string) bool {
+		assert.True(t, sequences.Any[string](want, func(s string) bool {
 			return s == v
 		}))
 		index++

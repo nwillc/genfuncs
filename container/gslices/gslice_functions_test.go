@@ -19,17 +19,13 @@ package gslices_test
 import (
 	"github.com/nwillc/genfuncs/container"
 	"github.com/nwillc/genfuncs/container/gslices"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"strconv"
 	"testing"
 
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
 )
-
-type PersonName struct {
-	First string
-	Last  string
-}
 
 func TestDistinct(t *testing.T) {
 	type args struct {
@@ -135,9 +131,7 @@ func TestGroupBy(t *testing.T) {
 			resultsMap := gslices.GroupBy(tt.args.slice, tt.args.keySelector)
 			assert.Equal(t, len(tt.want), resultsMap.Len())
 			for k, v := range tt.want {
-				assert.True(t, v.All(func(i int) bool {
-					return container.GSlice[int](resultsMap[k]).Any(genfuncs.OrderedEqualTo(i))
-				}))
+				assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](v, resultsMap[k], genfuncs.Ordered[int]))
 			}
 		})
 	}

@@ -31,6 +31,10 @@ type PersonName struct {
 	Last  string
 }
 
+func (p PersonName) String() string {
+	return p.First + " " + p.Last
+}
+
 func TestAll(t *testing.T) {
 	type args struct {
 		sequence  container.Sequence[string]
@@ -117,6 +121,181 @@ func TestAny(t *testing.T) {
 	}
 }
 
+func TestCompare(t *testing.T) {
+	type args[T any] struct {
+		s1 container.Sequence[T]
+		s2 container.Sequence[T]
+	}
+	tests := []struct {
+		name string
+		args args[int]
+		want int
+	}{
+		{
+			name: "empty",
+			args: args[int]{
+				s1: sequences.SequenceOf[int](),
+				s2: sequences.SequenceOf[int](),
+			},
+			want: genfuncs.EqualTo,
+		},
+		{
+			name: "simple equal",
+			args: args[int]{
+				s1: sequences.SequenceOf[int](2, 1),
+				s2: sequences.SequenceOf[int](2, 1),
+			},
+			want: genfuncs.EqualTo,
+		},
+		{
+			name: "simple less",
+			args: args[int]{
+				s1: sequences.SequenceOf[int](1),
+				s2: sequences.SequenceOf[int](2),
+			},
+			want: genfuncs.LessThan,
+		},
+		{
+			name: "simple greater",
+			args: args[int]{
+				s1: sequences.SequenceOf[int](1, 2),
+				s2: sequences.SequenceOf[int](1, 1),
+			},
+			want: genfuncs.GreaterThan,
+		},
+		{
+			name: "shorter less",
+			args: args[int]{
+				s1: sequences.SequenceOf[int](1),
+				s2: sequences.SequenceOf[int](1, 2),
+			},
+			want: genfuncs.LessThan,
+		},
+		{
+			name: "shorter less",
+			args: args[int]{
+				s1: sequences.SequenceOf[int](1),
+				s2: sequences.SequenceOf[int](1, 2),
+			},
+			want: genfuncs.LessThan,
+		},
+		{
+			name: "longer greater",
+			args: args[int]{
+				s1: sequences.SequenceOf[int](1, 2),
+				s2: sequences.SequenceOf[int](1),
+			},
+			want: genfuncs.GreaterThan,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sequences.Compare(tt.args.s1, tt.args.s2, genfuncs.Ordered[int])
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestFind(t *testing.T) {
+	type args struct {
+		sequence  container.Sequence[float32]
+		predicate genfuncs.Function[float32, bool]
+	}
+	tests := []struct {
+		name      string
+		args      args
+		want      float32
+		wantFound bool
+	}{
+		{
+			name: "Empty",
+			args: args{
+				sequence:  sequences.SequenceOf[float32](),
+				predicate: func(f float32) bool { return false },
+			},
+			wantFound: false,
+		},
+		{
+			name: "Not Found",
+			args: args{
+				sequence:  sequences.SequenceOf[float32](1.0, 2.0, 3.0),
+				predicate: func(f float32) bool { return false },
+			},
+			wantFound: false,
+		},
+		{
+			name: "Found",
+			args: args{
+				sequence:  sequences.SequenceOf[float32](1.0, 2.0, 3.0),
+				predicate: func(f float32) bool { return f > 1.0 },
+			},
+			want:      2.0,
+			wantFound: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sequences.Find(tt.args.sequence, tt.args.predicate)
+			if !tt.wantFound {
+				assert.False(t, got.Ok())
+				return
+			}
+			assert.True(t, got.Ok())
+			assert.Equal(t, tt.want, got.MustGet())
+		})
+	}
+}
+
+func TestFindLast(t *testing.T) {
+	type args struct {
+		sequence  container.Sequence[float32]
+		predicate genfuncs.Function[float32, bool]
+	}
+	tests := []struct {
+		name      string
+		args      args
+		want      float32
+		wantFound bool
+	}{
+		{
+			name: "Empty",
+			args: args{
+				sequence:  sequences.SequenceOf[float32](),
+				predicate: func(f float32) bool { return false },
+			},
+			wantFound: false,
+		},
+		{
+			name: "Not Found",
+			args: args{
+				sequence:  sequences.SequenceOf[float32](1.0, 2.0, 3.0),
+				predicate: func(f float32) bool { return f < 0.0 },
+			},
+			wantFound: false,
+		},
+		{
+			name: "Found",
+			args: args{
+				sequence:  sequences.SequenceOf[float32](1.0, 2.0, 3.0),
+				predicate: func(f float32) bool { return f > 1.0 },
+			},
+			want:      3.0,
+			wantFound: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sequences.FindLast(tt.args.sequence, tt.args.predicate)
+			if !tt.wantFound {
+				assert.False(t, got.Ok())
+				return
+			}
+			assert.True(t, got.Ok())
+			assert.Equal(t, tt.want, got.MustGet())
+		})
+	}
+}
+
 func TestFold(t *testing.T) {
 	sum := 0
 	si := container.GSlice[int]{1, 2, 3}
@@ -126,6 +305,209 @@ func TestFold(t *testing.T) {
 	mi := container.GMap[int, int]{1: 1, 2: 2, 3: 3}
 	sum = sequences.Fold[int, int](mi, 10, func(r int, i int) int { return r + i })
 	assert.Equal(t, 16, sum)
+}
+
+func TestForEach(t *testing.T) {
+	tests := []struct {
+		name     string
+		sequence container.Sequence[int]
+		want     int
+	}{
+		{
+			name:     "Empty",
+			sequence: sequences.SequenceOf[int](),
+			want:     0,
+		},
+		{
+			name:     "Two",
+			sequence: sequences.SequenceOf[int](1, 1),
+			want:     2,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			count := 0
+			sequences.ForEach(tt.sequence, func(i int) {
+				count++
+			})
+			assert.Equal(t, tt.want, count)
+		})
+	}
+}
+
+func TestIsSorted(t *testing.T) {
+	type args struct {
+		sequence container.Sequence[int]
+		order    genfuncs.BiFunction[int, int, bool]
+	}
+	tests := []struct {
+		args args
+		name string
+		want bool
+	}{
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](),
+				order:    genfuncs.OrderedLess[int],
+			},
+			name: "empty asc",
+			want: true,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](),
+				order:    genfuncs.OrderedGreater[int],
+			},
+			name: "empty desc",
+			want: true,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](1, 2),
+				order:    genfuncs.OrderedLess[int],
+			},
+			name: "two asc",
+			want: true,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](8, 2),
+				order:    genfuncs.OrderedGreater[int],
+			},
+			name: "two desc",
+			want: true,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](1, 2, 9),
+				order:    genfuncs.OrderedLess[int],
+			},
+			name: "three asc",
+			want: true,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](8, 2, 0),
+				order:    genfuncs.OrderedGreater[int],
+			},
+			name: "three desc",
+			want: true,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](2, 2, 9),
+				order:    genfuncs.OrderedLess[int],
+			},
+			name: "duplicate asc",
+			want: true,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](8, 2, 2, 0),
+				order:    genfuncs.OrderedGreater[int],
+			},
+			name: "duplicate desc",
+			want: true,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](2, 10, 9),
+				order:    genfuncs.OrderedLess[int],
+			},
+			name: "out of asc",
+			want: false,
+		},
+		{
+			args: args{
+				sequence: sequences.SequenceOf[int](8, 2, 2, 3),
+				order:    genfuncs.OrderedGreater[int],
+			},
+			name: "out of desc",
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sequences.IsSorted(tt.args.sequence, tt.args.order)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestJoinToString(t *testing.T) {
+	personStringer := genfuncs.StringerToString[PersonName]()
+	type args struct {
+		sequence  container.Sequence[PersonName]
+		separator string
+		prefix    string
+		postfix   string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "Empty",
+			args: args{
+				sequence:  sequences.SequenceOf[PersonName](),
+				separator: "",
+			},
+			want: "",
+		},
+		{
+			name: "One",
+			args: args{
+				sequence: sequences.SequenceOf[PersonName](
+					PersonName{
+						First: "fred",
+						Last:  "flintstone",
+					}),
+				separator: ", ",
+			},
+			want: "fred flintstone",
+		},
+		{
+			name: "Two",
+			args: args{
+				sequence: sequences.SequenceOf[PersonName](
+					PersonName{
+						First: "fred",
+						Last:  "flintstone",
+					},
+					PersonName{
+						First: "barney",
+						Last:  "rubble",
+					}),
+				separator: ", ",
+			},
+			want: "fred flintstone, barney rubble",
+		},
+		{
+			name: "Two With Prefix Postfix",
+			args: args{
+				sequence: sequences.SequenceOf[PersonName](
+					PersonName{
+						First: "fred",
+						Last:  "flintstone",
+					},
+					PersonName{
+						First: "barney",
+						Last:  "rubble",
+					}),
+				separator: ", ",
+				prefix:    "[",
+				postfix:   "]",
+			},
+			want: "[fred flintstone, barney rubble]",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sequences.JoinToString(tt.args.sequence, personStringer, tt.args.separator, tt.args.prefix, tt.args.postfix)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }
 
 func TestMap(t *testing.T) {

@@ -19,6 +19,7 @@ package sequences
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"strings"
 )
 
 func All[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool) {
@@ -71,6 +72,51 @@ func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor
 	return result
 }
 
+func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int) int {
+	i1 := s1.Iterator()
+	i2 := s2.Iterator()
+	for i1.HasNext() && i2.HasNext() {
+		cmp := comparator(i1.Next(), i2.Next())
+		if cmp != genfuncs.EqualTo {
+			return cmp
+		}
+	}
+	if i2.HasNext() {
+		return genfuncs.LessThan
+	}
+	if i1.HasNext() {
+		return genfuncs.GreaterThan
+	}
+	return genfuncs.EqualTo
+}
+
+// Find returns the first element matching the given predicate, or Result error of NoSuchElement if not found.
+func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T] {
+	iterator := sequence.Iterator()
+	var result T
+	for iterator.HasNext() {
+		result = iterator.Next()
+		if predicate(result) {
+			return genfuncs.NewResult(result)
+		}
+	}
+	return genfuncs.NewError[T](genfuncs.NoSuchElement)
+}
+
+// FindLast returns the last element matching the given predicate, or Result error of NoSuchElement if not found.
+func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T] {
+	iterator := sequence.Iterator()
+	result := genfuncs.NewError[T](genfuncs.NoSuchElement)
+	var t T
+	for iterator.HasNext() {
+		t = iterator.Next()
+		if predicate(t) {
+			result = genfuncs.NewResult(t)
+		}
+	}
+	return result
+}
+
 // FlatMap returns a sequence of all elements from results of transform being invoked on each element of
 // original sequence, and those resultant slices concatenated.
 func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, container.Sequence[R]]) (result container.Sequence[R]) {
@@ -86,6 +132,60 @@ func Fold[T, R any](sequence container.Sequence[T], initial R, operation genfunc
 		result = operation(result, iterator.Next())
 	}
 	return result
+}
+
+// ForEach calls action for each element of a Sequence.
+func ForEach[T any](sequence container.Sequence[T], action func(t T)) {
+	iterator := sequence.Iterator()
+	for iterator.HasNext() {
+		action(iterator.Next())
+	}
+}
+
+// IsSorted returns true if the GSlice is sorted by order.
+func IsSorted[T any](sequence container.Sequence[T], order genfuncs.BiFunction[T, T, bool]) (ok bool) {
+	iterator := sequence.Iterator()
+	var current, last T
+	ok = true
+	first := true
+	for iterator.HasNext() {
+		current = iterator.Next()
+		if first {
+			first = false
+		} else {
+			if order(current, last) {
+				ok = false
+				break
+			}
+		}
+		last = current
+	}
+	return ok
+}
+
+// JoinToString creates a string from all the elements of a Sequence using the stringer on each, separating them using separator, and
+// using the given prefix and postfix.
+func JoinToString[T any](
+	sequence container.Sequence[T],
+	stringer genfuncs.ToString[T],
+	separator string,
+	prefix string,
+	postfix string,
+) string {
+	var sb strings.Builder
+	iterator := sequence.Iterator()
+	sb.WriteString(prefix)
+	first := true
+	for iterator.HasNext() {
+		if first {
+			first = false
+		} else {
+			sb.WriteString(separator)
+		}
+		sb.WriteString(stringer(iterator.Next()))
+	}
+	sb.WriteString(postfix)
+	return sb.String()
 }
 
 func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, R]) container.Sequence[R] {

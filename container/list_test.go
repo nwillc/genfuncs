@@ -19,6 +19,7 @@ package container_test
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
@@ -273,7 +274,7 @@ func TestList_ForEach(t *testing.T) {
 			list.ForEach(func(s string) {
 				str = str + s
 			})
-			str2 := tt.args.values.JoinToString(func(s string) string { return s }, "", "", "")
+			str2 := sequences.JoinToString[string](tt.args.values, func(s string) string { return s }, "", "", "")
 			assert.Equal(t, str2, str)
 		})
 	}

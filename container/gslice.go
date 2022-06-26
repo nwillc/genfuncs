@@ -20,7 +20,6 @@ import (
 	"github.com/nwillc/genfuncs"
 	"golang.org/x/exp/slices"
 	"math/rand"
-	"strings"
 	"time"
 )
 
@@ -39,28 +38,6 @@ type (
 		index int
 	}
 )
-
-// All returns true if all elements of slice match the predicate.
-func (s GSlice[T]) All(predicate genfuncs.Function[T, bool]) bool {
-	length := s.Len()
-	for i := 0; i < length; i++ {
-		if !predicate(s[i]) {
-			return false
-		}
-	}
-	return true
-}
-
-// Any returns true if any element of the slice matches the predicate.
-func (s GSlice[T]) Any(predicate genfuncs.Function[T, bool]) bool {
-	length := s.Len()
-	for i := 0; i < length; i++ {
-		if predicate(s[i]) {
-			return true
-		}
-	}
-	return false
-}
 
 // Compare one GSlice to another, applying a comparison to each pair of corresponding entries. Compare returns 0
 // if all the pair's match, -1 if this GSlice is less, or 1 if it is greater.
@@ -88,32 +65,6 @@ func (s GSlice[T]) Filter(predicate genfuncs.Function[T, bool]) GSlice[T] {
 	return results
 }
 
-// Find returns the first element matching the given predicate and true, or false when no such element was found.
-func (s GSlice[T]) Find(predicate genfuncs.Function[T, bool]) (T, bool) {
-	length := len(s)
-	for i := 0; i < length; i++ {
-		if predicate(s[i]) {
-			return s[i], true
-		}
-	}
-	var t T
-	return t, false
-}
-
-// FindLast returns the last element matching the given predicate and true, or false when no such element was found.
-func (s GSlice[T]) FindLast(predicate genfuncs.Function[T, bool]) (last T, found bool) {
-	var t T
-	for i := len(s) - 1; i > -1; i-- {
-		t = s[i]
-		if predicate(t) {
-			found = true
-			last = t
-			return last, found
-		}
-	}
-	return last, found
-}
-
 // ForEach element of the GSlice invoke given function with the element. Syntactic sugar for a range that intends to
 // traverse all the elements, i.e. no exiting midway through.
 func (s GSlice[T]) ForEach(action func(i int, t T)) {
@@ -123,31 +74,9 @@ func (s GSlice[T]) ForEach(action func(i int, t T)) {
 	}
 }
 
+// Iterator returns an Iterator that will iterate over the GSlice.
 func (s GSlice[T]) Iterator() Iterator[T] {
 	return NewSliceIterator[T](s)
-}
-
-// JoinToString creates a string from all the elements using the stringer on each, separating them using separator, and
-// using the given prefix and postfix.
-func (s GSlice[T]) JoinToString(stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string {
-	length := len(s)
-	var sb strings.Builder
-	sb.WriteString(prefix)
-	last := length - 1
-	for i := 0; i < length; i++ {
-		sb.WriteString(stringer(s[i]))
-		if i != last {
-			sb.WriteString(separator)
-		}
-	}
-	sb.WriteString(postfix)
-	return sb.String()
-}
-
-// IsSorted returns true if the GSlice is sorted by order.
-func (s GSlice[T]) IsSorted(order genfuncs.BiFunction[T, T, bool]) (ok bool) {
-	ok = slices.IsSortedFunc(s, order)
-	return ok
 }
 
 // Len is the number of elements in the GSlice.
@@ -187,6 +116,7 @@ func NewSliceIterator[T any](slice []T) Iterator[T] {
 func NewValuesIterator[T any](values ...T) Iterator[T] {
 	return NewSliceIterator(values)
 }
+
 func (s *sliceIterator[T]) HasNext() bool {
 	return s.index < len(s.slice)
 }

@@ -35,6 +35,7 @@ var (
 	IIsZero    = OrderedEqualTo(0)
 )
 
+// Empty return an empty value of type T.
 func Empty[T any]() (empty T) {
 	return empty
 }
