@@ -30,10 +30,10 @@ func TestHeapFunctionExamples(t *testing.T) {
 		t.Skip("skipping: RUN_EXAMPLES not set")
 	}
 	// Heap
-	ExampleNewHeap()
+	ExampleHeapOf()
 }
 
-func ExampleNewHeap() {
+func ExampleHeapOf() {
 	heap := container.HeapOf[int](genfuncs.OrderedLess[int], 3, 1, 4, 2)
 	for heap.Len() > 0 {
 		fmt.Print(heap.Remove())
