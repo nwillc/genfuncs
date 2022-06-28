@@ -51,7 +51,7 @@ func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, b
 
 // Associate returns a map containing key/values created by applying a function to each value of the container.Iterator
 // returned by the container.Sequence.
-func Associate[T, K comparable, V any](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V]) {
+func Associate[T any, K comparable, V any](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V]) {
 	iterator := sequence.Iterator()
 	result = make(container.GMap[K, V])
 	for iterator.HasNext() {
