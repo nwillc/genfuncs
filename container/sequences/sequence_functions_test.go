@@ -603,9 +603,9 @@ func TestAssociate(t *testing.T) {
 }
 
 func TestAssociateWith(t *testing.T) {
-	var valueSelector genfuncs.MapValueFor[int, int] = func(i int) int { return i * 2 }
+	var valueSelector genfuncs.MapValueFor[int, int] = func(i int) *genfuncs.Result[int] { return genfuncs.NewResult(i * 2) }
 	type args struct {
-		slice     container.Sequence[int]
+		sequence  container.Sequence[int]
 		transform genfuncs.MapValueFor[int, int]
 	}
 	tests := []struct {
@@ -616,7 +616,7 @@ func TestAssociateWith(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				slice:     container.ListOf[int](),
+				sequence:  container.ListOf[int](),
 				transform: valueSelector,
 			},
 			wantSize: 0,
@@ -624,7 +624,7 @@ func TestAssociateWith(t *testing.T) {
 		{
 			name: "Three Unique",
 			args: args{
-				slice:     container.GSlice[int]{1, 2, 3},
+				sequence:  container.GSlice[int]{1, 2, 3},
 				transform: valueSelector,
 			},
 			wantSize: 3,
@@ -632,7 +632,7 @@ func TestAssociateWith(t *testing.T) {
 		{
 			name: "Duplicate",
 			args: args{
-				slice:     container.GMap[string, int]{"1": 1, "2": 2, "two": 2},
+				sequence:  container.GMap[string, int]{"1": 1, "2": 2, "two": 2},
 				transform: valueSelector,
 			},
 			wantSize: 2,
@@ -640,52 +640,50 @@ func TestAssociateWith(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultMap := sequences.AssociateWith(tt.args.slice, tt.args.transform)
-			assert.Equal(t, tt.wantSize, resultMap.Len())
-			for k := range resultMap {
-				_, ok := resultMap[k]
-				assert.True(t, ok)
-			}
+			resultMap := sequences.AssociateWith(tt.args.sequence, tt.args.transform)
+			assert.True(t, resultMap.Ok())
+			m := resultMap.OrEmpty()
+			assert.Equal(t, tt.wantSize, m.Len())
+			sequences.ForEach(tt.args.sequence, func(k int) {
+				assert.True(t, m.Contains(k))
+				assert.Equal(t, k*2, m[k])
+			})
 		})
 	}
 }
 
 func TestFlatMap(t *testing.T) {
-	var trans = func(i int) container.Sequence[string] { return container.GSlice[string]{"#", strconv.Itoa(i)} }
+	var trans = func(i int) container.Sequence[string] { return sequences.SequenceOf("#", strconv.Itoa(i)) }
 	type args struct {
-		slice     container.Sequence[int]
+		sequence  container.Sequence[int]
 		transform func(int) container.Sequence[string]
 	}
 	tests := []struct {
 		name string
 		args args
-		want []string
+		want container.Sequence[string]
 	}{
 		{
 			name: "Empty",
 			args: args{
-				slice:     container.GSlice[int]{},
+				sequence:  container.GSlice[int]{},
 				transform: trans,
 			},
-			want: []string{},
+			want: sequences.SequenceOf[string](),
 		},
 		{
 			name: "List",
 			args: args{
-				slice:     container.ListOf[int](1, 2, 3),
+				sequence:  container.ListOf[int](1, 2, 3),
 				transform: trans,
 			},
-			want: []string{"#", "1", "#", "2", "#", "3"},
+			want: sequences.SequenceOf("#", "1", "#", "2", "#", "3"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := sequences.FlatMap[int, string](tt.args.slice, tt.args.transform).Iterator()
-			index := 0
-			for got.HasNext() {
-				assert.Equal(t, got.Next(), tt.want[index])
-				index++
-			}
+			got := sequences.FlatMap[int, string](tt.args.sequence, tt.args.transform)
+			assert.Equal(t, genfuncs.EqualTo, sequences.Compare[string](got, tt.want, genfuncs.Ordered[string]))
 		})
 	}
 }

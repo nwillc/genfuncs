@@ -18,6 +18,8 @@ package sequences_test
 
 import (
 	"fmt"
+	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container"
 	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/nwillc/genfuncs/internal/tests"
 	"strings"
@@ -28,6 +30,7 @@ func TestFunctionExamples(t *testing.T) {
 	tests.MaybeRunExamples(t)
 	ExampleAssociate()
 	ExampleAssociateWith()
+	ExampleFold()
 }
 
 func ExampleAssociate() {
@@ -36,23 +39,33 @@ func ExampleAssociate() {
 		return parts[1], n
 	}
 	names := sequences.SequenceOf[string]("fred flintstone", "barney rubble")
-	nameMap := sequences.Associate[string](names, byLastName)
+	nameMap := sequences.Associate(names, byLastName)
 	fmt.Println(nameMap["rubble"])
 	// Output: barney rubble
 }
 
 func ExampleAssociateWith() {
-	oddEven := func(i int) string {
+	oddEven := func(i int) *genfuncs.Result[string] {
 		if i%2 == 0 {
-			return "EVEN"
+			return genfuncs.NewResult("EVEN")
 		}
-		return "ODD"
+		return genfuncs.NewResult("ODD")
 	}
 	numbers := sequences.SequenceOf[int](1, 2, 3, 4)
-	odsEvensMap := sequences.AssociateWith[int](numbers, oddEven)
-	fmt.Println(odsEvensMap[2])
-	fmt.Println(odsEvensMap[3])
+	sequences.AssociateWith[int, string](numbers, oddEven).OnSuccess(func(odsEvensMap container.GMap[int, string]) {
+		fmt.Println(odsEvensMap[2])
+		fmt.Println(odsEvensMap[3])
+	})
 	// Output:
 	// EVEN
 	// ODD
+}
+
+func ExampleFold() {
+	sequence := sequences.SequenceOf(1, 2, 3, 4)
+	sum := sequences.Fold(sequence, 0, func(prior, value int) int {
+		return prior + value
+	})
+	fmt.Println(sum)
+	// Output: 10
 }

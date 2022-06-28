@@ -30,7 +30,7 @@ type MapKeyFor[T any, K comparable] func(T) K
 type MapKeyValueFor[T any, K comparable, V any] func(T) (K, V)
 
 // MapValueFor given a comparable key will return a value for it.
-type MapValueFor[K comparable, T any] func(K) T
+type MapValueFor[K comparable, T any] func(K) *Result[T]
 
 // ToString is used to create string representations, it accepts any type and returns a string.
 type ToString[T any] func(T) string
