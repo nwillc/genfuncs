@@ -366,7 +366,7 @@ type MapKeyValueFor[T any, K comparable, V any] func(T) (K, V)
 MapValueFor given a comparable key will return a value for it\.
 
 ```go
-type MapValueFor[K comparable, T any] func(K) T
+type MapValueFor[K comparable, T any] func(K) *Result[T]
 ```
 
 ## type [Promise](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L25-L30>)
@@ -1778,8 +1778,8 @@ import "github.com/nwillc/genfuncs/container/sequences"
 
 - [func All[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool)](<#func-all>)
 - [func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool)](<#func-any>)
-- [func Associate[T, V any, K comparable](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V])](<#func-associate>)
-- [func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor genfuncs.MapValueFor[K, V]) (result container.GMap[K, V])](<#func-associatewith>)
+- [func Associate[T any, K comparable, V any](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V])](<#func-associate>)
+- [func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor genfuncs.MapValueFor[K, V]) (result *genfuncs.Result[container.GMap[K, V]])](<#func-associatewith>)
 - [func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int) int](<#func-compare>)
 - [func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]](<#func-find>)
 - [func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]](<#func-findlast>)
@@ -1792,7 +1792,7 @@ import "github.com/nwillc/genfuncs/container/sequences"
 - [func SequenceOf[T any](values ...T) (sequence container.Sequence[T])](<#func-sequenceof>)
 
 
-## func [All](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L26>)
+## func [All](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L27>)
 
 ```go
 func All[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool)
@@ -1800,7 +1800,7 @@ func All[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, b
 
 All returns true if all elements in the sequence match the predicate\.
 
-## func [Any](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L39>)
+## func [Any](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L40>)
 
 ```go
 func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool)
@@ -1808,10 +1808,10 @@ func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, b
 
 Any returns true if any element of the sequence matches the predicate\.
 
-## func [Associate](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L53>)
+## func [Associate](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L54>)
 
 ```go
-func Associate[T, V any, K comparable](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V])
+func Associate[T any, K comparable, V any](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V])
 ```
 
 Associate returns a map containing key/values created by applying a function to each value of the container\.Iterator returned by the container\.Sequence\.
@@ -1834,7 +1834,7 @@ func main() {
 		return parts[1], n
 	}
 	names := sequences.SequenceOf[string]("fred flintstone", "barney rubble")
-	nameMap := sequences.Associate[string](names, byLastName)
+	nameMap := sequences.Associate(names, byLastName)
 	fmt.Println(nameMap["rubble"])
 }
 ```
@@ -1848,10 +1848,10 @@ barney rubble
 </p>
 </details>
 
-## func [AssociateWith](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L65>)
+## func [AssociateWith](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L66>)
 
 ```go
-func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor genfuncs.MapValueFor[K, V]) (result container.GMap[K, V])
+func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor genfuncs.MapValueFor[K, V]) (result *genfuncs.Result[container.GMap[K, V]])
 ```
 
 AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the valueSelector function applied to each element\.
@@ -1864,20 +1864,23 @@ package main
 
 import (
 	"fmt"
+	"github.com/nwillc/genfuncs"
+	"github.com/nwillc/genfuncs/container"
 	"github.com/nwillc/genfuncs/container/sequences"
 )
 
 func main() {
-	oddEven := func(i int) string {
+	oddEven := func(i int) *genfuncs.Result[string] {
 		if i%2 == 0 {
-			return "EVEN"
+			return genfuncs.NewResult("EVEN")
 		}
-		return "ODD"
+		return genfuncs.NewResult("ODD")
 	}
 	numbers := sequences.SequenceOf[int](1, 2, 3, 4)
-	odsEvensMap := sequences.AssociateWith[int](numbers, oddEven)
-	fmt.Println(odsEvensMap[2])
-	fmt.Println(odsEvensMap[3])
+	sequences.AssociateWith[int, string](numbers, oddEven).OnSuccess(func(odsEvensMap container.GMap[int, string]) {
+		fmt.Println(odsEvensMap[2])
+		fmt.Println(odsEvensMap[3])
+	})
 }
 ```
 
@@ -1891,7 +1894,7 @@ ODD
 </p>
 </details>
 
-## func [Compare](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L77>)
+## func [Compare](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L82>)
 
 ```go
 func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int) int
@@ -1899,7 +1902,7 @@ func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int)
 
 Compare two sequences with a comparator returning less/equal/greater \(\-1/0/1\) and return comparison of the two\.
 
-## func [Find](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L96>)
+## func [Find](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L101>)
 
 ```go
 func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]
@@ -1907,7 +1910,7 @@ func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, 
 
 Find returns the first element matching the given predicate\, or Result error of NoSuchElement if not found\.
 
-## func [FindLast](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L109>)
+## func [FindLast](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L114>)
 
 ```go
 func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]
@@ -1915,7 +1918,7 @@ func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function
 
 FindLast returns the last element matching the given predicate\, or Result error of NoSuchElement if not found\.
 
-## func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L124>)
+## func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L129>)
 
 ```go
 func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, container.Sequence[R]]) (result container.Sequence[R])
@@ -1923,7 +1926,7 @@ func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Functi
 
 FlatMap returns a sequence of all elements from results of transform being invoked on each element of original sequence\, and those resultant slices concatenated\.
 
-## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L130>)
+## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L135>)
 
 ```go
 func Fold[T, R any](sequence container.Sequence[T], initial R, operation genfuncs.BiFunction[R, T, R]) (result R)
@@ -1931,7 +1934,36 @@ func Fold[T, R any](sequence container.Sequence[T], initial R, operation genfunc
 
 Fold accumulates a value starting with an initial value and applying operation to each value of the container\.Iterator returned by the container\.Sequence\.
 
-## func [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L140>)
+<details><summary>Example</summary>
+<p>
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nwillc/genfuncs/container/sequences"
+)
+
+func main() {
+	sequence := sequences.SequenceOf(1, 2, 3, 4)
+	sum := sequences.Fold(sequence, 0, func(prior, value int) int {
+		return prior + value
+	})
+	fmt.Println(sum)
+}
+```
+
+#### Output
+
+```
+10
+```
+
+</p>
+</details>
+
+## func [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L145>)
 
 ```go
 func ForEach[T any](sequence container.Sequence[T], action func(t T))
@@ -1939,7 +1971,7 @@ func ForEach[T any](sequence container.Sequence[T], action func(t T))
 
 ForEach calls action for each element of a Sequence\.
 
-## func [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L148>)
+## func [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L153>)
 
 ```go
 func IsSorted[T any](sequence container.Sequence[T], order genfuncs.BiFunction[T, T, bool]) (ok bool)
@@ -1947,7 +1979,7 @@ func IsSorted[T any](sequence container.Sequence[T], order genfuncs.BiFunction[T
 
 IsSorted returns true if the GSlice is sorted by order\.
 
-## func [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L170-L176>)
+## func [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L175-L181>)
 
 ```go
 func JoinToString[T any](sequence container.Sequence[T], stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string
@@ -1955,7 +1987,7 @@ func JoinToString[T any](sequence container.Sequence[T], stringer genfuncs.ToStr
 
 JoinToString creates a string from all the elements of a Sequence using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
 
-## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L194>)
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L199>)
 
 ```go
 func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, R]) container.Sequence[R]
@@ -1963,7 +1995,7 @@ func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T
 
 Map elements in a Sequence to a new Sequence having applied the transform to them\.
 
-## func [SequenceOf](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L199>)
+## func [SequenceOf](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L204>)
 
 ```go
 func SequenceOf[T any](values ...T) (sequence container.Sequence[T])
@@ -1987,7 +2019,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.17.0"
+const Version = "v0.18.3"
 ```
 
 # tests
