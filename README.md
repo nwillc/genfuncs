@@ -29,7 +29,8 @@ Both of these, while less idiomatic, were done because they measurably improve p
 ## General notes:
  - A Map interface is provided to allow both Go's normal map and it's sync.Map to be used polymorphically.
  - The bias of these functions where appropriate is to be pure, without side effects, at the cost of copying data.
- - Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle).
+ - Examples are found in `*examples_test.go` files or projects like [gordle](https://github.com/nwillc/gordle), 
+[gorelease](https://github.com/nwillc/gorelease) or [gotimer](https://github.com/nwillc/gotimer).
 
 ## License
 
