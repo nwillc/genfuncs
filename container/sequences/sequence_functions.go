@@ -19,6 +19,7 @@ package sequences
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/maps"
 	"github.com/nwillc/genfuncs/results"
 	"strings"
 )
@@ -51,19 +52,22 @@ func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, b
 
 // Associate returns a map containing key/values created by applying a function to each value of the container.Iterator
 // returned by the container.Sequence.
-func Associate[T any, K comparable, V any](sequence container.Sequence[T], keyValueFor genfuncs.MapKeyValueFor[T, K, V]) (result container.GMap[K, V]) {
+func Associate[T any, K comparable, V any](sequence container.Sequence[T], keyValueFor maps.KeyValueFor[T, K, V]) (result *genfuncs.Result[container.GMap[K, V]]) {
 	iterator := sequence.Iterator()
-	result = make(container.GMap[K, V])
+	m := make(container.GMap[K, V])
 	for iterator.HasNext() {
-		k, v := keyValueFor(iterator.Next())
-		result[k] = v
+		keyValueFor(iterator.Next()).
+			OnSuccess(func(kv *maps.Entry[K, V]) {
+				m[kv.Key] = kv.Value
+			})
+
 	}
-	return result
+	return genfuncs.NewResult(m)
 }
 
 // AssociateWith returns a Map where keys are elements from the given sequence and values are produced by the
 // valueSelector function applied to each element.
-func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor genfuncs.MapValueFor[K, V]) (result *genfuncs.Result[container.GMap[K, V]]) {
+func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor maps.ValueFor[K, V]) (result *genfuncs.Result[container.GMap[K, V]]) {
 	iterator := sequence.Iterator()
 	m := make(container.GMap[K, V])
 	var t K
@@ -200,8 +204,8 @@ func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T
 	return container.NewIteratorSequence[R](transformIterator[T, R]{iterator: sequence.Iterator(), transform: transform})
 }
 
-// SequenceOf creates a sequence from the provided values.
-func SequenceOf[T any](values ...T) (sequence container.Sequence[T]) {
+// NewSequence creates a sequence from the provided values.
+func NewSequence[T any](values ...T) (sequence container.Sequence[T]) {
 	var slice container.GSlice[T] = values
 	return slice
 }

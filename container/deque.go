@@ -26,9 +26,9 @@ type Deque[T any] struct {
 	list *List[T]
 }
 
-// DequeOf creates a Deque containing any provided elements.
-func DequeOf[T any](t ...T) (degue *Deque[T]) {
-	degue = &Deque[T]{list: ListOf[T]()}
+// NewDeque creates a Deque containing any provided elements.
+func NewDeque[T any](t ...T) (degue *Deque[T]) {
+	degue = &Deque[T]{list: NewList[T]()}
 	degue.AddAll(t...)
 	return degue
 }

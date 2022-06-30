@@ -70,8 +70,8 @@ func (e *ListElement[T]) Swap(e2 *ListElement[T]) {
 	e.Value, e2.Value = e2.Value, e.Value
 }
 
-// ListOf instantiates a new List containing any values provided.
-func ListOf[T any](values ...T) (l *List[T]) {
+// NewList instantiates a new List containing any values provided.
+func NewList[T any](values ...T) (l *List[T]) {
 	l = new(List[T])
 	l.root.next = &l.root
 	l.root.prev = &l.root

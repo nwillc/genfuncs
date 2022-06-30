@@ -23,7 +23,7 @@ import (
 )
 
 func Test_flatMapIterator_HasNoNext(t *testing.T) {
-	i := newFlatMapIterator[int, int](SequenceOf[int](), func(i int) container.Sequence[int] { return SequenceOf[int]() })
+	i := newFlatMapIterator[int, int](NewSequence[int](), func(i int) container.Sequence[int] { return NewSequence[int]() })
 	assert.False(t, i.HasNext())
 	assert.Panics(t, func() {
 		_ = i.Next()

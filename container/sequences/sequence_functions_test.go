@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/maps"
 	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/stretchr/testify/assert"
 	"strconv"
@@ -48,7 +49,7 @@ func TestAll(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				sequence:  sequences.SequenceOf[string](),
+				sequence:  sequences.NewSequence[string](),
 				predicate: func(s string) bool { return s == "a" },
 			},
 			want: true,
@@ -56,7 +57,7 @@ func TestAll(t *testing.T) {
 		{
 			name: "Some Not All",
 			args: args{
-				sequence:  sequences.SequenceOf("b", "c"),
+				sequence:  sequences.NewSequence("b", "c"),
 				predicate: func(s string) bool { return s == "b" },
 			},
 			want: false,
@@ -64,7 +65,7 @@ func TestAll(t *testing.T) {
 		{
 			name: "All",
 			args: args{
-				sequence:  sequences.SequenceOf("b", "a", "c"),
+				sequence:  sequences.NewSequence("b", "a", "c"),
 				predicate: func(s string) bool { return len(s) == 1 },
 			},
 			want: true,
@@ -91,7 +92,7 @@ func TestAny(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				sequence:  sequences.SequenceOf[string](),
+				sequence:  sequences.NewSequence[string](),
 				predicate: func(s string) bool { return s == "a" },
 			},
 			want: false,
@@ -99,7 +100,7 @@ func TestAny(t *testing.T) {
 		{
 			name: "Not Found",
 			args: args{
-				sequence:  sequences.SequenceOf("b", "c"),
+				sequence:  sequences.NewSequence("b", "c"),
 				predicate: func(s string) bool { return s == "a" },
 			},
 			want: false,
@@ -107,7 +108,7 @@ func TestAny(t *testing.T) {
 		{
 			name: "Found",
 			args: args{
-				sequence:  sequences.SequenceOf("b", "a", "c"),
+				sequence:  sequences.NewSequence("b", "a", "c"),
 				predicate: func(s string) bool { return s == "a" },
 			},
 			want: true,
@@ -134,56 +135,56 @@ func TestCompare(t *testing.T) {
 		{
 			name: "empty",
 			args: args[int]{
-				s1: sequences.SequenceOf[int](),
-				s2: sequences.SequenceOf[int](),
+				s1: sequences.NewSequence[int](),
+				s2: sequences.NewSequence[int](),
 			},
 			want: genfuncs.EqualTo,
 		},
 		{
 			name: "simple equal",
 			args: args[int]{
-				s1: sequences.SequenceOf[int](2, 1),
-				s2: sequences.SequenceOf[int](2, 1),
+				s1: sequences.NewSequence[int](2, 1),
+				s2: sequences.NewSequence[int](2, 1),
 			},
 			want: genfuncs.EqualTo,
 		},
 		{
 			name: "simple less",
 			args: args[int]{
-				s1: sequences.SequenceOf[int](1),
-				s2: sequences.SequenceOf[int](2),
+				s1: sequences.NewSequence[int](1),
+				s2: sequences.NewSequence[int](2),
 			},
 			want: genfuncs.LessThan,
 		},
 		{
 			name: "simple greater",
 			args: args[int]{
-				s1: sequences.SequenceOf[int](1, 2),
-				s2: sequences.SequenceOf[int](1, 1),
+				s1: sequences.NewSequence[int](1, 2),
+				s2: sequences.NewSequence[int](1, 1),
 			},
 			want: genfuncs.GreaterThan,
 		},
 		{
 			name: "shorter less",
 			args: args[int]{
-				s1: sequences.SequenceOf[int](1),
-				s2: sequences.SequenceOf[int](1, 2),
+				s1: sequences.NewSequence[int](1),
+				s2: sequences.NewSequence[int](1, 2),
 			},
 			want: genfuncs.LessThan,
 		},
 		{
 			name: "shorter less",
 			args: args[int]{
-				s1: sequences.SequenceOf[int](1),
-				s2: sequences.SequenceOf[int](1, 2),
+				s1: sequences.NewSequence[int](1),
+				s2: sequences.NewSequence[int](1, 2),
 			},
 			want: genfuncs.LessThan,
 		},
 		{
 			name: "longer greater",
 			args: args[int]{
-				s1: sequences.SequenceOf[int](1, 2),
-				s2: sequences.SequenceOf[int](1),
+				s1: sequences.NewSequence[int](1, 2),
+				s2: sequences.NewSequence[int](1),
 			},
 			want: genfuncs.GreaterThan,
 		},
@@ -210,7 +211,7 @@ func TestFind(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				sequence:  sequences.SequenceOf[float32](),
+				sequence:  sequences.NewSequence[float32](),
 				predicate: func(f float32) bool { return false },
 			},
 			wantFound: false,
@@ -218,7 +219,7 @@ func TestFind(t *testing.T) {
 		{
 			name: "Not Found",
 			args: args{
-				sequence:  sequences.SequenceOf[float32](1.0, 2.0, 3.0),
+				sequence:  sequences.NewSequence[float32](1.0, 2.0, 3.0),
 				predicate: func(f float32) bool { return false },
 			},
 			wantFound: false,
@@ -226,7 +227,7 @@ func TestFind(t *testing.T) {
 		{
 			name: "Found",
 			args: args{
-				sequence:  sequences.SequenceOf[float32](1.0, 2.0, 3.0),
+				sequence:  sequences.NewSequence[float32](1.0, 2.0, 3.0),
 				predicate: func(f float32) bool { return f > 1.0 },
 			},
 			want:      2.0,
@@ -260,7 +261,7 @@ func TestFindLast(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				sequence:  sequences.SequenceOf[float32](),
+				sequence:  sequences.NewSequence[float32](),
 				predicate: func(f float32) bool { return false },
 			},
 			wantFound: false,
@@ -268,7 +269,7 @@ func TestFindLast(t *testing.T) {
 		{
 			name: "Not Found",
 			args: args{
-				sequence:  sequences.SequenceOf[float32](1.0, 2.0, 3.0),
+				sequence:  sequences.NewSequence[float32](1.0, 2.0, 3.0),
 				predicate: func(f float32) bool { return f < 0.0 },
 			},
 			wantFound: false,
@@ -276,7 +277,7 @@ func TestFindLast(t *testing.T) {
 		{
 			name: "Found",
 			args: args{
-				sequence:  sequences.SequenceOf[float32](1.0, 2.0, 3.0),
+				sequence:  sequences.NewSequence[float32](1.0, 2.0, 3.0),
 				predicate: func(f float32) bool { return f > 1.0 },
 			},
 			want:      3.0,
@@ -315,12 +316,12 @@ func TestForEach(t *testing.T) {
 	}{
 		{
 			name:     "Empty",
-			sequence: sequences.SequenceOf[int](),
+			sequence: sequences.NewSequence[int](),
 			want:     0,
 		},
 		{
 			name:     "Two",
-			sequence: sequences.SequenceOf[int](1, 1),
+			sequence: sequences.NewSequence[int](1, 1),
 			want:     2,
 		},
 	}
@@ -347,7 +348,7 @@ func TestIsSorted(t *testing.T) {
 	}{
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](),
+				sequence: sequences.NewSequence[int](),
 				order:    genfuncs.OrderedLess[int],
 			},
 			name: "empty asc",
@@ -355,7 +356,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](),
+				sequence: sequences.NewSequence[int](),
 				order:    genfuncs.OrderedGreater[int],
 			},
 			name: "empty desc",
@@ -363,7 +364,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](1, 2),
+				sequence: sequences.NewSequence[int](1, 2),
 				order:    genfuncs.OrderedLess[int],
 			},
 			name: "two asc",
@@ -371,7 +372,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](8, 2),
+				sequence: sequences.NewSequence[int](8, 2),
 				order:    genfuncs.OrderedGreater[int],
 			},
 			name: "two desc",
@@ -379,7 +380,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](1, 2, 9),
+				sequence: sequences.NewSequence[int](1, 2, 9),
 				order:    genfuncs.OrderedLess[int],
 			},
 			name: "three asc",
@@ -387,7 +388,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](8, 2, 0),
+				sequence: sequences.NewSequence[int](8, 2, 0),
 				order:    genfuncs.OrderedGreater[int],
 			},
 			name: "three desc",
@@ -395,7 +396,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](2, 2, 9),
+				sequence: sequences.NewSequence[int](2, 2, 9),
 				order:    genfuncs.OrderedLess[int],
 			},
 			name: "duplicate asc",
@@ -403,7 +404,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](8, 2, 2, 0),
+				sequence: sequences.NewSequence[int](8, 2, 2, 0),
 				order:    genfuncs.OrderedGreater[int],
 			},
 			name: "duplicate desc",
@@ -411,7 +412,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](2, 10, 9),
+				sequence: sequences.NewSequence[int](2, 10, 9),
 				order:    genfuncs.OrderedLess[int],
 			},
 			name: "out of asc",
@@ -419,7 +420,7 @@ func TestIsSorted(t *testing.T) {
 		},
 		{
 			args: args{
-				sequence: sequences.SequenceOf[int](8, 2, 2, 3),
+				sequence: sequences.NewSequence[int](8, 2, 2, 3),
 				order:    genfuncs.OrderedGreater[int],
 			},
 			name: "out of desc",
@@ -450,7 +451,7 @@ func TestJoinToString(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				sequence:  sequences.SequenceOf[PersonName](),
+				sequence:  sequences.NewSequence[PersonName](),
 				separator: "",
 			},
 			want: "",
@@ -458,7 +459,7 @@ func TestJoinToString(t *testing.T) {
 		{
 			name: "One",
 			args: args{
-				sequence: sequences.SequenceOf[PersonName](
+				sequence: sequences.NewSequence[PersonName](
 					PersonName{
 						First: "fred",
 						Last:  "flintstone",
@@ -470,7 +471,7 @@ func TestJoinToString(t *testing.T) {
 		{
 			name: "Two",
 			args: args{
-				sequence: sequences.SequenceOf[PersonName](
+				sequence: sequences.NewSequence[PersonName](
 					PersonName{
 						First: "fred",
 						Last:  "flintstone",
@@ -486,7 +487,7 @@ func TestJoinToString(t *testing.T) {
 		{
 			name: "Two With Prefix Postfix",
 			args: args{
-				sequence: sequences.SequenceOf[PersonName](
+				sequence: sequences.NewSequence[PersonName](
 					PersonName{
 						First: "fred",
 						Last:  "flintstone",
@@ -525,10 +526,12 @@ func TestMap(t *testing.T) {
 }
 
 func TestAssociate(t *testing.T) {
-	var firstLast genfuncs.MapKeyValueFor[PersonName, string, string] = func(p PersonName) (string, string) { return p.First, p.Last }
+	var firstLast maps.KeyValueFor[PersonName, string, string] = func(p PersonName) *genfuncs.Result[*maps.Entry[string, string]] {
+		return genfuncs.NewResult(maps.NewEntry(p.First, p.Last))
+	}
 	type args struct {
 		sequence  container.Sequence[PersonName]
-		transform genfuncs.MapKeyValueFor[PersonName, string, string]
+		transform maps.KeyValueFor[PersonName, string, string]
 	}
 	tests := []struct {
 		name     string
@@ -539,7 +542,7 @@ func TestAssociate(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				sequence:  sequences.SequenceOf[PersonName](),
+				sequence:  sequences.NewSequence[PersonName](),
 				transform: firstLast,
 			},
 			wantSize: 0,
@@ -583,7 +586,7 @@ func TestAssociate(t *testing.T) {
 		{
 			name: "list one",
 			args: args{
-				sequence:  container.ListOf(PersonName{First: "Donald", Last: "Duck"}),
+				sequence:  container.NewList(PersonName{First: "Donald", Last: "Duck"}),
 				transform: firstLast,
 			},
 			wantSize: 1,
@@ -592,21 +595,26 @@ func TestAssociate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fNameMap := sequences.Associate(tt.args.sequence, tt.args.transform)
-			assert.Equal(t, tt.wantSize, fNameMap.Len())
-			for k := range fNameMap {
-				_, ok := fNameMap[k]
-				assert.True(t, ok)
-			}
+			sequences.Associate(tt.args.sequence, tt.args.transform).
+				OnFailure(func(e error) {
+					assert.Fail(t, "failed associate")
+				}).
+				OnSuccess(func(fNameMap container.GMap[string, string]) {
+					assert.Equal(t, tt.wantSize, fNameMap.Len())
+					for k := range fNameMap {
+						_, ok := fNameMap[k]
+						assert.True(t, ok)
+					}
+				})
 		})
 	}
 }
 
 func TestAssociateWith(t *testing.T) {
-	var valueSelector genfuncs.MapValueFor[int, int] = func(i int) *genfuncs.Result[int] { return genfuncs.NewResult(i * 2) }
+	var valueSelector maps.ValueFor[int, int] = func(i int) *genfuncs.Result[int] { return genfuncs.NewResult(i * 2) }
 	type args struct {
 		sequence  container.Sequence[int]
-		transform genfuncs.MapValueFor[int, int]
+		transform maps.ValueFor[int, int]
 	}
 	tests := []struct {
 		name     string
@@ -616,7 +624,7 @@ func TestAssociateWith(t *testing.T) {
 		{
 			name: "Empty",
 			args: args{
-				sequence:  container.ListOf[int](),
+				sequence:  container.NewList[int](),
 				transform: valueSelector,
 			},
 			wantSize: 0,
@@ -653,7 +661,7 @@ func TestAssociateWith(t *testing.T) {
 }
 
 func TestFlatMap(t *testing.T) {
-	var trans = func(i int) container.Sequence[string] { return sequences.SequenceOf("#", strconv.Itoa(i)) }
+	var trans = func(i int) container.Sequence[string] { return sequences.NewSequence("#", strconv.Itoa(i)) }
 	type args struct {
 		sequence  container.Sequence[int]
 		transform func(int) container.Sequence[string]
@@ -669,15 +677,15 @@ func TestFlatMap(t *testing.T) {
 				sequence:  container.GSlice[int]{},
 				transform: trans,
 			},
-			want: sequences.SequenceOf[string](),
+			want: sequences.NewSequence[string](),
 		},
 		{
 			name: "List",
 			args: args{
-				sequence:  container.ListOf[int](1, 2, 3),
+				sequence:  container.NewList[int](1, 2, 3),
 				transform: trans,
 			},
-			want: sequences.SequenceOf("#", "1", "#", "2", "#", "3"),
+			want: sequences.NewSequence("#", "1", "#", "2", "#", "3"),
 		},
 	}
 	for _, tt := range tests {
@@ -688,9 +696,9 @@ func TestFlatMap(t *testing.T) {
 	}
 }
 
-func TestSequenceOf(t *testing.T) {
+func TestNewSequence(t *testing.T) {
 	values := []int{1, 2, 3}
-	iterator := sequences.SequenceOf(values...).Iterator()
+	iterator := sequences.NewSequence(values...).Iterator()
 	for _, v := range values {
 		assert.True(t, iterator.HasNext())
 		assert.Equal(t, v, iterator.Next())

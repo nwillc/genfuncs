@@ -19,6 +19,7 @@ package gslices
 import (
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/maps"
 )
 
 // Distinct returns a slice containing only distinct elements from the given slice.
@@ -39,7 +40,7 @@ func FlatMap[T, R any](slice container.GSlice[T], transform genfuncs.Function[T,
 
 // GroupBy groups elements of the slice by the key returned by the given keySelector function applied to
 // each element and returns a map where each group key is associated with a slice of corresponding elements.
-func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor genfuncs.MapKeyFor[T, K]) (result container.GMap[K, container.GSlice[T]]) {
+func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor maps.KeyFor[T, K]) (result container.GMap[K, container.GSlice[T]]) {
 	length := len(slice)
 	result = make(container.GMap[K, container.GSlice[T]], length)
 	var t T
@@ -47,7 +48,7 @@ func GroupBy[T any, K comparable](slice container.GSlice[T], keyFor genfuncs.Map
 	var v container.GSlice[T]
 	for i := 0; i < length; i++ {
 		t = slice[i]
-		k = keyFor(t)
+		k = keyFor(t).MustGet()
 		v = result[k]
 		result[k] = append(v, t)
 	}

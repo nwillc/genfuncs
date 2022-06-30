@@ -19,6 +19,7 @@ package gslices_test
 import (
 	"github.com/nwillc/genfuncs/container"
 	"github.com/nwillc/genfuncs/container/gslices"
+	"github.com/nwillc/genfuncs/container/maps"
 	"github.com/nwillc/genfuncs/container/sequences"
 	"strconv"
 	"testing"
@@ -105,7 +106,7 @@ func TestFlatMap(t *testing.T) {
 func TestGroupBy(t *testing.T) {
 	type args struct {
 		slice       container.GSlice[int]
-		keySelector genfuncs.MapKeyFor[int, string]
+		keySelector maps.KeyFor[int, string]
 	}
 	tests := []struct {
 		name string
@@ -116,11 +117,11 @@ func TestGroupBy(t *testing.T) {
 			name: "Odds Evens",
 			args: args{
 				slice: []int{1, 2, 3, 4},
-				keySelector: func(i int) string {
+				keySelector: func(i int) *genfuncs.Result[string] {
 					if i%2 == 0 {
-						return "even"
+						return genfuncs.NewResult("even")
 					}
-					return "odd"
+					return genfuncs.NewResult("odd")
 				},
 			},
 			want: map[string]container.GSlice[int]{"odd": {1, 3}, "even": {2, 4}},

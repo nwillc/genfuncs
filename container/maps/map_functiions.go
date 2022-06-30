@@ -14,7 +14,7 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package gmaps
+package maps
 
 import (
 	"github.com/nwillc/genfuncs"
@@ -32,8 +32,8 @@ func Map[K comparable, V any, R any](m container.Map[K, V], transform genfuncs.B
 	return result
 }
 
-// MapMerge merges maps of container.GSlice's together into a new map appending the container.GSlice's when collisions occur.
-func MapMerge[K comparable, V any](mv ...container.Map[K, container.GSlice[V]]) (result container.GMap[K, container.GSlice[V]]) {
+// Merge merges maps of container.GSlice's together into a new map appending the container.GSlice's when collisions occur.
+func Merge[K comparable, V any](mv ...container.Map[K, container.GSlice[V]]) (result container.GMap[K, container.GSlice[V]]) {
 	result = make(container.GMap[K, container.GSlice[V]])
 	for _, m := range mv {
 		m.ForEach(func(k K, v container.GSlice[V]) {
@@ -42,4 +42,8 @@ func MapMerge[K comparable, V any](mv ...container.Map[K, container.GSlice[V]]) 
 		})
 	}
 	return result
+}
+
+func NewEntry[K comparable, V any](k K, v V) *Entry[K, V] {
+	return &Entry[K, V]{Key: k, Value: v}
 }

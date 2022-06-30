@@ -26,13 +26,13 @@ import (
 )
 
 func TestDeque_New(t *testing.T) {
-	deque := container.DequeOf[int]()
+	deque := container.NewDeque[int]()
 	assert.NotNil(t, deque)
 	assert.Equal(t, 0, deque.Len())
 }
 
 func TestDeque_Bounds(t *testing.T) {
-	deque := container.DequeOf[bool]()
+	deque := container.NewDeque[bool]()
 	assert.PanicsWithError(t, genfuncs.NoSuchElement.Error(), func() {
 		_ = deque.Remove()
 	})
@@ -54,7 +54,7 @@ func TestDeque_Bounds(t *testing.T) {
 }
 
 func TestDeque_Inserting(t *testing.T) {
-	deque := container.DequeOf(1, 3, 2, 4)
+	deque := container.NewDeque(1, 3, 2, 4)
 	assert.Equal(t, 1, deque.Remove())
 	assert.Equal(t, 3, deque.Remove())
 	assert.Equal(t, 2, deque.Peek())
@@ -83,7 +83,7 @@ func TestDeque_AddAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := container.DequeOf[string]()
+			d := container.NewDeque[string]()
 			d.AddAll(tt.args.slice...)
 			for _, e := range tt.want {
 				assert.Equal(t, e, d.Remove())
@@ -126,7 +126,7 @@ func TestDequeFifo_AddPeekRemove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := container.DequeOf(tt.args.slice...)
+			d := container.NewDeque(tt.args.slice...)
 			assert.Equal(t, len(tt.want), d.Len())
 			for _, ii := range tt.want {
 				v1 := d.Peek()
@@ -172,7 +172,7 @@ func TestDequeLifo_AddPeekRemove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := container.DequeOf(tt.args.slice...)
+			d := container.NewDeque(tt.args.slice...)
 			assert.Equal(t, len(tt.want), d.Len())
 			for _, ii := range tt.want {
 				v1 := d.PeekRight()
@@ -185,7 +185,7 @@ func TestDequeLifo_AddPeekRemove(t *testing.T) {
 }
 
 func TestDeque_AddLeft(t *testing.T) {
-	d := container.DequeOf[int](1)
+	d := container.NewDeque[int](1)
 	assert.Equal(t, 1, d.PeekLeft())
 	d.AddLeft(0)
 	assert.Equal(t, 0, d.PeekLeft())
@@ -193,12 +193,12 @@ func TestDeque_AddLeft(t *testing.T) {
 
 func TestDeque_Values(t *testing.T) {
 	s := container.GSlice[int]{1, 2, 3}
-	d := container.DequeOf[int](s...)
+	d := container.NewDeque[int](s...)
 	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](s, d.Values(), genfuncs.Ordered[int]))
 }
 
 func TestDeque_AddRight(t *testing.T) {
-	d := container.DequeOf[int](1)
+	d := container.NewDeque[int](1)
 	assert.Equal(t, 1, d.PeekRight())
 	d.AddRight(0)
 	assert.Equal(t, 0, d.PeekRight())

@@ -54,11 +54,11 @@ func ExampleFlatMap() {
 }
 
 func ExampleGroupBy() {
-	oddEven := func(i int) string {
+	oddEven := func(i int) *genfuncs.Result[string] {
 		if i%2 == 0 {
-			return "EVEN"
+			return genfuncs.NewResult("EVEN")
 		}
-		return "ODD"
+		return genfuncs.NewResult("ODD")
 	}
 	numbers := []int{1, 2, 3, 4}
 	grouped := gslices.GroupBy(numbers, oddEven)

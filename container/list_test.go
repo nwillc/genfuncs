@@ -27,7 +27,7 @@ import (
 )
 
 func TestNewList(t *testing.T) {
-	l := container.ListOf[int]()
+	l := container.NewList[int]()
 	assert.NotNil(t, l)
 	assert.Equal(t, 0, l.Len())
 	assert.Nil(t, l.PeekLeft())
@@ -35,7 +35,7 @@ func TestNewList(t *testing.T) {
 }
 
 func TestList_AddRight(t *testing.T) {
-	l := container.ListOf[string]("1")
+	l := container.NewList[string]("1")
 	assert.Equal(t, 1, l.Len())
 	assert.Equal(t, "1", l.PeekRight().Value)
 	assert.Equal(t, "1", l.PeekLeft().Value)
@@ -46,7 +46,7 @@ func TestList_AddRight(t *testing.T) {
 }
 
 func TestList_AddLeft(t *testing.T) {
-	l := container.ListOf[string]("1")
+	l := container.NewList[string]("1")
 	assert.Equal(t, 1, l.Len())
 	assert.Equal(t, "1", l.PeekRight().Value)
 	assert.Equal(t, "1", l.PeekLeft().Value)
@@ -57,7 +57,7 @@ func TestList_AddLeft(t *testing.T) {
 }
 
 func TestList_Remove(t *testing.T) {
-	l := container.ListOf[int](1, 2)
+	l := container.NewList[int](1, 2)
 	e := l.PeekLeft()
 	assert.Equal(t, 1, e.Value)
 	v := l.Remove(e)
@@ -89,14 +89,14 @@ func TestList_Values(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := container.ListOf[int](tt.args.expect...)
+			l := container.NewList[int](tt.args.expect...)
 			assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](tt.args.expect, l.Values(), genfuncs.Ordered[int]))
 		})
 	}
 }
 
 func TestElement_NextPrev(t *testing.T) {
-	l := container.ListOf[int](1, 2)
+	l := container.NewList[int](1, 2)
 	left := l.PeekLeft()
 	right := l.PeekRight()
 
@@ -120,7 +120,7 @@ func TestList_SortBy(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				list:  container.ListOf[int](),
+				list:  container.NewList[int](),
 				order: genfuncs.OrderedLess[int],
 			},
 			want: container.GSlice[int]{},
@@ -128,7 +128,7 @@ func TestList_SortBy(t *testing.T) {
 		{
 			name: "single",
 			args: args{
-				list:  container.ListOf[int](1),
+				list:  container.NewList[int](1),
 				order: genfuncs.OrderedLess[int],
 			},
 			want: container.GSlice[int]{1},
@@ -136,7 +136,7 @@ func TestList_SortBy(t *testing.T) {
 		{
 			name: "sort ascending",
 			args: args{
-				list:  container.ListOf[int](2, 1, 7, 3),
+				list:  container.NewList[int](2, 1, 7, 3),
 				order: genfuncs.OrderedLess[int],
 			},
 			want: container.GSlice[int]{1, 2, 3, 7},
@@ -144,7 +144,7 @@ func TestList_SortBy(t *testing.T) {
 		{
 			name: "sort descending",
 			args: args{
-				list:  container.ListOf[int](1, 7, 3, 9),
+				list:  container.NewList[int](1, 7, 3, 9),
 				order: genfuncs.OrderedGreater[int],
 			},
 			want: container.GSlice[int]{9, 7, 3, 1},
@@ -219,7 +219,7 @@ func TestList_RandomSorts(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			for pass := passes; pass > 0; pass-- {
 				count := tt.args.count + random.Intn(tt.args.count)
-				numbers := container.ListOf[int]()
+				numbers := container.NewList[int]()
 				for i := 0; i < count; i++ {
 					numbers.Add(random.Int() % 10)
 				}
@@ -268,7 +268,7 @@ func TestList_ForEach(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			list := container.ListOf[string]()
+			list := container.NewList[string]()
 			list.AddAll(tt.args.values...)
 			str := ""
 			list.ForEach(func(s string) {
@@ -344,7 +344,7 @@ func TestListElement_Swap(t *testing.T) {
 
 func Test_listIterator_Next(t *testing.T) {
 	values := []int{1, 2, 3}
-	list := container.ListOf[int]()
+	list := container.NewList[int]()
 	list.AddAll(values...)
 	i := list.Iterator()
 
@@ -357,7 +357,7 @@ func Test_listIterator_Next(t *testing.T) {
 }
 
 func Test_listIterator_NoHasNext(t *testing.T) {
-	l := container.ListOf[int]()
+	l := container.NewList[int]()
 	iterator := l.Iterator()
 	assert.False(t, iterator.HasNext())
 	assert.Panics(t, func() {

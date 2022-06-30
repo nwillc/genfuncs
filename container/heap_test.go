@@ -27,7 +27,7 @@ import (
 )
 
 func TestHeapNew(t *testing.T) {
-	heap := container.HeapOf[string](genfuncs.OrderedLess[string])
+	heap := container.NewHeap[string](genfuncs.OrderedLess[string])
 	assert.NotNil(t, heap)
 	assert.Equal(t, 0, heap.Len())
 }
@@ -94,7 +94,7 @@ func TestHeapAddPeekRemove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			heap := container.HeapOf(tt.args.lessThan, tt.args.slice...)
+			heap := container.NewHeap(tt.args.lessThan, tt.args.slice...)
 			assert.Equal(t, len(tt.want), heap.Len())
 			for _, ii := range tt.want {
 				v1 := heap.Peek()
@@ -152,7 +152,7 @@ func TestRandomHeaps(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for pass := passes; pass >= 0; pass-- {
-				heap := container.HeapOf[int](genfuncs.OrderedLess[int])
+				heap := container.NewHeap[int](genfuncs.OrderedLess[int])
 				for i := 0; i < tt.args.count; i++ {
 					heap.Add(random.Int())
 				}
@@ -162,7 +162,7 @@ func TestRandomHeaps(t *testing.T) {
 					assert.LessOrEqual(t, start, next)
 					start = next
 				}
-				heap = container.HeapOf[int](genfuncs.OrderedGreater[int])
+				heap = container.NewHeap[int](genfuncs.OrderedGreater[int])
 				for i := 0; i < tt.args.count; i++ {
 					heap.Add(random.Int())
 				}
@@ -179,7 +179,7 @@ func TestRandomHeaps(t *testing.T) {
 }
 
 func TestHeapInserting(t *testing.T) {
-	h := container.HeapOf[int](genfuncs.OrderedLess[int], 4, 2, 3, 1)
+	h := container.NewHeap[int](genfuncs.OrderedLess[int], 4, 2, 3, 1)
 	assert.Equal(t, 1, h.Remove())
 	assert.Equal(t, 2, h.Remove())
 	assert.Equal(t, 3, h.Peek())
@@ -194,6 +194,6 @@ func TestHeapInserting(t *testing.T) {
 
 func TestHeap_Values(t *testing.T) {
 	s := container.GSlice[int]{1, 2, 3}
-	h := container.HeapOf[int](genfuncs.OrderedLess[int], s...)
+	h := container.NewHeap[int](genfuncs.OrderedLess[int], s...)
 	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](s, h.Values(), genfuncs.Ordered[int]))
 }

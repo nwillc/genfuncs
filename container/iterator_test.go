@@ -25,7 +25,7 @@ import (
 )
 
 func TestNewIteratorSequence(t *testing.T) {
-	seq1 := sequences.SequenceOf(1, 2, 3)
+	seq1 := sequences.NewSequence(1, 2, 3)
 	seq2 := container.NewIteratorSequence(seq1.Iterator())
 	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](seq1, seq2, genfuncs.Ordered[int]))
 }

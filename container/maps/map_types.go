@@ -14,13 +14,24 @@
  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package genfuncs
+package maps
 
-// BiFunction accepts two arguments and produces a result.
-type BiFunction[T, U, R any] func(T, U) R
+import "github.com/nwillc/genfuncs"
 
-// Function is a single argument function.
-type Function[T, R any] func(T) R
+type (
+	// Entry can be used to hold onto a key/value.
+	Entry[K comparable, V any] struct {
+		Key   K
+		Value V
+	}
 
-// ToString is used to create string representations, it accepts any type and returns a string.
-type ToString[T any] func(T) string
+	// KeyFor is used for generating keys from types, it accepts any type and returns a comparable key for it.
+	KeyFor[T any, K comparable] func(T) *genfuncs.Result[K]
+
+	// KeyValueFor is used to generate a key and value from a type, it accepts any type, and returns a comparable key and
+	// any value.
+	KeyValueFor[T any, K comparable, V any] func(T) *genfuncs.Result[*Entry[K, V]]
+
+	// ValueFor given a comparable key will return a value for it.
+	ValueFor[K comparable, T any] func(K) *genfuncs.Result[T]
+)

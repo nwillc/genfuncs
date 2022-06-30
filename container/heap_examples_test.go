@@ -28,11 +28,11 @@ import (
 func TestHeapFunctionExamples(t *testing.T) {
 	tests.MaybeRunExamples(t)
 	// Heap
-	ExampleHeapOf()
+	ExampleNewHeap()
 }
 
-func ExampleHeapOf() {
-	heap := container.HeapOf[int](genfuncs.OrderedLess[int], 3, 1, 4, 2)
+func ExampleNewHeap() {
+	heap := container.NewHeap[int](genfuncs.OrderedLess[int], 3, 1, 4, 2)
 	for heap.Len() > 0 {
 		fmt.Print(heap.Remove())
 	}
