@@ -48,3 +48,9 @@ func TestMap(t *testing.T) {
 	want := container.GSlice[int]{3, 7, 11}
 	assert.ElementsMatch(t, want, sums)
 }
+
+func TestNewEntry(t *testing.T) {
+	e := maps.NewEntry("foo", 42)
+	assert.Equal(t, "foo", e.Key)
+	assert.Equal(t, 42, e.Value)
+}
