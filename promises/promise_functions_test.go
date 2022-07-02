@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/gslices"
 	"github.com/nwillc/genfuncs/promises"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -140,7 +141,10 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			all := promises.All(tt.args.actions...)
+			var p []*genfuncs.Promise[int] = gslices.Map(
+				tt.args.actions,
+				func(f func() *genfuncs.Result[int]) *genfuncs.Promise[int] { return genfuncs.NewPromise[int](f) })
+			all := promises.All(p...)
 			result := all.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if tt.wantOk {
@@ -202,7 +206,12 @@ func TestAny(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			one := promises.Any(tt.args.actions...)
+			var p []*genfuncs.Promise[string] = gslices.Map(
+				tt.args.actions,
+				func(f func() *genfuncs.Result[string]) *genfuncs.Promise[string] {
+					return genfuncs.NewPromise[string](f)
+				})
+			one := promises.Any(p...)
 			result := one.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !tt.wantOk {

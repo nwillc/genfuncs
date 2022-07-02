@@ -23,11 +23,9 @@ import (
 
 // Promise provides asynchronous Result of an action.
 type Promise[T any] struct {
-	result    *Result[T]
-	mutex     sync.Mutex
-	wg        sync.WaitGroup
-	onError   func(error)
-	onSuccess func(T)
+	result      *Result[T]
+	wg          sync.WaitGroup
+	deliverOnce sync.Once
 }
 
 var (
@@ -39,19 +37,11 @@ var (
 
 // NewPromise creates a Promise for an action.
 func NewPromise[T any](action func() *Result[T]) *Promise[T] {
-	return NewPromiseErrorSuccess(action, nil, nil)
-}
-
-// NewPromiseErrorSuccess creates a Promise with success and error handlers. Nil handlers are ignored.
-func NewPromiseErrorSuccess[T any](action func() *Result[T], onSuccess func(T), onError func(error)) *Promise[T] {
 	if action == nil {
 		return NewPromiseFromResult(NewError[T](fmt.Errorf(PromiseNoActionErrorMsg)))
 	}
 
-	p := &Promise[T]{
-		onError:   onError,
-		onSuccess: onSuccess,
-	}
+	p := &Promise[T]{}
 
 	p.wg.Add(1)
 
@@ -72,16 +62,16 @@ func NewPromiseFromResult[T any](result *Result[T]) *Promise[T] {
 
 // OnError returns a new Promise with an error handler waiting on the original Promise.
 func (p *Promise[T]) OnError(action func(e error)) *Promise[T] {
-	return NewPromiseErrorSuccess(func() *Result[T] {
-		return p.Wait()
-	}, nil, action)
+	return NewPromise(func() *Result[T] {
+		return p.Wait().OnError(action)
+	})
 }
 
 // OnSuccess returns a new Promise with a success handler waiting on the original Promise.
 func (p *Promise[T]) OnSuccess(action func(t T)) *Promise[T] {
-	return NewPromiseErrorSuccess(func() *Result[T] {
-		return p.Wait()
-	}, action, nil)
+	return NewPromise(func() *Result[T] {
+		return p.Wait().OnSuccess(action)
+	})
 }
 
 // Wait on the completion of a Promise.
@@ -92,23 +82,20 @@ func (p *Promise[T]) Wait() *Result[T] {
 
 // deliver on a Promise with a Result.
 func (p *Promise[T]) deliver(result *Result[T]) {
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
-	p.result = result
-	p.wg.Done()
-	result.OnError(p.onError)
-	result.OnSuccess(p.onSuccess)
+	p.deliverOnce.Do(func() {
+		p.result = result
+		p.wg.Done()
+	})
 }
 
 // deliverErrorOnPanic converts an action panic to an error Result.
 func (p *Promise[T]) deliverErrorOnPanic() {
-	if recovered := recover(); recovered != nil {
-		var err error
-		if validErr, ok := recovered.(error); ok {
-			err = fmt.Errorf("%s: %w", PromisePanicErrorMsg, validErr)
-		} else {
-			err = fmt.Errorf("%s: %+v", PromisePanicErrorMsg, recovered)
-		}
-		p.deliver(NewError[T](err))
+	recovered := recover()
+	var err error
+	if validErr, ok := recovered.(error); ok {
+		err = fmt.Errorf("%s: %w", PromisePanicErrorMsg, validErr)
+	} else {
+		err = fmt.Errorf("%s: %+v", PromisePanicErrorMsg, recovered)
 	}
+	p.deliver(NewError[T](err))
 }

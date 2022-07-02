@@ -35,22 +35,20 @@ type promiseResult[T any] struct {
 
 // All accepts promises and collects their results, returning a container.GSlice of the results in correlating order,
 // or if *any* genfuncs.Promise fails then All returns its error and immediately returns.
-func All[T any](actions ...func() *genfuncs.Result[T]) *genfuncs.Promise[container.GSlice[T]] {
-	count := len(actions)
+func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GSlice[T]] {
+	count := len(promises)
 	promiseResults := make(container.GSlice[T], count)
 	if count == 0 {
 		return genfuncs.NewPromiseFromResult(genfuncs.NewResult(promiseResults))
 	}
-	promises := make(container.GSlice[*genfuncs.Promise[T]], count)
 	return genfuncs.NewPromise(
 		func() *genfuncs.Result[container.GSlice[T]] {
 			resultChan := make(chan promiseResult[T], count)
 			for i := 0; i < count; i++ {
-				index := i
-				promises[i] = genfuncs.NewPromiseErrorSuccess(
-					actions[i],
-					func(value T) { resultChan <- promiseResult[T]{result: genfuncs.NewResult(value), index: index} },
-					func(err error) { resultChan <- promiseResult[T]{result: genfuncs.NewError[T](err), index: index} })
+				i := i
+				promises[i].
+					OnSuccess(func(value T) { resultChan <- promiseResult[T]{result: genfuncs.NewResult(value), index: i} }).
+					OnError(func(err error) { resultChan <- promiseResult[T]{result: genfuncs.NewError[T](err), index: i} })
 			}
 			for i := 0; i < count; i++ {
 				select {
@@ -66,20 +64,18 @@ func All[T any](actions ...func() *genfuncs.Result[T]) *genfuncs.Promise[contain
 }
 
 // Any returns a Promise that will return the first Promise fulfilled, or an error if none were.
-func Any[T any](actions ...func() *genfuncs.Result[T]) *genfuncs.Promise[T] {
-	count := len(actions)
+func Any[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[T] {
+	count := len(promises)
 	if count == 0 {
 		return genfuncs.NewPromiseFromResult(genfuncs.NewError[T](fmt.Errorf(PromiseAnyNoPromisesErrorMsg)))
 	}
-	promises := make(container.GSlice[*genfuncs.Promise[T]], count)
 	return genfuncs.NewPromise(func() *genfuncs.Result[T] {
 		resultChan := make(chan promiseResult[T], count)
 		for i := 0; i < count; i++ {
-			index := i
-			promises[i] = genfuncs.NewPromiseErrorSuccess(
-				actions[i],
-				func(value T) { resultChan <- promiseResult[T]{result: genfuncs.NewResult(value), index: index} },
-				func(err error) { resultChan <- promiseResult[T]{result: genfuncs.NewError[T](err), index: index} })
+			i := i
+			promises[i].
+				OnSuccess(func(value T) { resultChan <- promiseResult[T]{result: genfuncs.NewResult(value), index: i} }).
+				OnError(func(err error) { resultChan <- promiseResult[T]{result: genfuncs.NewError[T](err), index: i} })
 		}
 		for i := 0; i < count; i++ {
 			select {

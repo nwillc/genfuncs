@@ -91,6 +91,16 @@ func TestPromise_Wait(t *testing.T) {
 			wantOk:       false,
 			wantErrorMsg: genfuncs.NoSuchElement.Error(),
 		},
+		{
+			name: "action panic nil",
+			args: args{
+				action: func() *genfuncs.Result[int] {
+					panic(nil)
+				},
+			},
+			wantOk:       false,
+			wantErrorMsg: genfuncs.PromisePanicErrorMsg,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
