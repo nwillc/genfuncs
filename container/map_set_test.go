@@ -42,7 +42,15 @@ func TestRemove(t *testing.T) {
 }
 
 func TestMapSet_Iterator(t *testing.T) {
-	m := container.NewMapSet(1, 2, 3)
-	s := sequences.NewSequence(1, 2, 3)
-	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](m, s, genfuncs.Ordered[int]))
+	m := container.NewMapSet[int]()
+	s := sequences.NewSequence(1, 2, 3, 5)
+
+	sequences.Collect[int](s, m)
+	mapIterator := m.Iterator()
+	count := 0
+	for ; mapIterator.HasNext(); count++ {
+		v := mapIterator.Next()
+		assert.True(t, sequences.Any[int](s, genfuncs.OrderedEqualTo(v)))
+	}
+	assert.Equal(t, count, m.Len())
 }

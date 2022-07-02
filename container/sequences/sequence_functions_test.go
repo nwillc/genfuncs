@@ -704,3 +704,11 @@ func TestNewSequence(t *testing.T) {
 		assert.Equal(t, v, iterator.Next())
 	}
 }
+
+func TestCollect(t *testing.T) {
+	s := sequences.NewSequence[int](1, 2, 3)
+	l := container.NewList[int]()
+
+	sequences.Collect[int](s, l)
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](s, l, genfuncs.Ordered[int]))
+}

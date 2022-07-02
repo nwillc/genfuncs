@@ -82,6 +82,7 @@ func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor
 	return genfuncs.NewResult(m)
 }
 
+// Collect elements from a Sequence into a Container.
 func Collect[T any](s container.Sequence[T], c container.Container[T]) {
 	iterator := s.Iterator()
 	for iterator.HasNext() {
