@@ -136,7 +136,7 @@ func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function
 	return result
 }
 
-// FlatMap returns a sequence of all elements from results of transform being invoked on each element of
+// FlatMap returns a sequence of all elements from results of valueFor being invoked on each element of
 // original sequence, and those resultant slices concatenated.
 func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, container.Sequence[R]]) (result container.Sequence[R]) {
 	return container.NewIteratorSequence(newFlatMapIterator(sequence, transform))
@@ -207,7 +207,7 @@ func JoinToString[T any](
 	return sb.String()
 }
 
-// Map elements in a Sequence to a new Sequence having applied the transform to them.
+// Map elements in a Sequence to a new Sequence having applied the valueFor to them.
 func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, R]) container.Sequence[R] {
 	return container.NewIteratorSequence[R](transformIterator[T, R]{iterator: sequence.Iterator(), transform: transform})
 }

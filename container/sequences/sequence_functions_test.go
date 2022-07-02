@@ -613,49 +613,67 @@ func TestAssociate(t *testing.T) {
 func TestAssociateWith(t *testing.T) {
 	var valueSelector maps.ValueFor[int, int] = func(i int) *genfuncs.Result[int] { return genfuncs.NewResult(i * 2) }
 	type args struct {
-		sequence  container.Sequence[int]
-		transform maps.ValueFor[int, int]
+		sequence container.Sequence[int]
+		valueFor maps.ValueFor[int, int]
 	}
 	tests := []struct {
 		name     string
 		args     args
 		wantSize int
+		wantErr  string
 	}{
 		{
 			name: "Empty",
 			args: args{
-				sequence:  container.NewList[int](),
-				transform: valueSelector,
+				sequence: container.NewList[int](),
+				valueFor: valueSelector,
 			},
 			wantSize: 0,
 		},
 		{
 			name: "Three Unique",
 			args: args{
-				sequence:  container.GSlice[int]{1, 2, 3},
-				transform: valueSelector,
+				sequence: container.GSlice[int]{1, 2, 3},
+				valueFor: valueSelector,
 			},
 			wantSize: 3,
 		},
 		{
 			name: "Duplicate",
 			args: args{
-				sequence:  container.GMap[string, int]{"1": 1, "2": 2, "two": 2},
-				transform: valueSelector,
+				sequence: container.GMap[string, int]{"1": 1, "2": 2, "two": 2},
+				valueFor: valueSelector,
 			},
 			wantSize: 2,
+		},
+		{
+			name: "Failed ValueFor",
+			args: args{
+				sequence: container.GSlice[int]{1, 2, 3},
+				valueFor: func(i int) *genfuncs.Result[int] {
+					if i == 2 {
+						return genfuncs.NewError[int](fmt.Errorf("failed on two"))
+					}
+					return genfuncs.NewResult(i)
+				},
+			},
+			wantErr: "failed on two",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resultMap := sequences.AssociateWith(tt.args.sequence, tt.args.transform)
-			assert.True(t, resultMap.Ok())
-			m := resultMap.OrEmpty()
-			assert.Equal(t, tt.wantSize, m.Len())
-			sequences.ForEach(tt.args.sequence, func(k int) {
-				assert.True(t, m.Contains(k))
-				assert.Equal(t, k*2, m[k])
-			})
+			sequences.AssociateWith(tt.args.sequence, tt.args.valueFor).
+				OnError(func(err error) {
+					assert.Contains(t, err.Error(), tt.wantErr)
+				}).
+				OnSuccess(func(m container.GMap[int, int]) {
+					assert.Empty(t, tt.wantErr)
+					assert.Equal(t, tt.wantSize, m.Len())
+					sequences.ForEach(tt.args.sequence, func(k int) {
+						assert.True(t, m.Contains(k))
+						assert.Equal(t, k*2, m[k])
+					})
+				})
 		})
 	}
 }
