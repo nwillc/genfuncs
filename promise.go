@@ -24,7 +24,6 @@ import (
 // Promise provides asynchronous Result of an action.
 type Promise[T any] struct {
 	result    *Result[T]
-	pending   bool
 	mutex     sync.Mutex
 	wg        sync.WaitGroup
 	onError   func(error)
@@ -52,7 +51,6 @@ func NewPromiseErrorSuccess[T any](action func() *Result[T], onSuccess func(T), 
 	p := &Promise[T]{
 		onError:   onError,
 		onSuccess: onSuccess,
-		pending:   true,
 	}
 
 	p.wg.Add(1)
@@ -68,8 +66,7 @@ func NewPromiseErrorSuccess[T any](action func() *Result[T], onSuccess func(T), 
 // NewPromiseFromResult returns a completed Promise with the specified result.
 func NewPromiseFromResult[T any](result *Result[T]) *Promise[T] {
 	return &Promise[T]{
-		result:  result,
-		pending: false,
+		result: result,
 	}
 }
 
@@ -97,11 +94,7 @@ func (p *Promise[T]) Wait() *Result[T] {
 func (p *Promise[T]) deliver(result *Result[T]) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
-	if !p.pending {
-		return
-	}
 	p.result = result
-	p.pending = false
 	p.wg.Done()
 	result.OnError(p.onError)
 	result.OnSuccess(p.onSuccess)
