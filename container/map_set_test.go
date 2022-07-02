@@ -17,7 +17,9 @@
 package container_test
 
 import (
+	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
+	"github.com/nwillc/genfuncs/container/sequences"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -37,4 +39,10 @@ func TestRemove(t *testing.T) {
 	assert.Equal(t, true, set.Contains("a"))
 	set.Remove("a")
 	assert.Equal(t, false, set.Contains("a"))
+}
+
+func TestMapSet_Iterator(t *testing.T) {
+	m := container.NewMapSet(1, 2, 3)
+	s := sequences.NewSequence(1, 2, 3)
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](m, s, genfuncs.Ordered[int]))
 }

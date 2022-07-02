@@ -51,8 +51,9 @@ func (h *MapSet[T]) Contains(t T) (ok bool) {
 	return ok
 }
 
+// Iterator returns an Iterator of the current state of the MapSet. This creates a copy of the data.
 func (h *MapSet[T]) Iterator() Iterator[T] {
-	panic("")
+	return h.Values().Iterator()
 }
 
 // Len returns the length of the MapSet.

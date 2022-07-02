@@ -203,3 +203,9 @@ func TestDeque_AddRight(t *testing.T) {
 	d.AddRight(0)
 	assert.Equal(t, 0, d.PeekRight())
 }
+
+func TestDeque_Iterator(t *testing.T) {
+	m := container.NewDeque(1, 2, 3)
+	s := sequences.NewSequence(1, 2, 3)
+	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](m, s, genfuncs.Ordered[int]))
+}
