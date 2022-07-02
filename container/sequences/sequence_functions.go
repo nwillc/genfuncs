@@ -82,6 +82,13 @@ func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor
 	return genfuncs.NewResult(m)
 }
 
+func Collect[T any](s container.Sequence[T], c container.Container[T]) {
+	iterator := s.Iterator()
+	for iterator.HasNext() {
+		c.Add(iterator.Next())
+	}
+}
+
 // Compare two sequences with a comparator returning less/equal/greater (-1/0/1) and return comparison of the two.
 func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int) int {
 	i1 := s1.Iterator()

@@ -77,7 +77,7 @@ func TestMap(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p1 := genfuncs.NewPromise[int](tt.args.f1)
 			p2 := promises.Map(p1, tt.args.f2)
-			result := p2.Await()
+			result := p2.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !result.Ok() {
 				assert.Contains(t, tt.want, result.Error().Error())
@@ -90,7 +90,7 @@ func TestMap(t *testing.T) {
 
 func TestAll(t *testing.T) {
 	type args struct {
-		promises []*genfuncs.Promise[int]
+		actions []func() *genfuncs.Result[int]
 	}
 	tests := []struct {
 		name   string
@@ -101,7 +101,7 @@ func TestAll(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				promises: []*genfuncs.Promise[int]{},
+				actions: []func() *genfuncs.Result[int]{},
 			},
 			want:   container.GSlice[int]{},
 			wantOk: true,
@@ -109,8 +109,8 @@ func TestAll(t *testing.T) {
 		{
 			name: "one success",
 			args: args{
-				promises: []*genfuncs.Promise[int]{
-					genfuncs.NewPromise(func() *genfuncs.Result[int] { return genfuncs.NewResult(1) }),
+				actions: []func() *genfuncs.Result[int]{
+					func() *genfuncs.Result[int] { return genfuncs.NewResult(1) },
 				},
 			},
 			want:   container.GSlice[int]{1},
@@ -119,9 +119,9 @@ func TestAll(t *testing.T) {
 		{
 			name: "two success",
 			args: args{
-				promises: []*genfuncs.Promise[int]{
-					genfuncs.NewPromise(func() *genfuncs.Result[int] { return genfuncs.NewResult(1) }),
-					genfuncs.NewPromise(func() *genfuncs.Result[int] { return genfuncs.NewResult(2) }),
+				actions: []func() *genfuncs.Result[int]{
+					func() *genfuncs.Result[int] { return genfuncs.NewResult(1) },
+					func() *genfuncs.Result[int] { return genfuncs.NewResult(2) },
 				},
 			},
 			want:   container.GSlice[int]{1, 2},
@@ -130,9 +130,9 @@ func TestAll(t *testing.T) {
 		{
 			name: "two promises one error",
 			args: args{
-				promises: []*genfuncs.Promise[int]{
-					genfuncs.NewPromise(func() *genfuncs.Result[int] { return genfuncs.NewResult(1) }),
-					genfuncs.NewPromise(func() *genfuncs.Result[int] { return genfuncs.NewError[int](genfuncs.NoSuchElement) }),
+				actions: []func() *genfuncs.Result[int]{
+					func() *genfuncs.Result[int] { return genfuncs.NewResult(1) },
+					func() *genfuncs.Result[int] { return genfuncs.NewError[int](genfuncs.NoSuchElement) },
 				},
 			},
 			wantOk: false,
@@ -140,8 +140,8 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			all := promises.All(tt.args.promises...)
-			result := all.Await()
+			all := promises.All(tt.args.actions...)
+			result := all.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if tt.wantOk {
 				assert.Equal(t, tt.want, result.OrEmpty())
@@ -152,7 +152,7 @@ func TestAll(t *testing.T) {
 
 func TestAny(t *testing.T) {
 	type args struct {
-		promises []*genfuncs.Promise[string]
+		actions []func() *genfuncs.Result[string]
 	}
 	tests := []struct {
 		name   string
@@ -163,7 +163,7 @@ func TestAny(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				promises: []*genfuncs.Promise[string]{},
+				actions: []func() *genfuncs.Result[string]{},
 			},
 			want:   promises.PromiseAnyNoPromisesErrorMsg,
 			wantOk: false,
@@ -171,8 +171,8 @@ func TestAny(t *testing.T) {
 		{
 			name: "single success",
 			args: args{
-				promises: []*genfuncs.Promise[string]{
-					genfuncs.NewPromise(func() *genfuncs.Result[string] { return genfuncs.NewResult("one") }),
+				actions: []func() *genfuncs.Result[string]{
+					func() *genfuncs.Result[string] { return genfuncs.NewResult("one") },
 				},
 			},
 			want:   "one",
@@ -181,8 +181,8 @@ func TestAny(t *testing.T) {
 		{
 			name: "all error",
 			args: args{
-				promises: []*genfuncs.Promise[string]{
-					genfuncs.NewPromise(func() *genfuncs.Result[string] { return genfuncs.NewError[string](genfuncs.NoSuchElement) }),
+				actions: []func() *genfuncs.Result[string]{
+					func() *genfuncs.Result[string] { return genfuncs.NewError[string](genfuncs.NoSuchElement) },
 				},
 			},
 			want:   promises.PromiseNoneFulfilled,
@@ -191,9 +191,9 @@ func TestAny(t *testing.T) {
 		{
 			name: "second success",
 			args: args{
-				promises: []*genfuncs.Promise[string]{
-					genfuncs.NewPromise(func() *genfuncs.Result[string] { return genfuncs.NewError[string](genfuncs.NoSuchElement) }),
-					genfuncs.NewPromise(func() *genfuncs.Result[string] { return genfuncs.NewResult("second") }),
+				actions: []func() *genfuncs.Result[string]{
+					func() *genfuncs.Result[string] { return genfuncs.NewError[string](genfuncs.NoSuchElement) },
+					func() *genfuncs.Result[string] { return genfuncs.NewResult("second") },
 				},
 			},
 			want:   "second",
@@ -202,8 +202,8 @@ func TestAny(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			one := promises.Any(tt.args.promises...)
-			result := one.Await()
+			one := promises.Any(tt.args.actions...)
+			result := one.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !tt.wantOk {
 				assert.Contains(t, tt.want, result.Error().Error())

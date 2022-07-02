@@ -19,6 +19,7 @@ package container
 // Set is a Container that contains no duplicate elements.
 type Set[T comparable] interface {
 	Container[T]
+	Sequence[T]
 	// Contains returns true if the Set contains a given element.
 	Contains(t T) bool
 	// Remove the element from the Set.

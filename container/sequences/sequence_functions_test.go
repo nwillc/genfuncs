@@ -596,7 +596,7 @@ func TestAssociate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			sequences.Associate(tt.args.sequence, tt.args.transform).
-				OnFailure(func(e error) {
+				OnError(func(e error) {
 					assert.Fail(t, "failed associate")
 				}).
 				OnSuccess(func(fNameMap container.GMap[string, string]) {

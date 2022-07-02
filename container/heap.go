@@ -41,9 +41,6 @@ func NewHeap[T any](compare genfuncs.BiFunction[T, T, bool], values ...T) (heap 
 	return heap
 }
 
-// Len returns current length of the heap.
-func (h *Heap[T]) Len() (length int) { length = h.slice.Len(); return length }
-
 // Add a value onto the heap.
 func (h *Heap[T]) Add(v T) {
 	h.slice = append(h.slice, v)
@@ -59,6 +56,9 @@ func (h *Heap[T]) AddAll(values ...T) {
 		h.up(end)
 	}
 }
+
+// Len returns current length of the heap.
+func (h *Heap[T]) Len() (length int) { length = h.slice.Len(); return length }
 
 // Peek returns the next element without removing it.
 func (h *Heap[T]) Peek() (value T) {

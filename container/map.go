@@ -19,6 +19,7 @@ package container
 // Map interface to provide a polymorphic and generic interface to map implementations.
 type Map[K comparable, V any] interface {
 	HasValues[V]
+	Sequence[V]
 	Contains(key K) bool
 	Delete(key K)
 	Get(key K) (value V, ok bool)

@@ -29,7 +29,7 @@ func TestResult(t *testing.T) {
 	err := fmt.Errorf("ro ruh")
 	r = genfuncs.NewError[int](err)
 	r.
-		OnFailure(func(e error) {
+		OnError(func(e error) {
 			assert.Equal(t, err, e)
 		}).
 		OnSuccess(func(_ int) {
@@ -87,34 +87,41 @@ func TestResult_OnSuccess(t *testing.T) {
 	action := func(i int) { flag = i }
 	type args struct {
 		result *genfuncs.Result[int]
+		action func(int)
 	}
 	tests := []struct {
 		name string
 		args args
+		want int
 	}{
 		{
 			name: "error",
 			args: args{
 				result: genfuncs.NewError[int](fmt.Errorf("")),
 			},
+			want: 0,
 		},
 		{
 			name: "10",
 			args: args{
 				result: genfuncs.NewResult(10),
+				action: action,
 			},
+			want: 10,
+		},
+		{
+			name: "10 no action",
+			args: args{
+				result: genfuncs.NewResult(10),
+			},
+			want: 0,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			action(0)
-			assert.Equal(t, 0, flag)
-			tt.args.result.OnSuccess(action)
-			if tt.args.result.Ok() {
-				assert.Equal(t, flag, tt.args.result.MustGet())
-			} else {
-				assert.Equal(t, flag, 0)
-			}
+			flag = 0
+			tt.args.result.OnSuccess(tt.args.action)
+			assert.Equal(t, flag, tt.want)
 		})
 	}
 }

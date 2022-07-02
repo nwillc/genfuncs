@@ -88,6 +88,10 @@ func (s *SyncMap[K, V]) GetOrPut(key K, value V) (actual V, ok bool) {
 	return actual, ok
 }
 
+func (s *SyncMap[K, V]) Iterator() Iterator[V] {
+	return s.Values().Iterator()
+}
+
 // Keys returns the keys in the Map by traversing it and casting the sync.Map's any to the appropriate
 // type.
 func (s *SyncMap[K, V]) Keys() (keys GSlice[K]) {

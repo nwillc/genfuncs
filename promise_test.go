@@ -23,7 +23,7 @@ import (
 	"time"
 )
 
-func TestFutureAwait(t *testing.T) {
+func TestPromise_Wait(t *testing.T) {
 	type args struct {
 		action func() *genfuncs.Result[int]
 	}
@@ -95,7 +95,7 @@ func TestFutureAwait(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			future := genfuncs.NewPromise[int](tt.args.action)
-			result := future.Await()
+			result := future.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !tt.wantOk {
 				assert.Contains(t, result.Error().Error(), tt.wantErrorMsg)
@@ -106,7 +106,7 @@ func TestFutureAwait(t *testing.T) {
 	}
 }
 
-func TestPromise_Catch(t *testing.T) {
+func TestPromise_OnError(t *testing.T) {
 	var errorCount int
 	errorAdd := func(err error) { errorCount++ }
 
@@ -157,8 +157,8 @@ func TestPromise_Catch(t *testing.T) {
 				}
 				return tt.args.f1
 			})
-			p2 := p1.Catch(errorAdd)
-			result := p2.Await()
+			p2 := p1.OnError(errorAdd)
+			result := p2.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			assert.Equal(t, tt.errorCount, errorCount)
 			if !tt.wantOk {
@@ -166,4 +166,43 @@ func TestPromise_Catch(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPromise_OnSuccess_OnError(t *testing.T) {
+	count := 0
+	p := genfuncs.NewPromise[bool](
+		func() *genfuncs.Result[bool] {
+			return genfuncs.NewResult(true)
+		}).
+		OnSuccess(func(_ bool) {
+			count++
+		}).
+		OnError(func(e error) {
+			count++
+		})
+	r := p.Wait()
+	assert.True(t, r.Ok())
+	assert.True(t, r.OrEmpty())
+	assert.Equal(t, 1, count)
+}
+
+func TestPromise_MultiWait(t *testing.T) {
+	count := 0
+	p := genfuncs.NewPromise[bool](
+		func() *genfuncs.Result[bool] {
+			return genfuncs.NewResult(true)
+		}).
+		OnSuccess(func(_ bool) {
+			count++
+		})
+	r := p.Wait()
+	assert.True(t, r.Ok())
+	assert.True(t, r.OrEmpty())
+	assert.Equal(t, 1, count)
+
+	// Safe to call wait again.
+	r = p.Wait()
+	assert.True(t, r.Ok())
+	assert.True(t, r.OrEmpty())
+	assert.Equal(t, 1, count)
 }

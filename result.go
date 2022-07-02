@@ -61,9 +61,9 @@ func (r *Result[T]) Ok() bool {
 	return r.err == nil
 }
 
-// OnFailure performs the action is Result is not Ok().
-func (r *Result[T]) OnFailure(action func(e error)) *Result[T] {
-	if !r.Ok() {
+// OnError performs the action if Result is not Ok().
+func (r *Result[T]) OnError(action func(e error)) *Result[T] {
+	if !r.Ok() && action != nil {
 		action(r.err)
 	}
 	return r
@@ -71,7 +71,7 @@ func (r *Result[T]) OnFailure(action func(e error)) *Result[T] {
 
 // OnSuccess performs action if Result is Ok().
 func (r *Result[T]) OnSuccess(action func(t T)) *Result[T] {
-	if r.Ok() {
+	if r.Ok() && action != nil {
 		action(r.value)
 	}
 	return r

@@ -51,6 +51,10 @@ func (h *MapSet[T]) Contains(t T) (ok bool) {
 	return ok
 }
 
+func (h *MapSet[T]) Iterator() Iterator[T] {
+	panic("")
+}
+
 // Len returns the length of the MapSet.
 func (h *MapSet[T]) Len() (length int) {
 	length = h.set.Len()

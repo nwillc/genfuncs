@@ -53,6 +53,10 @@ func (d *Deque[T]) AddRight(t T) {
 	d.list.AddRight(t)
 }
 
+func (d *Deque[T]) Iterator() Iterator[T] {
+	return d.list.Iterator()
+}
+
 // Len reports the length of the Deque.
 func (d *Deque[T]) Len() (length int) {
 	length = d.list.Len()
