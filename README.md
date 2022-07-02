@@ -82,9 +82,11 @@ import "github.com/nwillc/genfuncs"
   - [func OrderedLessThan[O constraints.Ordered](a O) (fn Function[O, bool])](<#func-orderedlessthan>)
 - [type Promise](<#type-promise>)
   - [func NewPromise[T any](action func() *Result[T]) *Promise[T]](<#func-newpromise>)
+  - [func NewPromiseErrorSuccess[T any](action func() *Result[T], onSuccess func(T), onError func(error)) *Promise[T]](<#func-newpromiseerrorsuccess>)
   - [func NewPromiseFromResult[T any](result *Result[T]) *Promise[T]](<#func-newpromisefromresult>)
-  - [func (p *Promise[T]) Await() *Result[T]](<#func-promiset-await>)
-  - [func (p *Promise[T]) Catch(err func(error)) *Promise[T]](<#func-promiset-catch>)
+  - [func (p *Promise[T]) OnError(action func(e error)) *Promise[T]](<#func-promiset-onerror>)
+  - [func (p *Promise[T]) OnSuccess(action func(t T)) *Promise[T]](<#func-promiset-onsuccess>)
+  - [func (p *Promise[T]) Wait() *Result[T]](<#func-promiset-wait>)
 - [type Result](<#type-result>)
   - [func NewError[T any](err error) *Result[T]](<#func-newerror>)
   - [func NewResult[T any](t T) *Result[T]](<#func-newresult>)
@@ -92,7 +94,7 @@ import "github.com/nwillc/genfuncs"
   - [func (r *Result[T]) Error() error](<#func-resultt-error>)
   - [func (r *Result[T]) MustGet() T](<#func-resultt-mustget>)
   - [func (r *Result[T]) Ok() bool](<#func-resultt-ok>)
-  - [func (r *Result[T]) OnFailure(action func(e error)) *Result[T]](<#func-resultt-onfailure>)
+  - [func (r *Result[T]) OnError(action func(e error)) *Result[T]](<#func-resultt-onerror>)
   - [func (r *Result[T]) OnSuccess(action func(t T)) *Result[T]](<#func-resultt-onsuccess>)
   - [func (r *Result[T]) OrElse(v T) T](<#func-resultt-orelse>)
   - [func (r *Result[T]) OrEmpty() T](<#func-resultt-orempty>)
@@ -343,7 +345,7 @@ func OrderedLessThan[O constraints.Ordered](a O) (fn Function[O, bool])
 
 OrderedLessThan returns a function that returns true if its argument is ordered less than a\.
 
-## type [Promise](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L25-L30>)
+## type [Promise](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L25-L32>)
 
 Promise provides asynchronous Result of an action\.
 
@@ -353,7 +355,7 @@ type Promise[T any] struct {
 }
 ```
 
-### func [NewPromise](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L40>)
+### func [NewPromise](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L42>)
 
 ```go
 func NewPromise[T any](action func() *Result[T]) *Promise[T]
@@ -361,7 +363,15 @@ func NewPromise[T any](action func() *Result[T]) *Promise[T]
 
 NewPromise creates a Promise for an action\.
 
-### func [NewPromiseFromResult](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L60>)
+### func [NewPromiseErrorSuccess](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L47>)
+
+```go
+func NewPromiseErrorSuccess[T any](action func() *Result[T], onSuccess func(T), onError func(error)) *Promise[T]
+```
+
+NewPromiseErrorSuccess creates a Promise with success and error handlers\. Nil handlers are ignored\.
+
+### func [NewPromiseFromResult](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L69>)
 
 ```go
 func NewPromiseFromResult[T any](result *Result[T]) *Promise[T]
@@ -369,21 +379,29 @@ func NewPromiseFromResult[T any](result *Result[T]) *Promise[T]
 
 NewPromiseFromResult returns a completed Promise with the specified result\.
 
-### func \(\*Promise\[T\]\) [Await](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L68>)
+### func \(\*Promise\[T\]\) [OnError](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L77>)
 
 ```go
-func (p *Promise[T]) Await() *Result[T]
+func (p *Promise[T]) OnError(action func(e error)) *Promise[T]
 ```
 
-Await the completion of a Promise\.
+OnError returns a new Promise with an error handler waiting on the original Promise\.
 
-### func \(\*Promise\[T\]\) [Catch](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L74>)
+### func \(\*Promise\[T\]\) [OnSuccess](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L84>)
 
 ```go
-func (p *Promise[T]) Catch(err func(error)) *Promise[T]
+func (p *Promise[T]) OnSuccess(action func(t T)) *Promise[T]
 ```
 
-Catch returns a new Promise that adds an error handler to a Promise\.
+OnSuccess returns a new Promise with a success handler waiting on the original Promise\.
+
+### func \(\*Promise\[T\]\) [Wait](<https://github.com/nwillc/genfuncs/blob/master/promise.go#L91>)
+
+```go
+func (p *Promise[T]) Wait() *Result[T]
+```
+
+Wait on the completion of a Promise\.
 
 ## type [Result](<https://github.com/nwillc/genfuncs/blob/master/result.go#L26-L29>)
 
@@ -443,13 +461,13 @@ func (r *Result[T]) Ok() bool
 
 Ok returns the status of Result\, is it ok\, or an error\.
 
-### func \(\*Result\[T\]\) [OnFailure](<https://github.com/nwillc/genfuncs/blob/master/result.go#L65>)
+### func \(\*Result\[T\]\) [OnError](<https://github.com/nwillc/genfuncs/blob/master/result.go#L65>)
 
 ```go
-func (r *Result[T]) OnFailure(action func(e error)) *Result[T]
+func (r *Result[T]) OnError(action func(e error)) *Result[T]
 ```
 
-OnFailure performs the action is Result is not Ok\(\)\.
+OnError performs the action if Result is not Ok\(\)\.
 
 ### func \(\*Result\[T\]\) [OnSuccess](<https://github.com/nwillc/genfuncs/blob/master/result.go#L73>)
 
@@ -544,6 +562,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (d *Deque[T]) AddAll(t ...T)](<#func-dequet-addall>)
   - [func (d *Deque[T]) AddLeft(t T)](<#func-dequet-addleft>)
   - [func (d *Deque[T]) AddRight(t T)](<#func-dequet-addright>)
+  - [func (d *Deque[T]) Iterator() Iterator[T]](<#func-dequet-iterator>)
   - [func (d *Deque[T]) Len() (length int)](<#func-dequet-len>)
   - [func (d *Deque[T]) Peek() (value T)](<#func-dequet-peek>)
   - [func (d *Deque[T]) PeekLeft() (value T)](<#func-dequet-peekleft>)
@@ -612,6 +631,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (h *MapSet[T]) Add(t T)](<#func-mapsett-add>)
   - [func (h *MapSet[T]) AddAll(t ...T)](<#func-mapsett-addall>)
   - [func (h *MapSet[T]) Contains(t T) (ok bool)](<#func-mapsett-contains>)
+  - [func (h *MapSet[T]) Iterator() Iterator[T]](<#func-mapsett-iterator>)
   - [func (h *MapSet[T]) Len() (length int)](<#func-mapsett-len>)
   - [func (h *MapSet[T]) Remove(t T)](<#func-mapsett-remove>)
   - [func (h *MapSet[T]) Values() (values GSlice[T])](<#func-mapsett-values>)
@@ -628,6 +648,7 @@ import "github.com/nwillc/genfuncs/container"
   - [func (s *SyncMap[K, V]) Get(key K) (value V, ok bool)](<#func-syncmapk-v-get>)
   - [func (s *SyncMap[K, V]) GetAndDelete(key K) (value V, ok bool)](<#func-syncmapk-v-getanddelete>)
   - [func (s *SyncMap[K, V]) GetOrPut(key K, value V) (actual V, ok bool)](<#func-syncmapk-v-getorput>)
+  - [func (s *SyncMap[K, V]) Iterator() Iterator[V]](<#func-syncmapk-v-iterator>)
   - [func (s *SyncMap[K, V]) Keys() (keys GSlice[K])](<#func-syncmapk-v-keys>)
   - [func (s *SyncMap[K, V]) Len() (length int)](<#func-syncmapk-v-len>)
   - [func (s *SyncMap[K, V]) Put(key K, value V)](<#func-syncmapk-v-put>)
@@ -699,7 +720,13 @@ func (d *Deque[T]) AddRight(t T)
 
 AddRight an element to the right of the Deque\.
 
-### func \(\*Deque\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L57>)
+### func \(\*Deque\[T\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L56>)
+
+```go
+func (d *Deque[T]) Iterator() Iterator[T]
+```
+
+### func \(\*Deque\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L61>)
 
 ```go
 func (d *Deque[T]) Len() (length int)
@@ -707,7 +734,7 @@ func (d *Deque[T]) Len() (length int)
 
 Len reports the length of the Deque\.
 
-### func \(\*Deque\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L63>)
+### func \(\*Deque\[T\]\) [Peek](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L67>)
 
 ```go
 func (d *Deque[T]) Peek() (value T)
@@ -715,7 +742,7 @@ func (d *Deque[T]) Peek() (value T)
 
 Peek returns the left most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L69>)
+### func \(\*Deque\[T\]\) [PeekLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L73>)
 
 ```go
 func (d *Deque[T]) PeekLeft() (value T)
@@ -723,7 +750,7 @@ func (d *Deque[T]) PeekLeft() (value T)
 
 PeekLeft returns the left most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L78>)
+### func \(\*Deque\[T\]\) [PeekRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L82>)
 
 ```go
 func (d *Deque[T]) PeekRight() (value T)
@@ -731,7 +758,7 @@ func (d *Deque[T]) PeekRight() (value T)
 
 PeekRight returns the right most element in the Deque without removing it\.
 
-### func \(\*Deque\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L87>)
+### func \(\*Deque\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L91>)
 
 ```go
 func (d *Deque[T]) Remove() (value T)
@@ -739,7 +766,7 @@ func (d *Deque[T]) Remove() (value T)
 
 Remove and return the left most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [RemoveLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L93>)
+### func \(\*Deque\[T\]\) [RemoveLeft](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L97>)
 
 ```go
 func (d *Deque[T]) RemoveLeft() (value T)
@@ -747,7 +774,7 @@ func (d *Deque[T]) RemoveLeft() (value T)
 
 RemoveLeft and return the left most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [RemoveRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L103>)
+### func \(\*Deque\[T\]\) [RemoveRight](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L107>)
 
 ```go
 func (d *Deque[T]) RemoveRight() (value T)
@@ -755,7 +782,7 @@ func (d *Deque[T]) RemoveRight() (value T)
 
 RemoveRight and return the right most element in the Deque\.
 
-### func \(\*Deque\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L113>)
+### func \(\*Deque\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/deque.go#L117>)
 
 ```go
 func (d *Deque[T]) Values() (values GSlice[T])
@@ -1016,7 +1043,7 @@ func main() {
 </p>
 </details>
 
-### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L48>)
+### func \(\*Heap\[T\]\) [Add](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L45>)
 
 ```go
 func (h *Heap[T]) Add(v T)
@@ -1024,7 +1051,7 @@ func (h *Heap[T]) Add(v T)
 
 Add a value onto the heap\.
 
-### func \(\*Heap\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L55>)
+### func \(\*Heap\[T\]\) [AddAll](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L52>)
 
 ```go
 func (h *Heap[T]) AddAll(values ...T)
@@ -1032,7 +1059,7 @@ func (h *Heap[T]) AddAll(values ...T)
 
 AddAll the values onto the Heap\.
 
-### func \(\*Heap\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L45>)
+### func \(\*Heap\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/heap.go#L61>)
 
 ```go
 func (h *Heap[T]) Len() (length int)
@@ -1240,7 +1267,7 @@ func (e *ListElement[T]) Swap(e2 *ListElement[T])
 
 Swap the values of two ListElements\.
 
-## type [Map](<https://github.com/nwillc/genfuncs/blob/master/container/map.go#L20-L28>)
+## type [Map](<https://github.com/nwillc/genfuncs/blob/master/container/map.go#L20-L29>)
 
 Map interface to provide a polymorphic and generic interface to map implementations\.
 
@@ -1290,7 +1317,13 @@ func (h *MapSet[T]) Contains(t T) (ok bool)
 
 Contains returns true if MapSet contains element\.
 
-### func \(\*MapSet\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L55>)
+### func \(\*MapSet\[T\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L54>)
+
+```go
+func (h *MapSet[T]) Iterator() Iterator[T]
+```
+
+### func \(\*MapSet\[T\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L59>)
 
 ```go
 func (h *MapSet[T]) Len() (length int)
@@ -1298,7 +1331,7 @@ func (h *MapSet[T]) Len() (length int)
 
 Len returns the length of the MapSet\.
 
-### func \(\*MapSet\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L61>)
+### func \(\*MapSet\[T\]\) [Remove](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L65>)
 
 ```go
 func (h *MapSet[T]) Remove(t T)
@@ -1306,7 +1339,7 @@ func (h *MapSet[T]) Remove(t T)
 
 Remove an element from the MapSet\.
 
-### func \(\*MapSet\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L66>)
+### func \(\*MapSet\[T\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/map_set.go#L70>)
 
 ```go
 func (h *MapSet[T]) Values() (values GSlice[T])
@@ -1342,7 +1375,7 @@ type Sequence[T any] interface {
 func NewIteratorSequence[T any](iterator Iterator[T]) Sequence[T]
 ```
 
-## type [Set](<https://github.com/nwillc/genfuncs/blob/master/container/set.go#L20-L26>)
+## type [Set](<https://github.com/nwillc/genfuncs/blob/master/container/set.go#L20-L27>)
 
 Set is a Container that contains no duplicate elements\.
 
@@ -1431,7 +1464,13 @@ func (s *SyncMap[K, V]) GetOrPut(key K, value V) (actual V, ok bool)
 
 GetOrPut returns the existing value for the key if present\. Otherwise\, it puts and returns the given value\. The ok result is true if the value was present\, false if put\.
 
-### func \(\*SyncMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L93>)
+### func \(\*SyncMap\[K\, V\]\) [Iterator](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L91>)
+
+```go
+func (s *SyncMap[K, V]) Iterator() Iterator[V]
+```
+
+### func \(\*SyncMap\[K\, V\]\) [Keys](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L97>)
 
 ```go
 func (s *SyncMap[K, V]) Keys() (keys GSlice[K])
@@ -1439,7 +1478,7 @@ func (s *SyncMap[K, V]) Keys() (keys GSlice[K])
 
 Keys returns the keys in the Map by traversing it and casting the sync\.Map's any to the appropriate type\.
 
-### func \(\*SyncMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L102>)
+### func \(\*SyncMap\[K\, V\]\) [Len](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L106>)
 
 ```go
 func (s *SyncMap[K, V]) Len() (length int)
@@ -1447,7 +1486,7 @@ func (s *SyncMap[K, V]) Len() (length int)
 
 Len returns the element count\. This requires a traversal of the Map\.
 
-### func \(\*SyncMap\[K\, V\]\) [Put](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L109>)
+### func \(\*SyncMap\[K\, V\]\) [Put](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L113>)
 
 ```go
 func (s *SyncMap[K, V]) Put(key K, value V)
@@ -1455,7 +1494,7 @@ func (s *SyncMap[K, V]) Put(key K, value V)
 
 Put a key value pair into the Map\.
 
-### func \(\*SyncMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L114>)
+### func \(\*SyncMap\[K\, V\]\) [Values](<https://github.com/nwillc/genfuncs/blob/master/container/sync_map.go#L118>)
 
 ```go
 func (s *SyncMap[K, V]) Values() (values GSlice[V])
@@ -1472,8 +1511,8 @@ import "github.com/nwillc/genfuncs/promises"
 ## Index
 
 - [Variables](<#variables>)
-- [func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GSlice[T]]](<#func-all>)
-- [func Any[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[T]](<#func-any>)
+- [func All[T any](actions ...func() *genfuncs.Result[T]) *genfuncs.Promise[container.GSlice[T]]](<#func-all>)
+- [func Any[T any](actions ...func() *genfuncs.Result[T]) *genfuncs.Promise[T]](<#func-any>)
 - [func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *genfuncs.Result[B]]) *genfuncs.Promise[B]](<#func-map>)
 
 
@@ -1481,34 +1520,34 @@ import "github.com/nwillc/genfuncs/promises"
 
 ```go
 var (
-    PromiseAnyNoPromisesErrorMsg = "no any of none"
+    PromiseAnyNoPromisesErrorMsg = "no any without promises"
     PromiseNoneFulfilled         = "no promises fulfilled"
 )
 ```
 
-## func [All](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L49>)
+## func [All](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L38>)
 
 ```go
-func All[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[container.GSlice[T]]
+func All[T any](actions ...func() *genfuncs.Result[T]) *genfuncs.Promise[container.GSlice[T]]
 ```
 
 All accepts promises and collects their results\, returning a container\.GSlice of the results in correlating order\, or if \*any\* genfuncs\.Promise fails then All returns its error and immediately returns\.
 
-## func [Any](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L85>)
+## func [Any](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L69>)
 
 ```go
-func Any[T any](promises ...*genfuncs.Promise[T]) *genfuncs.Promise[T]
+func Any[T any](actions ...func() *genfuncs.Result[T]) *genfuncs.Promise[T]
 ```
 
 Any returns a Promise that will return the first Promise fulfilled\, or an error if none were\.
 
-## func [Map](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L32>)
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/promises/promise_functions.go#L97>)
 
 ```go
 func Map[A, B any](aPromise *genfuncs.Promise[A], then genfuncs.Function[A, *genfuncs.Result[B]]) *genfuncs.Promise[B]
 ```
 
-Map will Await aPromise and then return a new Promise which then maps its result\.
+Map will Wait for aPromise and then return a new Promise which then maps its result\.
 
 # results
 
@@ -1801,6 +1840,7 @@ import "github.com/nwillc/genfuncs/container/sequences"
 - [func Any[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) (result bool)](<#func-any>)
 - [func Associate[T any, K comparable, V any](sequence container.Sequence[T], keyValueFor maps.KeyValueFor[T, K, V]) (result *genfuncs.Result[container.GMap[K, V]])](<#func-associate>)
 - [func AssociateWith[K comparable, V any](sequence container.Sequence[K], valueFor maps.ValueFor[K, V]) (result *genfuncs.Result[container.GMap[K, V]])](<#func-associatewith>)
+- [func Collect[T any](s container.Sequence[T], c container.Container[T])](<#func-collect>)
 - [func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int) int](<#func-compare>)
 - [func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]](<#func-find>)
 - [func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]](<#func-findlast>)
@@ -1921,7 +1961,13 @@ ODD
 </p>
 </details>
 
-## func [Compare](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L86>)
+## func [Collect](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L85>)
+
+```go
+func Collect[T any](s container.Sequence[T], c container.Container[T])
+```
+
+## func [Compare](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L93>)
 
 ```go
 func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int) int
@@ -1929,7 +1975,7 @@ func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int)
 
 Compare two sequences with a comparator returning less/equal/greater \(\-1/0/1\) and return comparison of the two\.
 
-## func [Find](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L105>)
+## func [Find](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L112>)
 
 ```go
 func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]
@@ -1937,7 +1983,7 @@ func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, 
 
 Find returns the first element matching the given predicate\, or Result error of NoSuchElement if not found\.
 
-## func [FindLast](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L118>)
+## func [FindLast](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L125>)
 
 ```go
 func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T]
@@ -1945,7 +1991,7 @@ func FindLast[T any](sequence container.Sequence[T], predicate genfuncs.Function
 
 FindLast returns the last element matching the given predicate\, or Result error of NoSuchElement if not found\.
 
-## func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L133>)
+## func [FlatMap](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L140>)
 
 ```go
 func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, container.Sequence[R]]) (result container.Sequence[R])
@@ -1953,7 +1999,7 @@ func FlatMap[T, R any](sequence container.Sequence[T], transform genfuncs.Functi
 
 FlatMap returns a sequence of all elements from results of transform being invoked on each element of original sequence\, and those resultant slices concatenated\.
 
-## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L139>)
+## func [Fold](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L146>)
 
 ```go
 func Fold[T, R any](sequence container.Sequence[T], initial R, operation genfuncs.BiFunction[R, T, R]) (result R)
@@ -1990,7 +2036,7 @@ func main() {
 </p>
 </details>
 
-## func [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L149>)
+## func [ForEach](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L156>)
 
 ```go
 func ForEach[T any](sequence container.Sequence[T], action func(t T))
@@ -1998,7 +2044,7 @@ func ForEach[T any](sequence container.Sequence[T], action func(t T))
 
 ForEach calls action for each element of a Sequence\.
 
-## func [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L157>)
+## func [IsSorted](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L164>)
 
 ```go
 func IsSorted[T any](sequence container.Sequence[T], order genfuncs.BiFunction[T, T, bool]) (ok bool)
@@ -2006,7 +2052,7 @@ func IsSorted[T any](sequence container.Sequence[T], order genfuncs.BiFunction[T
 
 IsSorted returns true if the GSlice is sorted by order\.
 
-## func [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L179-L185>)
+## func [JoinToString](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L186-L192>)
 
 ```go
 func JoinToString[T any](sequence container.Sequence[T], stringer genfuncs.ToString[T], separator string, prefix string, postfix string) string
@@ -2014,7 +2060,7 @@ func JoinToString[T any](sequence container.Sequence[T], stringer genfuncs.ToStr
 
 JoinToString creates a string from all the elements of a Sequence using the stringer on each\, separating them using separator\, and using the given prefix and postfix\.
 
-## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L203>)
+## func [Map](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L210>)
 
 ```go
 func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T, R]) container.Sequence[R]
@@ -2022,7 +2068,7 @@ func Map[T, R any](sequence container.Sequence[T], transform genfuncs.Function[T
 
 Map elements in a Sequence to a new Sequence having applied the transform to them\.
 
-## func [NewSequence](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L208>)
+## func [NewSequence](<https://github.com/nwillc/genfuncs/blob/master/container/sequences/sequence_functions.go#L215>)
 
 ```go
 func NewSequence[T any](values ...T) (sequence container.Sequence[T])
@@ -2046,7 +2092,7 @@ import "github.com/nwillc/genfuncs/gen/version"
 Version number for official releases\.
 
 ```go
-const Version = "v0.19.0"
+const Version = "v0.19.1"
 ```
 
 # tests
