@@ -111,3 +111,19 @@ func TestSyncMap_GetOrPut(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "5", v)
 }
+
+func TestSyncMap_Iterator(t *testing.T) {
+	m := container.SyncMap[int, int]{}
+	s := sequences.NewSequence(1, 2, 3, 5)
+
+	sequences.ForEach(s, func(i int) {
+		m.Put(i, i)
+	})
+	mapIterator := m.Iterator()
+	count := 0
+	for ; mapIterator.HasNext(); count++ {
+		v := mapIterator.Next()
+		assert.True(t, sequences.Any[int](s, genfuncs.OrderedEqualTo(v)))
+	}
+	assert.Equal(t, count, m.Len())
+}

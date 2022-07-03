@@ -88,6 +88,7 @@ func (s *SyncMap[K, V]) GetOrPut(key K, value V) (actual V, ok bool) {
 	return actual, ok
 }
 
+// Iterator returns an iterator over a snapshot of the current values.
 func (s *SyncMap[K, V]) Iterator() Iterator[V] {
 	return s.Values().Iterator()
 }

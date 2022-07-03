@@ -46,8 +46,22 @@ func NewPromise[T any](action func() *Result[T]) *Promise[T] {
 	p.wg.Add(1)
 
 	go func() {
-		defer p.deliverErrorOnPanic()
-		p.deliver(action())
+		done := false
+		defer func() {
+			if !done {
+				recovered := recover()
+				var err error
+				if validErr, ok := recovered.(error); ok {
+					err = fmt.Errorf("%s: %w", PromisePanicErrorMsg, validErr)
+				} else {
+					err = fmt.Errorf("%s: %+v", PromisePanicErrorMsg, recovered)
+				}
+				p.deliver(NewError[T](err))
+			}
+		}()
+		result := action()
+		p.deliver(result)
+		done = true
 	}()
 
 	return p
@@ -86,16 +100,4 @@ func (p *Promise[T]) deliver(result *Result[T]) {
 		p.result = result
 		p.wg.Done()
 	})
-}
-
-// deliverErrorOnPanic converts an action panic to an error Result.
-func (p *Promise[T]) deliverErrorOnPanic() {
-	recovered := recover()
-	var err error
-	if validErr, ok := recovered.(error); ok {
-		err = fmt.Errorf("%s: %w", PromisePanicErrorMsg, validErr)
-	} else {
-		err = fmt.Errorf("%s: %+v", PromisePanicErrorMsg, recovered)
-	}
-	p.deliver(NewError[T](err))
 }
