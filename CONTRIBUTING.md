@@ -21,3 +21,4 @@ Issues are welcome however we don't have a lot of resources so:
   - No syntactic sugar - i.e. no _I wrote language/package X style signatures to existing functions_.
 - Balance efficiency with cleanliness
   - Don't write WET code unless it is a significant efficiency/feature gain.
+  - Don't write container specific functions where it could be cleanly added to sequence.
