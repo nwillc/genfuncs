@@ -362,10 +362,7 @@ func TestGMap_Iterator(t *testing.T) {
 	i := m.Iterator()
 	index := 0
 	for i.HasNext() {
-		v := i.Next()
-		assert.True(t, sequences.Any[string](want, func(s string) bool {
-			return s == v
-		}))
+		assert.True(t, sequences.Any[string](want, genfuncs.OrderedEqualTo(i.Next())))
 		index++
 	}
 	assert.Equal(t, m.Len(), index)

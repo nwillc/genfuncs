@@ -266,8 +266,7 @@ func TestRandom(t *testing.T) {
 	var s container.GSlice[int] = []int{1, 2, 3}
 
 	for c := 0; c < 2*s.Len(); c++ {
-		p := genfuncs.OrderedEqualTo(s.Random())
-		assert.True(t, sequences.Any[int](s, p))
+		assert.True(t, sequences.Any[int](s, genfuncs.OrderedEqualTo(s.Random())))
 	}
 }
 

@@ -109,6 +109,13 @@ func Compare[T any](s1, s2 container.Sequence[T], comparator func(t1, t2 T) int)
 	return genfuncs.EqualTo
 }
 
+// Distinct collects a sequence into a container.Set and returns it as a Sequence.
+func Distinct[T comparable](s container.Sequence[T]) container.Sequence[T] {
+	set := container.NewMapSet[T]()
+	Collect[T](s, set)
+	return set
+}
+
 // Find returns the first element matching the given predicate, or Result error of NoSuchElement if not found.
 func Find[T any](sequence container.Sequence[T], predicate genfuncs.Function[T, bool]) *genfuncs.Result[T] {
 	iterator := sequence.Iterator()

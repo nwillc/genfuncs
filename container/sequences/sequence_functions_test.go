@@ -730,3 +730,46 @@ func TestCollect(t *testing.T) {
 	sequences.Collect[int](s, l)
 	assert.Equal(t, genfuncs.EqualTo, sequences.Compare[int](s, l, genfuncs.Ordered[int]))
 }
+
+func TestDistinct(t *testing.T) {
+	type args struct {
+		sequence container.Sequence[int]
+	}
+	tests := []struct {
+		name string
+		args args
+		want container.GSlice[int]
+	}{
+		{
+			name: "Empty",
+			args: args{
+				sequence: sequences.NewSequence[int](),
+			},
+			want: container.GSlice[int]{},
+		},
+		{
+			name: "No Duplicates",
+			args: args{
+				sequence: sequences.NewSequence(1, 2, 3),
+			},
+			want: container.GSlice[int]{1, 2, 3},
+		},
+		{
+			name: "Duplicates",
+			args: args{
+				sequence: sequences.NewSequence(1, 2, 3, 1, 1, 2, 3, 3, 3),
+			},
+			want: container.GSlice[int]{1, 2, 3},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			distinct := sequences.Distinct(tt.args.sequence).Iterator()
+			count := 0
+			for ; distinct.HasNext(); count++ {
+				assert.True(t, sequences.Any[int](tt.want, genfuncs.OrderedEqualTo(distinct.Next())))
+			}
+			assert.Equal(t, len(tt.want), count)
+		})
+	}
+}
