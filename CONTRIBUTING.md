@@ -8,7 +8,7 @@ Contributions a very welcome!
 
 Issues are welcome however we don't have a lot of resources so:
 
- - Don't look for fixes on prior versions. Even if upgrading is painful please try the latest version of the package and Go before asking for a change.
+ - Don't look for fixes on prior versions. Even if upgrading is painful please try the latest version of the package and Go before raising an issue.
 
 ## Code
 
