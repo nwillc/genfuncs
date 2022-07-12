@@ -56,6 +56,15 @@ func (r *Result[T]) Error() error {
 	return r.err
 }
 
+// Then performs the action on the Result.
+func (r *Result[T]) Then(action func(t T) *Result[T]) *Result[T] {
+	if !r.Ok() {
+		return r
+	}
+
+	return action(r.OrEmpty())
+}
+
 // Ok returns the status of Result, is it ok, or an error.
 func (r *Result[T]) Ok() bool {
 	return r.err == nil
