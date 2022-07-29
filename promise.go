@@ -17,6 +17,7 @@
 package genfuncs
 
 import (
+	"context"
 	"fmt"
 	"sync"
 )
@@ -25,6 +26,8 @@ import (
 type Promise[T any] struct {
 	result      *Result[T]
 	wg          sync.WaitGroup
+	ctx         context.Context
+	cancel      context.CancelFunc
 	deliverOnce sync.Once
 }
 
@@ -36,12 +39,15 @@ var (
 )
 
 // NewPromise creates a Promise for an action.
-func NewPromise[T any](action func() *Result[T]) *Promise[T] {
+func NewPromise[T any](ctx context.Context, action func(context.Context) *Result[T]) *Promise[T] {
 	if action == nil {
 		return NewPromiseFromResult(NewError[T](fmt.Errorf(PromiseNoActionErrorMsg)))
 	}
-
-	p := &Promise[T]{}
+	pctx, cancel := context.WithCancel(ctx)
+	p := &Promise[T]{
+		ctx:    pctx,
+		cancel: cancel,
+	}
 
 	p.wg.Add(1)
 
@@ -59,7 +65,7 @@ func NewPromise[T any](action func() *Result[T]) *Promise[T] {
 				p.deliver(NewError[T](err))
 			}
 		}()
-		result := action()
+		result := action(pctx)
 		p.deliver(result)
 		done = true
 	}()
@@ -74,16 +80,21 @@ func NewPromiseFromResult[T any](result *Result[T]) *Promise[T] {
 	}
 }
 
+// Cancel the Promise which will allow any action that is listening on `<-ctx.Done()` to complete.
+func (p *Promise[T]) Cancel() {
+	p.cancel()
+}
+
 // OnError returns a new Promise with an error handler waiting on the original Promise.
-func (p *Promise[T]) OnError(action func(e error)) *Promise[T] {
-	return NewPromise(func() *Result[T] {
+func (p *Promise[T]) OnError(action func(error)) *Promise[T] {
+	return NewPromise(p.ctx, func(_ context.Context) *Result[T] {
 		return p.Wait().OnError(action)
 	})
 }
 
 // OnSuccess returns a new Promise with a success handler waiting on the original Promise.
 func (p *Promise[T]) OnSuccess(action func(t T)) *Promise[T] {
-	return NewPromise(func() *Result[T] {
+	return NewPromise(p.ctx, func(_ context.Context) *Result[T] {
 		return p.Wait().OnSuccess(action)
 	})
 }

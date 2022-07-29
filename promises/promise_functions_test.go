@@ -17,6 +17,7 @@
 package promises_test
 
 import (
+	"context"
 	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/nwillc/genfuncs/container"
@@ -28,7 +29,7 @@ import (
 
 func TestMap(t *testing.T) {
 	type args struct {
-		f1 func() *genfuncs.Result[int]
+		f1 func(ctx context.Context) *genfuncs.Result[int]
 		f2 func(int) *genfuncs.Result[string]
 	}
 	tests := []struct {
@@ -40,7 +41,7 @@ func TestMap(t *testing.T) {
 		{
 			name: "both pass",
 			args: args{
-				f1: func() *genfuncs.Result[int] { return genfuncs.NewResult(1) },
+				f1: func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewResult(1) },
 				f2: func(i int) *genfuncs.Result[string] { return genfuncs.NewResult(fmt.Sprintf("%d", i)) },
 			},
 			wantOk: true,
@@ -49,7 +50,7 @@ func TestMap(t *testing.T) {
 		{
 			name: "first fails",
 			args: args{
-				f1: func() *genfuncs.Result[int] { return genfuncs.NewError[int](fmt.Errorf("first")) },
+				f1: func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewError[int](fmt.Errorf("first")) },
 				f2: func(i int) *genfuncs.Result[string] { return genfuncs.NewResult(fmt.Sprintf("%d", i)) },
 			},
 			wantOk: false,
@@ -58,7 +59,7 @@ func TestMap(t *testing.T) {
 		{
 			name: "second fails",
 			args: args{
-				f1: func() *genfuncs.Result[int] { return genfuncs.NewResult(1) },
+				f1: func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewResult(1) },
 				f2: func(i int) *genfuncs.Result[string] { return genfuncs.NewError[string](fmt.Errorf("second")) },
 			},
 			wantOk: false,
@@ -67,7 +68,7 @@ func TestMap(t *testing.T) {
 		{
 			name: "both fail",
 			args: args{
-				f1: func() *genfuncs.Result[int] { return genfuncs.NewError[int](fmt.Errorf("first")) },
+				f1: func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewError[int](fmt.Errorf("first")) },
 				f2: func(i int) *genfuncs.Result[string] { return genfuncs.NewError[string](fmt.Errorf("second")) },
 			},
 			wantOk: false,
@@ -76,8 +77,9 @@ func TestMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p1 := genfuncs.NewPromise[int](tt.args.f1)
-			p2 := promises.Map(p1, tt.args.f2)
+			ctx := context.Background()
+			p1 := genfuncs.NewPromise[int](ctx, tt.args.f1)
+			p2 := promises.Map(ctx, p1, tt.args.f2)
 			result := p2.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !result.Ok() {
@@ -91,7 +93,7 @@ func TestMap(t *testing.T) {
 
 func TestAll(t *testing.T) {
 	type args struct {
-		actions []func() *genfuncs.Result[int]
+		actions []func(ctx context.Context) *genfuncs.Result[int]
 	}
 	tests := []struct {
 		name   string
@@ -102,7 +104,7 @@ func TestAll(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				actions: []func() *genfuncs.Result[int]{},
+				actions: []func(context.Context) *genfuncs.Result[int]{},
 			},
 			want:   container.GSlice[int]{},
 			wantOk: true,
@@ -110,8 +112,8 @@ func TestAll(t *testing.T) {
 		{
 			name: "one success",
 			args: args{
-				actions: []func() *genfuncs.Result[int]{
-					func() *genfuncs.Result[int] { return genfuncs.NewResult(1) },
+				actions: []func(context.Context) *genfuncs.Result[int]{
+					func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewResult(1) },
 				},
 			},
 			want:   container.GSlice[int]{1},
@@ -120,9 +122,9 @@ func TestAll(t *testing.T) {
 		{
 			name: "two success",
 			args: args{
-				actions: []func() *genfuncs.Result[int]{
-					func() *genfuncs.Result[int] { return genfuncs.NewResult(1) },
-					func() *genfuncs.Result[int] { return genfuncs.NewResult(2) },
+				actions: []func(ctx context.Context) *genfuncs.Result[int]{
+					func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewResult(1) },
+					func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewResult(2) },
 				},
 			},
 			want:   container.GSlice[int]{1, 2},
@@ -131,9 +133,9 @@ func TestAll(t *testing.T) {
 		{
 			name: "two promises one error",
 			args: args{
-				actions: []func() *genfuncs.Result[int]{
-					func() *genfuncs.Result[int] { return genfuncs.NewResult(1) },
-					func() *genfuncs.Result[int] { return genfuncs.NewError[int](genfuncs.NoSuchElement) },
+				actions: []func(ctx context.Context) *genfuncs.Result[int]{
+					func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewResult(1) },
+					func(_ context.Context) *genfuncs.Result[int] { return genfuncs.NewError[int](genfuncs.NoSuchElement) },
 				},
 			},
 			wantOk: false,
@@ -141,10 +143,13 @@ func TestAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
 			var p []*genfuncs.Promise[int] = gslices.Map(
 				tt.args.actions,
-				func(f func() *genfuncs.Result[int]) *genfuncs.Promise[int] { return genfuncs.NewPromise[int](f) })
-			all := promises.All(p...)
+				func(f func(context.Context) *genfuncs.Result[int]) *genfuncs.Promise[int] {
+					return genfuncs.NewPromise[int](context.Background(), f)
+				})
+			all := promises.All(ctx, p...)
 			result := all.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if tt.wantOk {
@@ -156,7 +161,7 @@ func TestAll(t *testing.T) {
 
 func TestAny(t *testing.T) {
 	type args struct {
-		actions []func() *genfuncs.Result[string]
+		actions []func(context.Context) *genfuncs.Result[string]
 	}
 	tests := []struct {
 		name   string
@@ -167,7 +172,7 @@ func TestAny(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				actions: []func() *genfuncs.Result[string]{},
+				actions: []func(context.Context) *genfuncs.Result[string]{},
 			},
 			want:   promises.PromiseAnyNoPromisesErrorMsg,
 			wantOk: false,
@@ -175,8 +180,8 @@ func TestAny(t *testing.T) {
 		{
 			name: "single success",
 			args: args{
-				actions: []func() *genfuncs.Result[string]{
-					func() *genfuncs.Result[string] { return genfuncs.NewResult("one") },
+				actions: []func(context.Context) *genfuncs.Result[string]{
+					func(_ context.Context) *genfuncs.Result[string] { return genfuncs.NewResult("one") },
 				},
 			},
 			want:   "one",
@@ -185,8 +190,10 @@ func TestAny(t *testing.T) {
 		{
 			name: "all error",
 			args: args{
-				actions: []func() *genfuncs.Result[string]{
-					func() *genfuncs.Result[string] { return genfuncs.NewError[string](genfuncs.NoSuchElement) },
+				actions: []func(context.Context) *genfuncs.Result[string]{
+					func(_ context.Context) *genfuncs.Result[string] {
+						return genfuncs.NewError[string](genfuncs.NoSuchElement)
+					},
 				},
 			},
 			want:   promises.PromiseNoneFulfilled,
@@ -195,9 +202,11 @@ func TestAny(t *testing.T) {
 		{
 			name: "second success",
 			args: args{
-				actions: []func() *genfuncs.Result[string]{
-					func() *genfuncs.Result[string] { return genfuncs.NewError[string](genfuncs.NoSuchElement) },
-					func() *genfuncs.Result[string] { return genfuncs.NewResult("second") },
+				actions: []func(context.Context) *genfuncs.Result[string]{
+					func(_ context.Context) *genfuncs.Result[string] {
+						return genfuncs.NewError[string](genfuncs.NoSuchElement)
+					},
+					func(_ context.Context) *genfuncs.Result[string] { return genfuncs.NewResult("second") },
 				},
 			},
 			want:   "second",
@@ -206,12 +215,13 @@ func TestAny(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
 			var p []*genfuncs.Promise[string] = gslices.Map(
 				tt.args.actions,
-				func(f func() *genfuncs.Result[string]) *genfuncs.Promise[string] {
-					return genfuncs.NewPromise[string](f)
+				func(f func(context.Context) *genfuncs.Result[string]) *genfuncs.Promise[string] {
+					return genfuncs.NewPromise[string](ctx, f)
 				})
-			one := promises.Any(p...)
+			one := promises.Any(ctx, p...)
 			result := one.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !tt.wantOk {

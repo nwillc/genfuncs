@@ -17,6 +17,8 @@
 package genfuncs_test
 
 import (
+	"context"
+	"fmt"
 	"github.com/nwillc/genfuncs"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -25,7 +27,7 @@ import (
 
 func TestPromise_Wait(t *testing.T) {
 	type args struct {
-		action func() *genfuncs.Result[int]
+		action func(context.Context) *genfuncs.Result[int]
 	}
 	tests := []struct {
 		name         string
@@ -43,7 +45,7 @@ func TestPromise_Wait(t *testing.T) {
 		{
 			name: "deliver action",
 			args: args{
-				action: func() *genfuncs.Result[int] {
+				action: func(_ context.Context) *genfuncs.Result[int] {
 					return genfuncs.NewResult(1)
 				},
 			},
@@ -53,7 +55,7 @@ func TestPromise_Wait(t *testing.T) {
 		{
 			name: "deliver slow action",
 			args: args{
-				action: func() *genfuncs.Result[int] {
+				action: func(_ context.Context) *genfuncs.Result[int] {
 					time.Sleep(400 * time.Millisecond)
 					return genfuncs.NewResult(2)
 				},
@@ -64,7 +66,7 @@ func TestPromise_Wait(t *testing.T) {
 		{
 			name: "deliver error",
 			args: args{
-				action: func() *genfuncs.Result[int] {
+				action: func(_ context.Context) *genfuncs.Result[int] {
 					return genfuncs.NewError[int](genfuncs.NoSuchElement)
 				},
 			},
@@ -74,7 +76,7 @@ func TestPromise_Wait(t *testing.T) {
 		{
 			name: "action panic message",
 			args: args{
-				action: func() *genfuncs.Result[int] {
+				action: func(_ context.Context) *genfuncs.Result[int] {
 					panic("sky is falling")
 				},
 			},
@@ -84,7 +86,7 @@ func TestPromise_Wait(t *testing.T) {
 		{
 			name: "action panic error",
 			args: args{
-				action: func() *genfuncs.Result[int] {
+				action: func(_ context.Context) *genfuncs.Result[int] {
 					panic(genfuncs.NoSuchElement)
 				},
 			},
@@ -94,7 +96,7 @@ func TestPromise_Wait(t *testing.T) {
 		{
 			name: "action panic nil",
 			args: args{
-				action: func() *genfuncs.Result[int] {
+				action: func(_ context.Context) *genfuncs.Result[int] {
 					panic(nil)
 				},
 			},
@@ -104,7 +106,7 @@ func TestPromise_Wait(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			future := genfuncs.NewPromise[int](tt.args.action)
+			future := genfuncs.NewPromise[int](context.Background(), tt.args.action)
 			result := future.Wait()
 			assert.Equal(t, tt.wantOk, result.Ok())
 			if !tt.wantOk {
@@ -161,7 +163,7 @@ func TestPromise_OnError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errorCount = 0
-			p1 := genfuncs.NewPromise(func() *genfuncs.Result[int] {
+			p1 := genfuncs.NewPromise(context.Background(), func(_ context.Context) *genfuncs.Result[int] {
 				if tt.args.aPanic {
 					panic(tt.name)
 				}
@@ -181,7 +183,8 @@ func TestPromise_OnError(t *testing.T) {
 func TestPromise_OnSuccess_OnError(t *testing.T) {
 	count := 0
 	p := genfuncs.NewPromise[bool](
-		func() *genfuncs.Result[bool] {
+		context.Background(),
+		func(_ context.Context) *genfuncs.Result[bool] {
 			return genfuncs.NewResult(true)
 		}).
 		OnSuccess(func(_ bool) {
@@ -199,7 +202,8 @@ func TestPromise_OnSuccess_OnError(t *testing.T) {
 func TestPromise_MultiWait(t *testing.T) {
 	count := 0
 	p := genfuncs.NewPromise[bool](
-		func() *genfuncs.Result[bool] {
+		context.Background(),
+		func(_ context.Context) *genfuncs.Result[bool] {
 			return genfuncs.NewResult(true)
 		}).
 		OnSuccess(func(_ bool) {
@@ -215,4 +219,31 @@ func TestPromise_MultiWait(t *testing.T) {
 	assert.True(t, r.Ok())
 	assert.True(t, r.OrEmpty())
 	assert.Equal(t, 1, count)
+}
+
+func TestPromise_Cancel(t *testing.T) {
+	waitForCancel := 500 * time.Millisecond
+	cancelAction := func(ctx context.Context) *genfuncs.Result[bool] {
+		select {
+		case <-ctx.Done():
+			return genfuncs.NewError[bool](fmt.Errorf("cancelled"))
+		case <-time.After(waitForCancel):
+			return genfuncs.NewResult(true)
+		}
+	}
+
+	ctx := context.Background()
+	p := genfuncs.NewPromise(ctx, cancelAction)
+	r := p.Wait()
+	assert.True(t, r.Ok())
+
+	ctx = context.Background()
+	p = genfuncs.NewPromise(ctx, cancelAction)
+	go func() {
+		time.Sleep(waitForCancel / 2)
+		p.Cancel()
+	}()
+	r = p.Wait()
+	assert.False(t, r.Ok())
+	assert.Contains(t, r.Error().Error(), "cancel")
 }
