@@ -65,7 +65,7 @@ import "github.com/nwillc/genfuncs"
 ## Index
 
 - [Variables](<#variables>)
-- [func Empty[T any]() (empty T)](<#func-empty>)
+- [func Empty[T any]\(\) (empty T)](<#func-empty>)
 - [func Max[T constraints.Ordered](v ...T) (max T)](<#func-max>)
 - [func Min[T constraints.Ordered](v ...T) (min T)](<#func-min>)
 - [func Ordered[T constraints.Ordered](a, b T) (order int)](<#func-ordered>)
@@ -101,7 +101,7 @@ import "github.com/nwillc/genfuncs"
   - [func (r *Result[T]) String() string](<#func-resultt-string>)
   - [func (r *Result[T]) Then(action func(t T) *Result[T]) *Result[T]](<#func-resultt-then>)
 - [type ToString](<#type-tostring>)
-  - [func StringerToString[T fmt.Stringer]() (fn ToString[T])](<#func-stringertostring>)
+  - [func StringerToString[T fmt.Stringer]\(\) (fn ToString[T])](<#func-stringertostring>)
 
 
 ## Variables
@@ -144,7 +144,7 @@ var NoSuchElement = fmt.Errorf("no such element")
 ## func [Empty](<https://github.com/nwillc/genfuncs/blob/master/dry.go#L39>)
 
 ```go
-func Empty[T any]() (empty T)
+func Empty[T any]\(\) (empty T)
 ```
 
 Empty return an empty value of type T.
@@ -654,7 +654,7 @@ import "github.com/nwillc/genfuncs/container"
 - [type Set](<#type-set>)
   - [func NewMapSet[T comparable](t ...T) (set Set[T])](<#func-newmapset>)
 - [type SyncMap](<#type-syncmap>)
-  - [func NewSyncMap[K any, V any]() (syncMap *SyncMap[K, V])](<#func-newsyncmap>)
+  - [func NewSyncMap[K any, V any]\(\) (syncMap *SyncMap[K, V])](<#func-newsyncmap>)
   - [func (s *SyncMap[K, V]) Contains(key K) (contains bool)](<#func-syncmapk-v-contains>)
   - [func (s *SyncMap[K, V]) Delete(key K)](<#func-syncmapk-v-delete>)
   - [func (s *SyncMap[K, V]) ForEach(f func(key K, value V))](<#func-syncmapk-v-foreach>)
