@@ -56,6 +56,7 @@ func All[T any](ctx context.Context, promises ...*genfuncs.Promise[T]) *genfuncs
 				select {
 				case r := <-resultChan:
 					if !r.result.Ok() {
+						cancelAll(promises)
 						return results.MapError[T, container.GSlice[T]](r.result)
 					}
 					promiseResults[r.index] = r.result.OrEmpty()
@@ -84,6 +85,7 @@ func Any[T any](ctx context.Context, promises ...*genfuncs.Promise[T]) *genfuncs
 			for i := 0; i < count; i++ {
 				select {
 				case r := <-resultChan:
+					cancelAll(promises)
 					if r.result.Ok() {
 						return r.result
 					}
@@ -98,4 +100,10 @@ func Map[A, B any](ctx context.Context, aPromise *genfuncs.Promise[A], then genf
 	return genfuncs.NewPromise(ctx, func(_ context.Context) *genfuncs.Result[B] {
 		return results.Map[A, B](aPromise.Wait(), then)
 	})
+}
+
+func cancelAll[T any](promises []*genfuncs.Promise[T]) {
+	for _, p := range promises {
+		p.Cancel()
+	}
 }

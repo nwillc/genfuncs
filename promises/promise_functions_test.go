@@ -24,7 +24,9 @@ import (
 	"github.com/nwillc/genfuncs/container/gslices"
 	"github.com/nwillc/genfuncs/promises"
 	"github.com/stretchr/testify/assert"
+	"sync/atomic"
 	"testing"
+	"time"
 )
 
 func TestMap(t *testing.T) {
@@ -231,4 +233,40 @@ func TestAny(t *testing.T) {
 			assert.Equal(t, tt.want, result.OrEmpty())
 		})
 	}
+}
+
+func TestAnyAllCancelled(t *testing.T) {
+	ctx := context.Background()
+	var cancelledCount int64 = 0
+
+	// Any
+	complete := func(_ context.Context) *genfuncs.Result[bool] {
+		return genfuncs.NewResult(true)
+	}
+
+	errorOnCancel := func(ctx context.Context) *genfuncs.Result[bool] {
+		<-ctx.Done()
+		atomic.AddInt64(&cancelledCount, 1)
+		return genfuncs.NewError[bool](fmt.Errorf("cancelled"))
+	}
+
+	pAny := promises.Any(ctx, genfuncs.NewPromise[bool](ctx, errorOnCancel), genfuncs.NewPromise[bool](ctx, complete), genfuncs.NewPromise[bool](ctx, errorOnCancel))
+	r1 := pAny.Wait()
+	assert.True(t, r1.Ok())
+	assert.True(t, r1.OrEmpty())
+	time.Sleep(200 * time.Millisecond)
+	assert.Equal(t, int64(2), cancelledCount)
+
+	// All
+	cancelledCount = 0
+	errors := func(_ context.Context) *genfuncs.Result[bool] {
+		return genfuncs.NewError[bool](fmt.Errorf("fail"))
+	}
+
+	pAll := promises.All(ctx, genfuncs.NewPromise[bool](ctx, errorOnCancel), genfuncs.NewPromise[bool](ctx, errors), genfuncs.NewPromise[bool](ctx, errorOnCancel))
+	r2 := pAll.Wait()
+	assert.False(t, r2.Ok())
+	assert.Contains(t, r2.Error().Error(), "fail")
+	time.Sleep(200 * time.Millisecond)
+	assert.Equal(t, int64(2), cancelledCount)
 }
