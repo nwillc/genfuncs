@@ -238,7 +238,7 @@ func TestAny(t *testing.T) {
 func TestAnyAllCancelled(t *testing.T) {
 	ctx := context.Background()
 	var cancelledCount int64 = 0
-	
+
 	// Any
 	complete := func(_ context.Context) *genfuncs.Result[bool] {
 		return genfuncs.NewResult(true)
