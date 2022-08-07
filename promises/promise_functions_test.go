@@ -238,7 +238,7 @@ func TestAny(t *testing.T) {
 func TestAnyAllCancelled(t *testing.T) {
 	ctx := context.Background()
 	var cancelledCount int64 = 0
-
+	
 	// Any
 	complete := func(_ context.Context) *genfuncs.Result[bool] {
 		return genfuncs.NewResult(true)
@@ -255,7 +255,7 @@ func TestAnyAllCancelled(t *testing.T) {
 	assert.True(t, r1.Ok())
 	assert.True(t, r1.OrEmpty())
 	time.Sleep(200 * time.Millisecond)
-	assert.Equal(t, int64(2), cancelledCount)
+	assert.Equal(t, int64(2), atomic.LoadInt64(&cancelledCount))
 
 	// All
 	cancelledCount = 0
@@ -268,5 +268,5 @@ func TestAnyAllCancelled(t *testing.T) {
 	assert.False(t, r2.Ok())
 	assert.Contains(t, r2.Error().Error(), "fail")
 	time.Sleep(200 * time.Millisecond)
-	assert.Equal(t, int64(2), cancelledCount)
+	assert.Equal(t, int64(2), atomic.LoadInt64(&cancelledCount))
 }
